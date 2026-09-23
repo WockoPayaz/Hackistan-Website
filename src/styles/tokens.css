@@ -1,0 +1,13 @@
+:root {
+  --color-bg: #0B0C0D;
+  --color-bg-soft: #111214;
+  --color-fg: #F2F0EA;
+  --color-fg-muted: #9C9C98;
+  --color-line-dark: rgba(242, 240, 234, 0.18);
+  --font-sans: "Geist", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --text-xs: clamp(0.68rem, 0.62rem + 0.12vw, 0.78rem);
+  --text-2xl: clamp(2.8rem, 2rem + 3.5vw, 5.5rem);
+  --text-display: clamp(3.8rem, 7vw, 8.5rem);
+  --page-x: clamp(1.25rem, 3.5vw, 4rem);
+  --section-y: clamp(4rem, 8vw, 10rem);
+}

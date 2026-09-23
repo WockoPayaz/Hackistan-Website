@@ -1,0 +1,8 @@
+.hairline-top { border-top: 1px solid var(--color-line-dark); }
+.hairline-bottom { border-bottom: 1px solid var(--color-line-dark); }
+.hairline-box { border: 1px solid var(--color-line-dark); }
+.grid-12 {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  column-gap: clamp(1rem, 2vw, 2rem);
+}
