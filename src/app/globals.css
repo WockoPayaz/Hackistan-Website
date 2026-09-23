@@ -1,9 +1,55 @@
-@import "../styles/tokens.css";
-@import "../styles/reset.css";
-@import "../styles/typography.css";
-@import "../styles/utilities.css";
-
-@config "../../tailwind.config.js";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --color-bg: #0B0C0D;
+  --color-bg-soft: #111214;
+  --color-fg: #F2F0EA;
+  --color-fg-muted: #9C9C98;
+  --color-line-dark: rgba(242, 240, 234, 0.18);
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --text-xs: clamp(0.68rem, 0.62rem + 0.12vw, 0.78rem);
+  --text-2xl: clamp(2.2rem, 1.8rem + 2.5vw, 4.5rem);
+  --text-display: clamp(3rem, 6vw, 7rem);
+  --page-x: clamp(1.25rem, 3.5vw, 4rem);
+  --section-y: clamp(4rem, 8vw, 10rem);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  background-color: #0B0C0D;
+  color: #F2F0EA;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.tracking-label {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-weight: 500;
+  color: #9C9C98;
+}
+
+.text-display {
+  font-size: var(--text-display);
+  line-height: 0.92;
+  letter-spacing: -0.04em;
+  font-weight: 400;
+}
+
+.text-title {
+  font-size: var(--text-2xl);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  font-weight: 400;
+}
+
+.hairline-top { border-top: 1px solid rgba(242, 240, 234, 0.18); }
+.hairline-bottom { border-bottom: 1px solid rgba(242, 240, 234, 0.18); }
+.hairline-box { border: 1px solid rgba(242, 240, 234, 0.18); }
