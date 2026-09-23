@@ -3,6 +3,7 @@
 @import "../styles/typography.css";
 @import "../styles/utilities.css";
 
+@config "../../tailwind.config.js";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
