@@ -98,7 +98,7 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       canvas.remove();
       return;
     }
-    const sides = new THREE.MeshPhysicalMaterial({ color: 0xc5c0b8, roughness: 0.3, metalness: 0, clearcoat: 0.18, clearcoatRoughness: 0.35, envMapIntensity: 0.85, side: THREE.DoubleSide, vertexColors: true });
+    const sides = new THREE.MeshPhysicalMaterial({ color: 0xd3cec4, roughness: 0.24, metalness: 0, clearcoat: 0.22, clearcoatRoughness: 0.32, envMapIntensity: 1.1, side: THREE.DoubleSide, vertexColors: true });
     // The package expects an explicit scene texture; render a small neutral
     // studio backdrop once on resize, never as an additional per-frame pass.
     const bufferTarget = new THREE.WebGLRenderTarget(1, 1, { depthBuffer: false, stencilBuffer: false });

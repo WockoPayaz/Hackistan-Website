@@ -1,24 +1,24 @@
 import * as THREE from "three";
 import { MeshTransmissionMaterial } from "@pmndrs/vanilla/materials/MeshTransmissionMaterial.js";
 
-/** Shared, fixed buffer: the DOM wordmark stays behind the canvas, outside refraction. */
+/** Shared studio reflection buffer; the real DOM wordmark remains underneath the canvas. */
 export function createGlassBackdrop() {
   const canvas = document.createElement("canvas");
   canvas.width = canvas.height = 256;
   const context = canvas.getContext("2d");
   if (!context) throw new Error("No 2D canvas for the glass backdrop");
-  context.fillStyle = "#20201e";
+  context.fillStyle = "#1d1d1b";
   context.fillRect(0, 0, 256, 256);
   const left = context.createLinearGradient(18, 0, 184, 256);
-  left.addColorStop(0, "rgba(238,234,222,.78)");
-  left.addColorStop(0.2, "rgba(136,135,127,.3)");
+  left.addColorStop(0, "rgba(238,234,222,.52)");
+  left.addColorStop(0.2, "rgba(136,135,127,.25)");
   left.addColorStop(0.49, "rgba(36,36,34,0)");
-  left.addColorStop(0.83, "rgba(206,204,195,.37)");
+  left.addColorStop(0.83, "rgba(206,204,195,.28)");
   left.addColorStop(1, "rgba(26,26,24,0)");
   context.fillStyle = left;
   context.fillRect(0, 0, 256, 256);
   const glow = context.createRadialGradient(216, 32, 2, 216, 32, 192);
-  glow.addColorStop(0, "rgba(232,229,219,.36)");
+  glow.addColorStop(0, "rgba(232,229,219,.26)");
   glow.addColorStop(1, "rgba(18,18,17,0)");
   context.fillStyle = glow;
   context.fillRect(0, 0, 256, 256);
@@ -33,21 +33,26 @@ export function createGlassBackdrop() {
 export function createGlassMaterial(mobile: boolean) {
   const material = new MeshTransmissionMaterial({
     samples: mobile ? 3 : 5,
-    _transmission: 0.68,
-    thickness: 24,
-    roughness: mobile ? 0.2 : 0.16,
-    anisotropicBlur: mobile ? 0.08 : 0.12,
+    _transmission: 0.78,
+    thickness: 30,
+    roughness: mobile ? 0.14 : 0.12,
+    anisotropicBlur: mobile ? 0.06 : 0.08,
     chromaticAberration: 0.001,
     distortion: 0,
     temporalDistortion: 0,
-    attenuationDistance: 90,
-    attenuationColor: new THREE.Color(0xc9c6bd),
+    attenuationDistance: 125,
+    attenuationColor: new THREE.Color(0xd5d1c9),
   });
-  material.color.set(0xf1eee6);
-  material.ior = 1.42;
+  material.color.set(0xe5e4dc);
+  material.ior = 1.45;
   material.metalness = 0;
-  material.envMapIntensity = 1.2;
+  material.envMapIntensity = 1.35;
   material.side = THREE.DoubleSide;
-  material.transparent = false;
+  // The refraction buffer contains only the studio gradient. Alpha compositing
+  // also lets the actual DOM wordmark behind the canvas show through the H.
+  material.transparent = true;
+  material.opacity = mobile ? 0.8 : 0.76;
+  material.depthWrite = true;
+  material.forceSinglePass = true;
   return material;
 }
