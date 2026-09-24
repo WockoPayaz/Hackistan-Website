@@ -5,7 +5,7 @@ import * as THREE from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { SVGLoader } from "three/addons/loaders/SVGLoader.js";
 import { gsap } from "@/lib/gsap";
-import { hero3d, touchDragIntent } from "@/lib/hero-3d";
+import { hero3d, pointerResponse, touchDragIntent } from "@/lib/hero-3d";
 import { createGlassBackdrop, createGlassMaterial } from "@/lib/hero-glass";
 import { markGeometry } from "./geometry";
 import styles from "./LogoScene.module.css";
@@ -203,8 +203,8 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       const dy = event.clientY - drag.startY;
       if (drag.intent === "pending") drag.intent = touchDragIntent(dx, dy);
       if (drag.intent !== "rotate" || getProgress() >= hero3d.pointerCutoff) return;
-      touchX = Math.max(-1, Math.min(1, dx / (mark.clientWidth * 0.48))) * hero3d.rotationY;
-      touchY = -Math.max(-1, Math.min(1, dy / (mark.clientHeight * 0.65))) * hero3d.rotationX * 0.85;
+      touchX = pointerResponse(dx / (mark.clientWidth * 0.32)) * hero3d.rotationY;
+      touchY = -pointerResponse(dy / (mark.clientHeight * 0.48)) * hero3d.rotationX * 0.85;
     };
     const touchEnd = (event: PointerEvent) => {
       if (drag?.id !== event.pointerId) return;
@@ -247,8 +247,8 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       const amount = 1 - Math.exp(-elapsed / damping);
       const previousX = pointerGroup.rotation.x;
       const previousY = pointerGroup.rotation.y;
-      pointerGroup.rotation.y += ((touchActive ? touchX : mouseActive ? pointerX * hero3d.rotationY : 0) - pointerGroup.rotation.y) * amount;
-      pointerGroup.rotation.x += ((touchActive ? touchY : mouseActive ? -pointerY * hero3d.rotationX : 0) - pointerGroup.rotation.x) * amount;
+      pointerGroup.rotation.y += ((touchActive ? touchX : mouseActive ? pointerResponse(pointerX) * hero3d.rotationY : 0) - pointerGroup.rotation.y) * amount;
+      pointerGroup.rotation.x += ((touchActive ? touchY : mouseActive ? -pointerResponse(pointerY) * hero3d.rotationX : 0) - pointerGroup.rotation.x) * amount;
       let changed = firstFrame || Math.abs(pointerGroup.rotation.x - previousX) > 0.00005 || Math.abs(pointerGroup.rotation.y - previousY) > 0.00005;
       for (const name of partNames) {
         const element = svgParts[name]!;

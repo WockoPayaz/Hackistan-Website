@@ -33,10 +33,10 @@ export function createGlassBackdrop() {
 export function createGlassMaterial(mobile: boolean) {
   const material = new MeshTransmissionMaterial({
     samples: mobile ? 3 : 5,
-    _transmission: 0.78,
+    _transmission: 0.8,
     thickness: 30,
-    roughness: mobile ? 0.14 : 0.12,
-    anisotropicBlur: mobile ? 0.06 : 0.08,
+    roughness: mobile ? 0.2 : 0.18,
+    anisotropicBlur: mobile ? 0.11 : 0.15,
     chromaticAberration: 0.001,
     distortion: 0,
     temporalDistortion: 0,
