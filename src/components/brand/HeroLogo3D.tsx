@@ -5,7 +5,7 @@ import * as THREE from "three";
 import { SVGLoader } from "three/addons/loaders/SVGLoader.js";
 import { gsap } from "@/lib/gsap";
 import { hero3d, touchDragIntent } from "@/lib/hero-3d";
-import { createHeroSurface } from "@/lib/hero-surface";
+import { createHeroFrontMaterial, createHeroSurface } from "@/lib/hero-surface";
 import { markGeometry } from "./geometry";
 import styles from "./LogoScene.module.css";
 
@@ -71,11 +71,13 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
     renderer.setClearColor(0x000000, 0);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.04;
+    renderer.toneMappingExposure = 1.13;
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(30, 1, 1, 4000);
-    camera.position.z = hero3d.cameraZ;
+    // A nearly frontal view still exposes a sliver of the real extrusion at rest.
+    camera.position.set(hero3d.cameraX, hero3d.cameraY, hero3d.cameraZ);
+    camera.lookAt(0, 0, 0);
     const pointerGroup = new THREE.Group();
     scene.add(pointerGroup);
     let surface: ReturnType<typeof createHeroSurface>;
@@ -86,11 +88,12 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       canvas.remove();
       return;
     }
-    const front = new THREE.MeshStandardMaterial({
-      color: 0xffffff, map: surface.map, roughnessMap: surface.roughnessMap,
-      bumpMap: surface.bumpMap, bumpScale: 1.9,
-      roughness: 0.78, metalness: 0, side: THREE.DoubleSide,
-    });
+    for (const texture of [surface.map, surface.roughnessMap, surface.normalMap]) {
+      texture.minFilter = THREE.LinearMipmapLinearFilter;
+      texture.magFilter = THREE.LinearFilter;
+      texture.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
+    }
+    const front = createHeroFrontMaterial(surface);
     const sides = new THREE.MeshStandardMaterial({ color: 0xaaa49a, roughness: 0.76, metalness: 0, side: THREE.DoubleSide, vertexColors: true });
     const meshes = {} as Record<Part, THREE.Mesh<THREE.ExtrudeGeometry>>;
     try {
@@ -106,23 +109,19 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       sides.dispose();
       surface.map.dispose();
       surface.roughnessMap.dispose();
-      surface.bumpMap.dispose();
+      surface.normalMap.dispose();
       renderer.dispose();
       canvas.remove();
       return; // Keep the SVG if the source paths cannot be extruded.
     }
-    scene.add(new THREE.AmbientLight(0xffffff, 0.36));
-    const key = new THREE.DirectionalLight(0xfff8ed, 1.9);
-    key.position.set(-420, 430, 500);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.27));
+    const key = new THREE.DirectionalLight(0xfff8ee, 2.25);
+    key.position.set(-520, 420, 500);
     scene.add(key);
-    // Gentle falloff across the wide front plane; shadows remain disabled.
-    const studio = new THREE.PointLight(0xfff6e9, 110000, 0, 2);
-    studio.position.set(-270, 300, 460);
-    scene.add(studio);
-    const fill = new THREE.DirectionalLight(0xffffff, 0.35);
+    const fill = new THREE.DirectionalLight(0xffffff, 0.28);
     fill.position.set(410, -120, 260);
     scene.add(fill);
-    const rim = new THREE.DirectionalLight(0xffffff, 0.85);
+    const rim = new THREE.DirectionalLight(0xffffff, 0.5);
     rim.position.set(270, 180, -420);
     scene.add(rim);
 
@@ -260,7 +259,7 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       sides.dispose();
       surface.map.dispose();
       surface.roughnessMap.dispose();
-      surface.bumpMap.dispose();
+      surface.normalMap.dispose();
       renderer.dispose();
       canvas.remove();
     };

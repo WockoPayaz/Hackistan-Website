@@ -1,10 +1,11 @@
 .scene { position: relative; width: 100%; height: 100%; }
-.fallback { width: 100%; height: 100%; }
+.fallback { position: relative; z-index: 1; width: 100%; height: 100%; pointer-events: none; transition: opacity 180ms ease-out; }
 .scene[data-scene-ready="true"] .fallback { opacity: 0; }
 .canvas { position: absolute; left: 50%; top: 50%; width: 100vw; height: 120dvh; transform: translate(-50%, -50%); pointer-events: none; }
 .canvas canvas { display: block; width: 100%; height: 100%; }
 .touchTarget { position: absolute; inset: 0; z-index: 2; pointer-events: none; touch-action: pan-y pinch-zoom; }
 .scene[data-scene-ready="true"] .touchTarget { pointer-events: auto; }
 @media (prefers-reduced-motion: reduce) {
+  .fallback { transition: none; }
   .scene[data-scene-ready="true"] .touchTarget { pointer-events: none; }
 }
