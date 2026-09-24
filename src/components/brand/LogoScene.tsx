@@ -12,7 +12,7 @@ export function LogoScene() {
   const [ready, setReady] = useState(false);
   const handleReady = useCallback((next: boolean) => {
     setReady(next);
-    if (next) window.dispatchEvent(new Event("hackistan:webgl-ready"));
+    window.dispatchEvent(new Event(next ? "hackistan:webgl-ready" : "hackistan:webgl-failed"));
   }, []);
   return <div className={styles.scene} data-scene-ready={ready}>
     <div className={styles.fallback} data-hero-mark><HackistanMark dimensional /></div>

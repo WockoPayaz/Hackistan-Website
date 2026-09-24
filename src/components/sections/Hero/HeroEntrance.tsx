@@ -131,6 +131,7 @@ export function HeroEntrance() {
     const onScroll = () => { if (window.scrollY > 24 || hero.getBoundingClientRect().top < -24) finish(); };
     const onMotion = () => { if (reduced.matches) finish(); };
     window.addEventListener("hackistan:webgl-ready", begin);
+    window.addEventListener("hackistan:webgl-failed", finish);
     window.addEventListener("scroll", onScroll, { passive: true });
     reduced.addEventListener("change", onMotion);
     timer = window.setTimeout(finish, 1700); // WebGL failure keeps the usable SVG hero.
@@ -138,6 +139,7 @@ export function HeroEntrance() {
     return () => {
       window.clearTimeout(timer);
       window.removeEventListener("hackistan:webgl-ready", begin);
+      window.removeEventListener("hackistan:webgl-failed", finish);
       window.removeEventListener("scroll", onScroll);
       reduced.removeEventListener("change", onMotion);
       finish();

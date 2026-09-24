@@ -57,6 +57,8 @@
   .hero[data-intro="pending"] .background,
   .hero[data-intro="pending"] .ribbonField,
   .hero[data-intro="pending"] [data-hero-edge] { opacity: 0; }
+  /* The 3D canvas and drafting drawing may appear, but never the finished SVG H. */
+  .hero[data-intro="running"] [data-hero-mark] { opacity: 0; transition: none; }
 }
 .construction { position: absolute; inset: 0; z-index: 3; pointer-events: none; opacity: 0; overflow: visible; }
 .construction path, .construction line, .construction circle { fill: none; stroke: rgba(235,234,229,.55); stroke-width: .65; vector-effect: non-scaling-stroke; }
