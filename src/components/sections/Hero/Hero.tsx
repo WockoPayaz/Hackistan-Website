@@ -1,5 +1,6 @@
 import { Wordmark } from "@/components/brand/Wordmark";
 import { LogoScene } from "@/components/brand/LogoScene";
+import { HeroRibbons } from "./HeroRibbons";
 import { Arrow } from "@/components/ui/Arrow";
 import styles from "./Hero.module.css";
 
@@ -8,6 +9,7 @@ export function Hero() {
     <section id="top" aria-labelledby="hero-title" className={styles.hero} data-hero tabIndex={-1}>
       <div className={styles.stage} data-hero-stage>
         <div className={`${styles.frame} page-width`}>
+          <HeroRibbons />
           <div className={styles.background} data-hero-wordmark><h1 id="hero-title"><Wordmark /></h1></div>
           <div className={styles.mark} data-mark-stage><LogoScene /></div>
           <p className={`${styles.locator} eyebrow`} data-hero-edge>Quetta / Pakistan<br /><span className="muted">30.18° N &nbsp; 66.98° E</span></p>
