@@ -6,11 +6,11 @@ export const hero3d = {
   cameraY: 45,
   depth: 30,
   bevel: 2.4,
-  rotationY: 19 * Math.PI / 180,
-  rotationX: 12 * Math.PI / 180,
-  pointerDamping: 0.13,
+  rotationY: 25 * Math.PI / 180,
+  rotationX: 16 * Math.PI / 180,
+  pointerDamping: 0.105,
   touchReleaseDamping: 0.19,
-  scrollDamping: 0.06,
+  scrollDamping: 0.045,
   pointerCutoff: 0.025,
   touchIntentPixels: 9,
   touchIntentRatio: 1.25,
@@ -20,7 +20,8 @@ export const hero3d = {
 /** More travel near the center, with a smooth flattening toward the limits. */
 export function pointerResponse(value: number): number {
   const clamped = Math.max(-1, Math.min(1, value));
-  return clamped * (1.5 - 0.5 * clamped * clamped);
+  const square = clamped * clamped;
+  return clamped * (1.6 - 0.7 * square + 0.1 * square * square);
 }
 
 /** Vertical or ambiguous gestures belong to native page scrolling. */

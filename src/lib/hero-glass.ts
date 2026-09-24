@@ -37,8 +37,10 @@ export function createGlassMaterial(mobile: boolean) {
     thickness: 30,
     roughness: mobile ? 0.2 : 0.18,
     anisotropicBlur: mobile ? 0.11 : 0.15,
-    chromaticAberration: 0.001,
-    distortion: 0,
+    chromaticAberration: 0.0015,
+    // A few broad, stationary lensing regions across the 400-unit mark.
+    distortion: mobile ? 0.14 : 0.2,
+    distortionScale: 0.006,
     temporalDistortion: 0,
     attenuationDistance: 125,
     attenuationColor: new THREE.Color(0xd5d1c9),

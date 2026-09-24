@@ -203,8 +203,8 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       const dy = event.clientY - drag.startY;
       if (drag.intent === "pending") drag.intent = touchDragIntent(dx, dy);
       if (drag.intent !== "rotate" || getProgress() >= hero3d.pointerCutoff) return;
-      touchX = pointerResponse(dx / (mark.clientWidth * 0.32)) * hero3d.rotationY;
-      touchY = -pointerResponse(dy / (mark.clientHeight * 0.48)) * hero3d.rotationX * 0.85;
+      touchX = pointerResponse(dx / (mark.clientWidth * 0.27)) * hero3d.rotationY;
+      touchY = -pointerResponse(dy / (mark.clientHeight * 0.4)) * hero3d.rotationX * 0.85;
     };
     const touchEnd = (event: PointerEvent) => {
       if (drag?.id !== event.pointerId) return;
