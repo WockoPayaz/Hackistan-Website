@@ -6,11 +6,11 @@ export const hero3d = {
   cameraY: 45,
   depth: 30,
   bevel: 2.4,
-  rotationY: 25 * Math.PI / 180,
-  rotationX: 16 * Math.PI / 180,
-  pointerDamping: 0.105,
+  rotationY: 29 * Math.PI / 180,
+  rotationX: 18 * Math.PI / 180,
+  pointerDamping: 0.09,
   touchReleaseDamping: 0.19,
-  scrollDamping: 0.045,
+  scrollDamping: 0.04,
   pointerCutoff: 0.025,
   touchIntentPixels: 9,
   touchIntentRatio: 1.25,
@@ -21,7 +21,7 @@ export const hero3d = {
 export function pointerResponse(value: number): number {
   const clamped = Math.max(-1, Math.min(1, value));
   const square = clamped * clamped;
-  return clamped * (1.6 - 0.7 * square + 0.1 * square * square);
+  return clamped * (1.75 - 1.05 * square + 0.3 * square * square);
 }
 
 /** Vertical or ambiguous gestures belong to native page scrolling. */

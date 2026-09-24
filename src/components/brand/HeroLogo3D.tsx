@@ -50,6 +50,7 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
     const mark = container?.closest<HTMLElement>("[data-mark-stage]");
     const journey = container?.closest<HTMLElement>("[data-journey]");
     const hero = container?.closest<HTMLElement>("[data-hero]");
+    const wordmark = hero?.querySelector<HTMLElement>("[data-hero-wordmark] h1 span") ?? null;
     const touchTarget = container?.parentElement?.querySelector<HTMLElement>("[data-hero-touch-target]");
     if (!container || !mark || !journey || !hero || !touchTarget) return;
 
@@ -99,8 +100,8 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       return;
     }
     const sides = new THREE.MeshPhysicalMaterial({ color: 0xd3cec4, roughness: 0.24, metalness: 0, clearcoat: 0.22, clearcoatRoughness: 0.32, envMapIntensity: 1.1, side: THREE.DoubleSide, vertexColors: true });
-    // The package expects an explicit scene texture; render a small neutral
-    // studio backdrop once on resize, never as an additional per-frame pass.
+    // The explicit transmission buffer includes an aligned copy of the DOM
+    // wordmark. Paint on resize/font load, not on each animation frame.
     const bufferTarget = new THREE.WebGLRenderTarget(1, 1, { depthBuffer: false, stencilBuffer: false });
     bufferTarget.texture.minFilter = THREE.LinearFilter;
     bufferTarget.texture.magFilter = THREE.LinearFilter;
@@ -151,7 +152,10 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
       const scale = Math.min(mobile ? 512 : 768, Math.max(width, height));
-      bufferTarget.setSize(Math.max(1, Math.round(scale * width / Math.max(width, height))), Math.max(1, Math.round(scale * height / Math.max(width, height))));
+      const bufferWidth = Math.max(1, Math.round(scale * width / Math.max(width, height)));
+      const bufferHeight = Math.max(1, Math.round(scale * height / Math.max(width, height)));
+      bufferTarget.setSize(bufferWidth, bufferHeight);
+      backdrop.paint(bufferWidth, bufferHeight, container, wordmark);
       renderer.setRenderTarget(bufferTarget);
       renderer.render(backdrop.scene, camera);
       renderer.setRenderTarget(null);
@@ -161,6 +165,7 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
     resizeObserver.observe(container);
     resizeObserver.observe(mark);
     resize();
+    document.fonts.ready.then(() => { if (canvas.isConnected) resize(); });
 
     const hover = window.matchMedia("(hover: hover) and (pointer: fine)");
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -203,8 +208,8 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       const dy = event.clientY - drag.startY;
       if (drag.intent === "pending") drag.intent = touchDragIntent(dx, dy);
       if (drag.intent !== "rotate" || getProgress() >= hero3d.pointerCutoff) return;
-      touchX = pointerResponse(dx / (mark.clientWidth * 0.27)) * hero3d.rotationY;
-      touchY = -pointerResponse(dy / (mark.clientHeight * 0.4)) * hero3d.rotationX * 0.85;
+      touchX = pointerResponse(dx / (mark.clientWidth * 0.23)) * hero3d.rotationY;
+      touchY = -pointerResponse(dy / (mark.clientHeight * 0.36)) * hero3d.rotationX * 0.85;
     };
     const touchEnd = (event: PointerEvent) => {
       if (drag?.id !== event.pointerId) return;
