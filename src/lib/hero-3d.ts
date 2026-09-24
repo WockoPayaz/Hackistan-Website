@@ -2,8 +2,8 @@
 export const hero3d = {
   viewBox: 420,
   cameraZ: 950,
-  depth: 27,
-  bevel: 2,
+  depth: 30,
+  bevel: 2.4,
   rotationY: 11 * Math.PI / 180,
   rotationX: 7 * Math.PI / 180,
   pointerDamping: 0.17,
