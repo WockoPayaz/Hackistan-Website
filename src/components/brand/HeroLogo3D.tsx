@@ -2,10 +2,11 @@
 
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { SVGLoader } from "three/addons/loaders/SVGLoader.js";
 import { gsap } from "@/lib/gsap";
-import { hero3d, touchDragIntent } from "@/lib/hero-3d";
-import { createHeroFrontMaterial, createHeroSurface } from "@/lib/hero-surface";
+import { hero3d, pointerResponse, touchDragIntent } from "@/lib/hero-3d";
+import { createGlassBackdrop, createGlassMaterial } from "@/lib/hero-glass";
 import { markGeometry } from "./geometry";
 import styles from "./LogoScene.module.css";
 
@@ -49,6 +50,7 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
     const mark = container?.closest<HTMLElement>("[data-mark-stage]");
     const journey = container?.closest<HTMLElement>("[data-journey]");
     const hero = container?.closest<HTMLElement>("[data-hero]");
+    const wordmark = hero?.querySelector<HTMLElement>("[data-hero-wordmark] h1 span") ?? null;
     const touchTarget = container?.parentElement?.querySelector<HTMLElement>("[data-hero-touch-target]");
     if (!container || !mark || !journey || !hero || !touchTarget) return;
 
@@ -71,7 +73,7 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
     renderer.setClearColor(0x000000, 0);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.13;
+    renderer.toneMappingExposure = 1.06;
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(30, 1, 1, 4000);
@@ -80,21 +82,35 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
     camera.lookAt(0, 0, 0);
     const pointerGroup = new THREE.Group();
     scene.add(pointerGroup);
-    let surface: ReturnType<typeof createHeroSurface>;
+    let environment: THREE.WebGLRenderTarget;
+    let backdrop: ReturnType<typeof createGlassBackdrop>;
+    let front: ReturnType<typeof createGlassMaterial>;
+    const mobile = window.matchMedia("(pointer: coarse)").matches;
     try {
-      surface = createHeroSurface();
+      const room = new RoomEnvironment();
+      const pmrem = new THREE.PMREMGenerator(renderer);
+      try { environment = pmrem.fromScene(room, 0.04); }
+      finally { pmrem.dispose(); room.dispose(); }
+      scene.environment = environment.texture;
+      backdrop = createGlassBackdrop();
+      front = createGlassMaterial(mobile);
     } catch {
       renderer.dispose();
       canvas.remove();
       return;
     }
-    for (const texture of [surface.map, surface.roughnessMap, surface.normalMap]) {
-      texture.minFilter = THREE.LinearMipmapLinearFilter;
-      texture.magFilter = THREE.LinearFilter;
-      texture.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
-    }
-    const front = createHeroFrontMaterial(surface);
-    const sides = new THREE.MeshStandardMaterial({ color: 0xaaa49a, roughness: 0.76, metalness: 0, side: THREE.DoubleSide, vertexColors: true });
+    const sides = new THREE.MeshPhysicalMaterial({ color: 0xd3cec4, roughness: 0.24, metalness: 0, clearcoat: 0.22, clearcoatRoughness: 0.32, envMapIntensity: 1.1, side: THREE.DoubleSide, vertexColors: true });
+    // The explicit transmission buffer includes an aligned copy of the DOM
+    // wordmark. Paint on resize/font load, not on each animation frame.
+    const bufferTarget = new THREE.WebGLRenderTarget(1, 1, { depthBuffer: false, stencilBuffer: false });
+    bufferTarget.texture.minFilter = THREE.LinearFilter;
+    bufferTarget.texture.magFilter = THREE.LinearFilter;
+    front.uniforms.buffer.value = bufferTarget.texture;
+    let shaderFailed = false;
+    renderer.debug.onShaderError = (gl, program) => {
+      shaderFailed = true;
+      console.error("Hackistan glass shader failed:", gl.getProgramInfoLog(program));
+    };
     const meshes = {} as Record<Part, THREE.Mesh<THREE.ExtrudeGeometry>>;
     try {
       for (const name of partNames) {
@@ -107,21 +123,21 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       for (const name of partNames) meshes[name]?.geometry.dispose();
       front.dispose();
       sides.dispose();
-      surface.map.dispose();
-      surface.roughnessMap.dispose();
-      surface.normalMap.dispose();
+      bufferTarget.dispose();
+      backdrop.texture.dispose();
+      environment.dispose();
       renderer.dispose();
       canvas.remove();
       return; // Keep the SVG if the source paths cannot be extruded.
     }
-    scene.add(new THREE.AmbientLight(0xffffff, 0.27));
-    const key = new THREE.DirectionalLight(0xfff8ee, 2.25);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.16));
+    const key = new THREE.DirectionalLight(0xfff8ee, 1.25);
     key.position.set(-520, 420, 500);
     scene.add(key);
-    const fill = new THREE.DirectionalLight(0xffffff, 0.28);
+    const fill = new THREE.DirectionalLight(0xffffff, 0.17);
     fill.position.set(410, -120, 260);
     scene.add(fill);
-    const rim = new THREE.DirectionalLight(0xffffff, 0.5);
+    const rim = new THREE.DirectionalLight(0xffffff, 0.32);
     rim.position.set(270, 180, -420);
     scene.add(rim);
 
@@ -135,12 +151,21 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       camera.fov = 2 * Math.atan(worldHeight / (2 * hero3d.cameraZ)) * 180 / Math.PI;
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
+      const scale = Math.min(mobile ? 512 : 768, Math.max(width, height));
+      const bufferWidth = Math.max(1, Math.round(scale * width / Math.max(width, height)));
+      const bufferHeight = Math.max(1, Math.round(scale * height / Math.max(width, height)));
+      bufferTarget.setSize(bufferWidth, bufferHeight);
+      backdrop.paint(bufferWidth, bufferHeight, container, wordmark);
+      renderer.setRenderTarget(bufferTarget);
+      renderer.render(backdrop.scene, camera);
+      renderer.setRenderTarget(null);
       renderer.render(scene, camera);
     };
     const resizeObserver = new ResizeObserver(resize);
     resizeObserver.observe(container);
     resizeObserver.observe(mark);
     resize();
+    document.fonts.ready.then(() => { if (canvas.isConnected) resize(); });
 
     const hover = window.matchMedia("(hover: hover) and (pointer: fine)");
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -183,8 +208,8 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       const dy = event.clientY - drag.startY;
       if (drag.intent === "pending") drag.intent = touchDragIntent(dx, dy);
       if (drag.intent !== "rotate" || getProgress() >= hero3d.pointerCutoff) return;
-      touchX = Math.max(-1, Math.min(1, dx / (mark.clientWidth * 0.48))) * hero3d.rotationY;
-      touchY = -Math.max(-1, Math.min(1, dy / (mark.clientHeight * 0.65))) * hero3d.rotationX * 0.85;
+      touchX = pointerResponse(dx / (mark.clientWidth * 0.23)) * hero3d.rotationY;
+      touchY = -pointerResponse(dy / (mark.clientHeight * 0.36)) * hero3d.rotationX * 0.85;
     };
     const touchEnd = (event: PointerEvent) => {
       if (drag?.id !== event.pointerId) return;
@@ -227,8 +252,8 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       const amount = 1 - Math.exp(-elapsed / damping);
       const previousX = pointerGroup.rotation.x;
       const previousY = pointerGroup.rotation.y;
-      pointerGroup.rotation.y += ((touchActive ? touchX : mouseActive ? pointerX * hero3d.rotationY : 0) - pointerGroup.rotation.y) * amount;
-      pointerGroup.rotation.x += ((touchActive ? touchY : mouseActive ? -pointerY * hero3d.rotationX : 0) - pointerGroup.rotation.x) * amount;
+      pointerGroup.rotation.y += ((touchActive ? touchX : mouseActive ? pointerResponse(pointerX) * hero3d.rotationY : 0) - pointerGroup.rotation.y) * amount;
+      pointerGroup.rotation.x += ((touchActive ? touchY : mouseActive ? -pointerResponse(pointerY) * hero3d.rotationX : 0) - pointerGroup.rotation.x) * amount;
       let changed = firstFrame || Math.abs(pointerGroup.rotation.x - previousX) > 0.00005 || Math.abs(pointerGroup.rotation.y - previousY) > 0.00005;
       for (const name of partNames) {
         const element = svgParts[name]!;
@@ -238,7 +263,7 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
         meshes[name].position.set(x, -y, 0);
       }
       if (changed) renderer.render(scene, camera);
-      if (firstFrame) { firstFrame = false; onReadyChange(true); }
+      if (firstFrame && !shaderFailed) { firstFrame = false; onReadyChange(true); }
     };
     frame = requestAnimationFrame(update);
 
@@ -257,9 +282,9 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       for (const name of partNames) meshes[name].geometry.dispose();
       front.dispose();
       sides.dispose();
-      surface.map.dispose();
-      surface.roughnessMap.dispose();
-      surface.normalMap.dispose();
+      bufferTarget.dispose();
+      backdrop.texture.dispose();
+      environment.dispose();
       renderer.dispose();
       canvas.remove();
     };
