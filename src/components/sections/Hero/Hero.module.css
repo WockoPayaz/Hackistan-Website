@@ -1,0 +1,46 @@
+.hero { position: relative; height: 100svh; min-height: 700px; }
+.stage { height: 100svh; min-height: 700px; position: relative; overflow: clip; }
+.frame { height: 100%; position: relative; }
+.locator { position: absolute; top: 19%; left: 0; }
+.locator span { display: block; margin-top: var(--space-2); letter-spacing: 0.13em; }
+.manifesto { position: absolute; right: 0; top: 19%; text-align: right; line-height: 1.85; }
+.mark { position: absolute; width: min(35svh, 30vw); height: min(35svh, 30vw); top: 11%; left: 48.5%; perspective: 1100px; }
+.mark > div { width: 100%; height: 100%; transform-style: preserve-3d; }
+.name { position: absolute; left: -0.006em; bottom: 20%; width: 100%; }
+.name h1 { font-size: clamp(7rem, min(16.55vw, 25.5svh), 25rem); font-weight: 400; }
+.phrase { margin-top: var(--space-6); margin-left: 0.6%; letter-spacing: 0.37em; }
+.bottom { position: absolute; bottom: 5%; width: 100%; display: flex; align-items: flex-end; justify-content: space-between; }
+.descriptor { line-height: 1.7; }
+.scroll { margin-bottom: -0.625rem; gap: var(--space-6); }
+.edition { position: absolute; right: 0; bottom: 20.5%; writing-mode: vertical-rl; }
+
+@media (min-width: 1920px) { .name h1 { font-size: clamp(16rem, min(16vw, 25.5svh), 25rem); } }
+@media (max-width: 1023px) {
+  .mark { width: min(43svh, 48vw); height: min(43svh, 48vw); top: 20%; left: 35%; }
+  .name h1 { font-size: 16.65vw; }
+  .name { bottom: 21%; }
+  .manifesto { top: 15%; }
+  .locator { top: 15%; }
+  .edition { bottom: 28%; }
+}
+@media (max-width: 767px) {
+  .hero, .stage { min-height: 680px; }
+  .locator { top: 15%; font-size: 10px; }
+  .locator span { display: none; }
+  .manifesto { top: 15%; font-size: 10px; line-height: 1.7; }
+  .mark { top: 25%; left: 24%; width: min(58vw, 33svh); height: min(58vw, 33svh); }
+  .name { bottom: 24%; }
+  .name h1 { font-size: 16.5vw; }
+  .phrase { margin-top: var(--space-5); letter-spacing: 0.28em; max-width: 18ch; font-size: var(--text-xs); line-height: 1.7; }
+  .bottom { bottom: 5%; align-items: flex-end; }
+  .descriptor { font-size: 10px; letter-spacing: 0.16em; }
+  .descriptor span { display: block; margin-top: var(--space-2); max-width: 18ch; }
+  .scroll { gap: var(--space-4); font-size: 10px; letter-spacing: 0.16em; max-width: 125px; }
+  .scroll > span:first-child { max-width: 9ch; }
+  .edition { display: none; }
+}
+@media (max-height: 650px) and (min-width: 768px) {
+  .hero, .stage { min-height: 600px; }
+  .mark { width: 245px; height: 245px; top: 15%; }
+  .name h1 { font-size: min(14.5vw, 200px); }
+}

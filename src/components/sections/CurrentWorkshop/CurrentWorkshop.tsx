@@ -1,45 +1,30 @@
-"use client";
-import React from "react";
 import Image from "next/image";
-import { getCurrentWorkshop } from "@/data/workshops";
-import { TextReveal } from "@/components/motion/TextReveal";
-import { MediaReveal } from "@/components/motion/MediaReveal";
+import type { Workshop } from "@/types/workshop";
 import { WorkshopMeta } from "./WorkshopMeta";
+import { Arrow } from "@/components/ui/Arrow";
+import styles from "./CurrentWorkshop.module.css";
 
-export const CurrentWorkshop = () => {
-  const workshop = getCurrentWorkshop();
+export function CurrentWorkshop({ workshop }: { workshop?: Workshop }) {
+  if (!workshop) return <section id="now" className={`${styles.empty} page-width`} aria-labelledby="empty-title"><p className="eyebrow">01 / Now</p><h2 id="empty-title" className="display">No active workshop.</h2><p className="body-copy muted">Next program announcement soon.</p></section>;
 
   return (
-    <section id="now" className="relative w-full min-h-screen px-[var(--page-x)] py-[var(--section-y)] bg-[#0B0C0D] hairline-top">
-      <div className="w-full flex justify-between pb-12 hairline-bottom">
-        <div className="flex items-center gap-4">
-          <span className="tracking-label text-fg font-bold">01 / NOW</span>
-          <span className="tracking-label text-fg">● CURRENT WORKSHOP</span>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 pt-12 items-start">
-        <div className="md:col-span-7 flex flex-col justify-between">
-          <div>
-            <TextReveal><h2 className="text-title text-[clamp(2.5rem,5.5vw,5.5rem)] uppercase">{workshop.title}</h2></TextReveal>
-            <TextReveal delay={0.2}><p className="mt-8 text-fg-muted text-lg max-w-[50ch]">{workshop.shortDescription}</p></TextReveal>
+    <section id="now" className={styles.section} data-now aria-labelledby="workshop-title" tabIndex={-1}>
+      <article className={`${styles.composition} page-width page-grid`}>
+        <div className={styles.index} data-now-reveal><span className="eyebrow">01 / Now</span><span className={`${styles.status} eyebrow`}><span aria-hidden="true">●</span> Current</span></div>
+        <div className={styles.kicker} data-now-reveal><p className="eyebrow">Current workshop</p><p className="eyebrow muted">{workshop.tags.join(" / ")}</p></div>
+        <figure className={styles.figure}>
+          <div className={styles.media} data-workshop-media>
+            {workshop.coverImage ? <Image src={workshop.coverImage} alt={workshop.coverAlt ?? workshop.title} fill sizes="(max-width: 767px) 90vw, (max-width: 1023px) 85vw, 66vw" className={styles.image} loading="lazy" data-workshop-image /> : <div className={styles.mediaFallback}><span className="eyebrow">Work in progress</span></div>}
+            <span className={`${styles.mediaIndex} eyebrow`} aria-hidden="true">In good company.</span>
           </div>
-          <div className="mt-12">
-            <WorkshopMeta tags={workshop.tags} dates={`${workshop.startDate} — ${workshop.endDate}`} location={workshop.location} />
-            <div className="mt-8 pt-6 hairline-top">
-              <a href="#" className="tracking-label text-[#F2F0EA]">EXPLORE WORKSHOP →</a>
-            </div>
-          </div>
-        </div>
-
-        <div className="md:col-span-5">
-          <MediaReveal>
-            <div className="relative aspect-[4/5] w-full hairline-box overflow-hidden bg-[#111214]">
-              <Image src={workshop.coverImage} alt={workshop.title} fill sizes="(max-width: 768px) 100vw, 45vw" className="object-cover grayscale contrast-125" />
-            </div>
-          </MediaReveal>
-        </div>
-      </div>
+          {workshop.coverCredit && <figcaption className={styles.credit} data-now-reveal><a href={workshop.coverCredit.url} target="_blank" rel="noreferrer">{workshop.coverCredit.label}<span className="sr-only"> (opens in a new tab)</span></a></figcaption>}
+        </figure>
+        <h2 id="workshop-title" className={`${styles.title} display`}>
+          {(workshop.titleLines ?? [workshop.title]).map((line) => <span className="clip-line" key={line}><span data-now-title>{line}</span></span>)}
+        </h2>
+        <WorkshopMeta workshop={workshop} />
+        <div className={styles.description} data-now-reveal><p className="body-copy">{workshop.shortDescription}</p>{workshop.href && <a href={workshop.href} className="text-link eyebrow"><span>Explore workshop</span><span><Arrow direction="right" /></span></a>}</div>
+      </article>
     </section>
   );
-};
+}

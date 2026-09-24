@@ -1,38 +1,29 @@
-import { Workshop } from "@/types/workshop";
+import type { Workshop } from "@/types/workshop";
 
-export const WORKSHOPS_DATA: Workshop[] = [
+/** Phase 1 fixture. Replace this adapter with a CMS when real content is ready. */
+export const workshops: readonly Workshop[] = [
   {
-    id: "ws-01-web",
+    id: "web-001",
     slug: "build-your-first-website",
-    title: "BUILD YOUR FIRST WEBSITE",
-    subtitle: "WEB ARCHITECTURE & DESIGN",
-    shortDescription:
-      "Learning how the web works by designing, building, and shipping something of your own from scratch using modern semantic web standards.",
+    title: "Build your first website",
+    titleLines: ["Build your", "first website"],
+    shortDescription: "Learning how the web works by designing, building and shipping something of your own.",
     status: "current",
-    startDate: "SEP 19",
-    endDate: "OCT 03",
+    startDate: "2026-09-19",
+    endDate: "2026-10-03",
     session: 3,
     totalSessions: 5,
-    tags: ["WEB", "HTML", "CSS", "JAVASCRIPT"],
-    coverImage: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=2000&auto=format&fit=crop",
-    location: "QUETTA, PAKISTAN",
-    link: "#",
-  },
-  {
-    id: "ws-02-python",
-    slug: "python-fundamentals",
-    title: "COMPUTATIONAL THINKING WITH PYTHON",
-    shortDescription: "Mastering core algorithmic principles and problem-solving techniques.",
-    status: "upcoming",
-    startDate: "OCT 15",
-    endDate: "OCT 29",
-    tags: ["PYTHON", "ALGORITHMS"],
-    coverImage: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=2000&auto=format&fit=crop",
-    location: "QUETTA, PAKISTAN",
+    tags: ["Web", "HTML", "CSS", "JavaScript"],
+    coverImage: "/images/web-workshop.webp",
+    coverAlt: "Hack Club participants working together at a laptop during Outernet, 2023. Community reference photograph.",
+    coverCredit: { label: "Community photograph — Hack Club / Outernet", url: "https://hackclub.com/press/" },
+    location: "Quetta, Pakistan",
+    sessions: [],
+    resources: [],
+    linkedProjectIds: [],
   },
 ];
 
-export function getCurrentWorkshop(): Workshop {
-  const current = WORKSHOPS_DATA.find((ws) => ws.status === "current");
-  return current || WORKSHOPS_DATA[0];
+export function getCurrentWorkshop(source: readonly Workshop[] = workshops): Workshop | undefined {
+  return source.find((workshop) => workshop.status === "current");
 }

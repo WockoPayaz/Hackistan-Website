@@ -1,7 +1,8 @@
 node_modules/
 .next/
 out/
-build/
-.DS_Store
-*.pem
-.env*.local
+.sites-runtime/
+.vercel/
+*.tsbuildinfo
+.env*
+!.env.example

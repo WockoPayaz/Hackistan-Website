@@ -1,0 +1,54 @@
+.section { position: relative; min-height: max(880px, 100svh); padding-top: clamp(7rem, 14svh, 12rem); padding-bottom: var(--space-8); }
+.composition { position: relative; grid-template-rows: auto auto auto auto; row-gap: var(--space-7); }
+.index { grid-column: 1 / -1; display: flex; justify-content: space-between; padding-bottom: var(--space-5); border-bottom: 1px solid var(--color-line-dark); }
+.status { display: inline-flex; align-items: center; gap: 0.8rem; }
+.status span { font-size: 8px; }
+.kicker { grid-column: 1 / 5; grid-row: 2; z-index: 5; padding-top: var(--space-1); }
+.kicker p + p { margin-top: var(--space-4); letter-spacing: 0.14em; max-width: 25ch; }
+.figure { grid-column: 5 / -1; grid-row: 2 / 4; min-width: 0; }
+.media { position: relative; width: 100%; aspect-ratio: 1.72; overflow: clip; background: var(--color-bg-soft); }
+.image { object-fit: cover; object-position: 50% 60%; filter: grayscale(1) contrast(0.94) brightness(0.86); transform: scale(1.015); transition: filter var(--duration-normal) var(--ease-standard); }
+.mediaIndex { position: absolute; bottom: var(--space-5); right: var(--space-5); font-size: 10px; letter-spacing: 0.14em; text-shadow: 0 1px 5px var(--color-bg); }
+.credit { margin-top: var(--space-2); text-align: right; font-size: 11px; line-height: 1.5; letter-spacing: 0.04em; color: var(--color-fg-muted); }
+.credit a { display: inline-flex; align-items: center; min-height: 44px; text-underline-offset: 3px; }
+.credit a:hover { text-decoration: underline; }
+.title { grid-column: 1 / -1; grid-row: 3; align-self: end; font-size: clamp(4.5rem, 9vw, 13rem); z-index: 5; text-transform: uppercase; pointer-events: none; padding-top: 1.5em; margin-bottom: -0.27em; }
+.title [data-now-title] { display: block; }
+.meta { grid-column: 1 / 7; grid-row: 4; display: flex; gap: var(--space-8); padding-top: var(--space-5); letter-spacing: 0.12em; }
+.meta dt { color: var(--color-fg-muted); margin-bottom: var(--space-3); font-size: 10px; }
+.meta dd { white-space: nowrap; }
+.description { grid-column: 9 / -1; grid-row: 4; padding-top: var(--space-5); }
+.description .body-copy { max-width: 31ch; }
+.empty { padding-block: var(--section-y); }
+.empty h2 { font-size: var(--text-display); margin-block: var(--space-8); }
+.mediaFallback { min-height: 100%; display: grid; place-items: center; }
+@media (hover: hover) { .media:hover .image { filter: grayscale(0.7) contrast(0.96) brightness(0.92); } }
+@media (min-width: 1920px) { .media { aspect-ratio: 1.9; } .title { padding-top: 1.8em; } }
+@media (max-width: 1023px) {
+  .section { min-height: 100svh; padding-top: 7rem; }
+  .composition { row-gap: var(--space-6); }
+  .kicker { grid-column: 1 / -1; display: flex; justify-content: space-between; }
+  .kicker p + p { margin: 0; max-width: none; }
+  .figure { grid-column: 2 / -1; grid-row: 3 / 5; }
+  .credit { max-width: 24ch; margin-left: auto; }
+  .title { grid-column: 1 / -1; grid-row: 4; font-size: 10vw; padding-top: 1em; }
+  .meta { grid-column: 1 / 5; grid-row: 5; gap: var(--space-6); flex-direction: column; }
+  .description { grid-column: 6 / -1; grid-row: 5; }
+}
+@media (max-width: 767px) {
+  .section { min-height: 880px; padding-block: 6.5rem 3rem; }
+  .composition { row-gap: var(--space-5); }
+  .index { padding-bottom: var(--space-4); }
+  .index, .kicker { font-size: 10px; }
+  .kicker { display: block; }
+  .kicker p + p { margin-top: var(--space-2); font-size: 10px; letter-spacing: 0.12em; }
+  .figure { grid-column: 1 / -1; grid-row: 3; }
+  .media { aspect-ratio: 4 / 3; }
+  .mediaIndex { display: none; }
+  .credit { font-size: 10px; text-align: left; margin-top: 0; margin-left: 0; max-width: none; }
+  .title { grid-row: 4; padding: 0; margin: 0; font-size: 12.4vw; line-height: 0.98; letter-spacing: -0.05em; }
+  .meta { grid-column: 1 / -1; grid-row: 5; flex-direction: row; justify-content: space-between; gap: var(--space-4); padding-top: 0; font-size: 11px; letter-spacing: 0.09em; }
+  .meta dt { margin-bottom: var(--space-2); font-size: 9px; }
+  .description { grid-column: 1 / -1; grid-row: 6; padding-top: 0; max-width: 32ch; }
+  .description p { font-size: 16px; }
+}

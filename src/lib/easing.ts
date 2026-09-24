@@ -1,4 +1,6 @@
 export const ease = {
-  cinematic: [0.16, 1, 0.3, 1],
-  standard: [0.22, 1, 0.36, 1],
-};
+  standard: "power3.out",
+  cinematic: "expo.out",
+  exit: "power3.inOut",
+  linear: "none",
+} as const;

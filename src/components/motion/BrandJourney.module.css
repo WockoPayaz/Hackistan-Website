@@ -1,0 +1,11 @@
+.journey { position: relative; }
+.stage { position: relative; }
+.journey[data-enhanced="true"] { height: calc(var(--scene-height) + var(--scroll-distance)); }
+.journey[data-enhanced="true"] .stage { position: sticky; top: 0; height: var(--scene-height); overflow: clip; }
+.journey[data-enhanced="true"] [data-hero] { position: absolute; top: 0; left: 0; width: 100%; z-index: 1; }
+.journey[data-enhanced="true"] [data-now] { position: absolute; top: 0; left: 0; width: 100%; z-index: 2; }
+.journey[data-enhanced="true"] [data-now]:focus { outline: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .journey { height: auto !important; }
+  .stage { position: relative !important; height: auto !important; }
+}

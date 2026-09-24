@@ -1,8 +1,8 @@
-.hairline-top { border-top: 1px solid var(--color-line-dark); }
-.hairline-bottom { border-bottom: 1px solid var(--color-line-dark); }
-.hairline-box { border: 1px solid var(--color-line-dark); }
-.grid-12 {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  column-gap: clamp(1rem, 2vw, 2rem);
-}
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.page-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gutter); }
+.page-width { width: min(calc(100% - 2 * var(--page-x)), var(--content-max)); margin-inline: auto; }
+.clip-line { display: block; overflow: clip; padding-bottom: 0.1em; margin-bottom: -0.1em; }
+.skip-link { position: fixed; left: var(--page-x); top: -100px; padding: 1rem 1.5rem; z-index: 1100; background: var(--color-fg); color: var(--color-bg); }
+.skip-link:focus { top: 1rem; }
+@media (max-width: 1023px) { .page-grid { grid-template-columns: repeat(8, minmax(0, 1fr)); } }
+@media (max-width: 767px) { .page-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }

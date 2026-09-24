@@ -1,21 +1,10 @@
-.tracking-label {
+.eyebrow {
   font-size: var(--text-xs);
-  text-transform: uppercase;
-  letter-spacing: 0.22em;
   font-weight: 500;
-  color: var(--color-fg-muted);
+  letter-spacing: 0.2em;
+  line-height: 1.55;
+  text-transform: uppercase;
 }
-
-.text-display {
-  font-size: var(--text-display);
-  line-height: 0.92;
-  letter-spacing: -0.04em;
-  font-weight: 400;
-}
-
-.text-title {
-  font-size: var(--text-2xl);
-  line-height: 0.95;
-  letter-spacing: -0.03em;
-  font-weight: 400;
-}
+.display { font-weight: 400; letter-spacing: -0.055em; line-height: 0.92; }
+.muted { color: var(--color-fg-muted); }
+.body-copy { font-size: var(--text-md); line-height: 1.55; max-width: 42ch; }

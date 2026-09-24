@@ -1,10 +1,12 @@
-"use client";
-import React from "react";
+import type { Workshop } from "@/types/workshop";
+import { formatWorkshopDate, padNumber } from "@/lib/format";
+import styles from "./CurrentWorkshop.module.css";
 
-export const WorkshopMeta: React.FC<{ tags: string[]; dates: string; location?: string }> = ({ tags, dates, location }) => (
-  <div className="flex flex-col gap-4 text-xs tracking-widest uppercase text-fg-muted hairline-top pt-6">
-    <div className="flex justify-between items-center"><span>TAGS</span><span className="text-fg">{tags.join(" / ")}</span></div>
-    <div className="flex justify-between items-center hairline-top pt-3"><span>TIMELINE</span><span className="text-fg">{dates}</span></div>
-    {location && <div className="flex justify-between items-center hairline-top pt-3"><span>LOCATION</span><span className="text-fg">{location}</span></div>}
-  </div>
-);
+export function WorkshopMeta({ workshop }: { workshop: Workshop }) {
+  return (
+    <dl className={`${styles.meta} eyebrow`} data-now-reveal>
+      <div><dt>In the making</dt><dd><time dateTime={workshop.startDate}>{formatWorkshopDate(workshop.startDate)}</time>{workshop.endDate && <> — <time dateTime={workshop.endDate}>{formatWorkshopDate(workshop.endDate)}</time></>}</dd></div>
+      {workshop.session !== undefined && workshop.totalSessions !== undefined && <div><dt>Progress</dt><dd>Session {padNumber(workshop.session)} / {padNumber(workshop.totalSessions)}</dd></div>}
+    </dl>
+  );
+}
