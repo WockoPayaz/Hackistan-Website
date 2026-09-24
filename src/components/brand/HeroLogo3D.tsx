@@ -161,20 +161,20 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
     const clamp = (value: number) => Math.max(0, Math.min(1, value));
     const introProgress = (value: number) => {
       if (!introActive) return;
-      const depth = clamp((value - 0.43) / 0.28);
+      const depth = clamp((value - 0.53) / 0.23);
       introGroup.position.z = -24 * (1 - depth);
       introGroup.scale.setScalar(0.96 + 0.04 * depth);
       for (const line of wires) {
         const bridge = line.name === "bridge";
-        const reveal = clamp((value - (bridge ? 0.23 : 0.39)) / 0.15);
-        const fade = 1 - clamp((value - 0.59) / 0.18);
+        const reveal = clamp((value - (bridge ? 0.24 : 0.42)) / (bridge ? 0.18 : 0.19));
+        const fade = 1 - clamp((value - 0.69) / 0.17);
         line.visible = reveal * fade > 0;
         (line.material as THREE.LineBasicMaterial).opacity = reveal * fade * 0.6;
-        const settle = 1 - clamp((value - 0.47) / 0.18);
+        const settle = 1 - clamp((value - 0.55) / 0.19);
         line.position.set(bridge ? 0 : line.name === "left" ? -14 * settle : 14 * settle,
           bridge ? 12 * settle : 0, bridge ? -12 * settle : 0);
       }
-      const glass = clamp((value - 0.58) / 0.2);
+      const glass = clamp((value - 0.68) / 0.18);
       front.opacity = finalOpacity * glass;
       sides.transparent = true;
       sides.opacity = glass;
