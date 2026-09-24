@@ -18,6 +18,9 @@ export function useLogoTransition(ref: RefObject<HTMLDivElement | null>) {
       const hero = root.querySelector<HTMLElement>("[data-hero]");
       const mark = root.querySelector<HTMLElement>("[data-mark-stage]");
       if (!hero || !mark) return;
+      const parts = ["left", "bridge", "right"].map((part) => mark.querySelector<SVGElement>(`[data-logo-part="${part}"]`));
+      if (parts.some((part) => !part)) return;
+      const [left, bridge, right] = parts as SVGElement[];
       const distance = () => Math.round(window.innerHeight * (window.matchMedia("(min-width: 1024px)").matches ? movement.desktopScroll : movement.mobileScroll));
       const measure = () => {
         root.style.setProperty("--scroll-distance", `${distance()}px`);
@@ -38,15 +41,19 @@ export function useLogoTransition(ref: RefObject<HTMLDivElement | null>) {
         },
       });
       timeline
-        .to(mark, { scale: 1.09, duration: 0.35 }, 0.2)
-        .to("[data-hero-edge]", { y: -16, autoAlpha: 0, duration: 0.22 }, 0.67)
-        .to("[data-hero-wordmark]", { y: -26, autoAlpha: 0, duration: 0.27 }, 0.68)
-        .to(mark, { y: -35, autoAlpha: 0, duration: 0.29, ease: ease.standard }, 0.71)
-        .to(hero, { autoAlpha: 0, duration: 0.12 }, 0.88);
+        .to(mark, { scale: 1.06, duration: 0.4 }, 0.12)
+        .to(left, { x: () => -mark.offsetWidth * 0.28, duration: 0.4 }, 0.12)
+        .to(right, { x: () => mark.offsetWidth * 0.28, duration: 0.4 }, 0.12)
+        .to(bridge, { y: () => -mark.offsetHeight * 0.22, duration: 0.4 }, 0.12)
+        // Hold the separated mark while NOW starts rising into the viewport.
+        .to("[data-hero-edge]", { y: -16, autoAlpha: 0, duration: 0.18 }, 0.75)
+        .to("[data-hero-wordmark]", { y: -26, autoAlpha: 0, duration: 0.2 }, 0.74)
+        .to(mark, { y: -25, autoAlpha: 0, duration: 0.19, ease: ease.standard }, 0.78)
+        .to(hero, { autoAlpha: 0, duration: 0.08 }, 0.92);
 
       return () => {
         timeline.kill();
-        gsap.set([hero, mark, ...root.querySelectorAll("[data-hero-edge], [data-hero-wordmark]")], { clearProps: "all" });
+        gsap.set([hero, mark, left, bridge, right, ...root.querySelectorAll("[data-hero-edge], [data-hero-wordmark]")], { clearProps: "all" });
         delete root.dataset.enhanced;
         delete root.dataset.scrollDistance;
         root.style.removeProperty("--scroll-distance");
