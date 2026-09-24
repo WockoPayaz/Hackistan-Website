@@ -5,5 +5,5 @@ import { SiteEnd } from "@/components/layout/SiteEnd";
 import { getCurrentWorkshop } from "@/data/workshops";
 
 export default function HomePage() {
-  return <><main id="main"><BrandJourney><Hero /><CurrentWorkshop workshop={getCurrentWorkshop()} /></BrandJourney></main><SiteEnd /></>;
+  return <><main id="main"><BrandJourney hero={<Hero />} now={<CurrentWorkshop workshop={getCurrentWorkshop()} />} /></main><SiteEnd /></>;
 }
