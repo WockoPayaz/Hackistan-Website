@@ -31,6 +31,7 @@ export function HeroEntrance() {
     const hero = document.querySelector<HTMLElement>("[data-hero]");
     if (!hero) return;
     if (hero.dataset.intro === "done") return;
+    const curtain = hero.querySelector<HTMLElement>("[data-hero-curtain]");
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
     const mark = hero.querySelector<HTMLElement>("[data-mark-stage]");
     const ribbons = hero.querySelector<HTMLElement>("[class*='ribbonField']");
@@ -77,6 +78,8 @@ export function HeroEntrance() {
       window.removeEventListener("resize", measure);
       timeline?.kill();
       hero.dataset.intro = "done";
+      delete hero.dataset.introHeader;
+      if (curtain) curtain.style.display = "none";
       gsap.set([...targets, drawing, guides, bridge, viewportGuides], { clearProps: "opacity,strokeDashoffset" });
       progress(1);
       window.dispatchEvent(new Event("hackistan:intro-finished"));
@@ -98,7 +101,7 @@ export function HeroEntrance() {
       if (finished || timeline) return;
       if (window.scrollY > 24) { finish(); return; }
       window.clearTimeout(timer);
-      const duration = window.matchMedia("(max-width: 767px)").matches ? 2.9 : 3.6;
+      const duration = 2.9;
       hero.dataset.intro = "running";
       gsap.set(targets, { opacity: 0 });
       gsap.set(drawing, { opacity: 1 });
@@ -110,6 +113,7 @@ export function HeroEntrance() {
       gsap.set(bridge, { opacity: 0.8, strokeDasharray: length, strokeDashoffset: length });
       timeline = gsap.timeline({ onUpdate: () => progress(timeline!.progress()), onComplete: finish });
       // Normalized phases leave the same final DOM and Three.js values as Pass B.
+      if (curtain) timeline.to(curtain, { opacity: 0, duration: 0.12, ease: "none", onComplete: () => { curtain.style.display = "none"; } }, 0);
       timeline.to(guides, { opacity: 0.65, duration: duration * .14 }, duration * .05)
         .to(bridge, { strokeDashoffset: 0, duration: duration * .24, ease: "power1.inOut" }, duration * .18)
         .to(rays, { opacity: 0.72, strokeDashoffset: 0, duration: duration * .18, stagger: duration * .012, ease: "power2.out" }, duration * .32)
@@ -119,6 +123,7 @@ export function HeroEntrance() {
         .to(ribbons, { opacity: 1, duration: duration * .16 }, duration * .78)
         .to(wordmark, { opacity: 1, duration: duration * .16 }, duration * .8)
         .to(edges, { opacity: 1, duration: duration * .085, stagger: duration * .007 }, duration * .88)
+        .call(() => { hero.dataset.introHeader = "visible"; }, [], duration * .88)
         .to({}, { duration: duration * .02 }, duration * .98);
       // Keep the complete sequence at its intended duration despite short tweens.
       timeline.duration(duration);

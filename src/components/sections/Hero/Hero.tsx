@@ -24,6 +24,7 @@ export function Hero() {
           <span className={`${styles.edition} eyebrow muted`} data-hero-edge>00 — Identity</span>
         </div>
       </div>
+      <div className={styles.curtain} data-hero-curtain aria-hidden="true" />
     </section>
   );
 }
