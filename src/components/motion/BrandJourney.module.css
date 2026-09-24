@@ -1,11 +1,14 @@
 .journey { position: relative; }
 .stage { position: relative; }
-.journey[data-enhanced="true"] { height: calc(var(--scene-height) + var(--scroll-distance)); }
-.journey[data-enhanced="true"] .stage { position: sticky; top: 0; height: var(--scene-height); overflow: clip; }
-.journey[data-enhanced="true"] [data-hero] { position: absolute; top: 0; left: 0; width: 100%; z-index: 1; }
-.journey[data-enhanced="true"] [data-now] { position: absolute; top: 0; left: 0; width: 100%; z-index: 2; }
-.journey[data-enhanced="true"] [data-now]:focus { outline: 0; }
+.travel { display: none; }
+.now { position: relative; background: var(--color-bg); }
+/* The hero stage stays viewport-sized; NOW's content height cannot change the pin. */
+.journey[data-enhanced="true"] .stage { position: sticky; top: 0; height: 100dvh; overflow: clip; }
+.journey[data-enhanced="true"] .travel { display: block; height: var(--scroll-distance); pointer-events: none; }
+.journey[data-enhanced="true"] .now { margin-top: -100dvh; z-index: 2; }
+.journey [data-now]:focus { outline: 0; }
 @media (prefers-reduced-motion: reduce) {
-  .journey { height: auto !important; }
-  .stage { position: relative !important; height: auto !important; }
+  .journey .stage { position: relative !important; height: auto !important; }
+  .journey .travel { display: none !important; }
+  .journey .now { margin-top: 0 !important; }
 }

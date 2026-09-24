@@ -9,9 +9,6 @@ export const motion = {
 
 export const movement = {
   pointer: { x: 8, y: 6, rotation: 3 },
-  fragment: 14,
-  reveal: 36,
-  mediaScale: 1.035,
-  desktopScroll: 1.12,
-  mobileScroll: 0.65,
+  desktopScroll: 1.8,
+  mobileScroll: 1.05,
 } as const;

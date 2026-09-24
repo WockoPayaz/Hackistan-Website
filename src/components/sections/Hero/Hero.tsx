@@ -8,13 +8,11 @@ export function Hero() {
     <section id="top" aria-labelledby="hero-title" className={styles.hero} data-hero tabIndex={-1}>
       <div className={styles.stage} data-hero-stage>
         <div className={`${styles.frame} page-width`}>
+          <div className={styles.background} data-hero-wordmark><h1 id="hero-title"><Wordmark /></h1></div>
+          <div className={styles.mark} data-mark-stage><LogoScene /></div>
           <p className={`${styles.locator} eyebrow`} data-hero-edge>Quetta / Pakistan<br /><span className="muted">30.18° N &nbsp; 66.98° E</span></p>
           <p className={`${styles.manifesto} eyebrow`} data-hero-edge>Ideas<br />People<br />Progress</p>
-          <div className={styles.mark} data-mark-stage><LogoScene /></div>
-          <div className={styles.name} data-hero-wordmark>
-            <h1 id="hero-title" data-hero-entry><Wordmark /></h1>
-            <p className={`${styles.phrase} eyebrow`}>Ideas fuel progress</p>
-          </div>
+          <p className={`${styles.phrase} eyebrow`} data-hero-edge>Ideas fuel progress</p>
           <div className={styles.bottom} data-hero-edge>
             <p className={`${styles.descriptor} eyebrow`}>Student-led.<br />Built in Quetta.<br /><span className="muted">A Hack Club community.</span></p>
             <a href="#now" className={`${styles.scroll} text-link eyebrow`}><span>Scroll to explore</span><span><Arrow /></span></a>

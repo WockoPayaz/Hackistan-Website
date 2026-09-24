@@ -1,0 +1,387 @@
+From 49a1592f736c0a8f0c10658ae13564fae28bf742 Mon Sep 17 00:00:00 2001
+From: Codex <codex@openai.com>
+Date: Thu, 24 Sep 2026 09:58:44 -0400
+Subject: [PATCH] Rebuild Pass A hero layout and native scroll journey
+
+---
+ src/app/page.tsx                              |   2 +-
+ src/components/brand/geometry.ts              |   4 -
+ src/components/motion/BrandJourney.module.css |  17 ++-
+ src/components/motion/BrandJourney.tsx        |   8 +-
+ src/components/sections/Hero/Hero.module.css  |  58 ++++----
+ src/components/sections/Hero/Hero.tsx         |   8 +-
+ src/hooks/useLogoTransition.ts                | 130 ++++--------------
+ src/lib/motion.ts                             |   7 +-
+ 8 files changed, 77 insertions(+), 157 deletions(-)
+
+diff --git a/src/app/page.tsx b/src/app/page.tsx
+index bf2b477..d3aa237 100644
+--- a/src/app/page.tsx
++++ b/src/app/page.tsx
+@@ -5,5 +5,5 @@ import { SiteEnd } from "@/components/layout/SiteEnd";
+ import { getCurrentWorkshop } from "@/data/workshops";
+ 
+ export default function HomePage() {
+-  return <><main id="main"><BrandJourney><Hero /><CurrentWorkshop workshop={getCurrentWorkshop()} /></BrandJourney></main><SiteEnd /></>;
++  return <><main id="main"><BrandJourney hero={<Hero />} now={<CurrentWorkshop workshop={getCurrentWorkshop()} />} /></main><SiteEnd /></>;
+ }
+diff --git a/src/components/brand/geometry.ts b/src/components/brand/geometry.ts
+index 27d6b78..c40cc63 100644
+--- a/src/components/brand/geometry.ts
++++ b/src/components/brand/geometry.ts
+@@ -6,7 +6,3 @@ export const markGeometry = {
+   bridge: "M32 272L189 129L238 193L254 176L286 208L366 272L271 232L260 255L184 178L105 255Z",
+   right: "M295 0H400V400H295V250L366 272L295 199Z",
+ } as const;
+-
+-// Same ridge, normalized for a viewport crop. Shared by every scene transition.
+-export const mountainCrop = "polygon(0% 100%, 0% 68%, 47.25% 32.25%, 59.5% 48.25%, 63.5% 44%, 100% 68%, 100% 100%)";
+-export const openCrop = "polygon(0% 100%, 0% 0%, 47.25% 0%, 59.5% 0%, 63.5% 0%, 100% 0%, 100% 100%)";
+diff --git a/src/components/motion/BrandJourney.module.css b/src/components/motion/BrandJourney.module.css
+index b5c7b09..b118089 100644
+--- a/src/components/motion/BrandJourney.module.css
++++ b/src/components/motion/BrandJourney.module.css
+@@ -1,11 +1,14 @@
+ .journey { position: relative; }
+ .stage { position: relative; }
+-.journey[data-enhanced="true"] { height: calc(var(--scene-height) + var(--scroll-distance)); }
+-.journey[data-enhanced="true"] .stage { position: sticky; top: 0; height: var(--scene-height); overflow: clip; }
+-.journey[data-enhanced="true"] [data-hero] { position: absolute; top: 0; left: 0; width: 100%; z-index: 1; }
+-.journey[data-enhanced="true"] [data-now] { position: absolute; top: 0; left: 0; width: 100%; z-index: 2; }
+-.journey[data-enhanced="true"] [data-now]:focus { outline: 0; }
++.travel { display: none; }
++.now { position: relative; background: var(--color-bg); }
++/* The hero stage stays viewport-sized; NOW's content height cannot change the pin. */
++.journey[data-enhanced="true"] .stage { position: sticky; top: 0; height: 100dvh; overflow: clip; }
++.journey[data-enhanced="true"] .travel { display: block; height: var(--scroll-distance); pointer-events: none; }
++.journey[data-enhanced="true"] .now { margin-top: -100dvh; z-index: 2; }
++.journey [data-now]:focus { outline: 0; }
+ @media (prefers-reduced-motion: reduce) {
+-  .journey { height: auto !important; }
+-  .stage { position: relative !important; height: auto !important; }
++  .journey .stage { position: relative !important; height: auto !important; }
++  .journey .travel { display: none !important; }
++  .journey .now { margin-top: 0 !important; }
+ }
+diff --git a/src/components/motion/BrandJourney.tsx b/src/components/motion/BrandJourney.tsx
+index 56781c0..8d4b615 100644
+--- a/src/components/motion/BrandJourney.tsx
++++ b/src/components/motion/BrandJourney.tsx
+@@ -4,8 +4,12 @@ import { useRef, type ReactNode } from "react";
+ import { useLogoTransition } from "@/hooks/useLogoTransition";
+ import styles from "./BrandJourney.module.css";
+ 
+-export function BrandJourney({ children }: { children: ReactNode }) {
++export function BrandJourney({ hero, now }: { hero: ReactNode; now: ReactNode }) {
+   const root = useRef<HTMLDivElement>(null);
+   useLogoTransition(root);
+-  return <div ref={root} className={styles.journey} data-journey><div className={styles.stage}>{children}</div></div>;
++  return <div ref={root} className={styles.journey} data-journey>
++    <div className={styles.stage}>{hero}</div>
++    <div className={styles.travel} aria-hidden="true" />
++    <div className={styles.now}>{now}</div>
++  </div>;
+ }
+diff --git a/src/components/sections/Hero/Hero.module.css b/src/components/sections/Hero/Hero.module.css
+index 4cfb674..eb5284c 100644
+--- a/src/components/sections/Hero/Hero.module.css
++++ b/src/components/sections/Hero/Hero.module.css
+@@ -1,46 +1,42 @@
+-.hero { position: relative; height: 100svh; min-height: 700px; }
+-.stage { height: 100svh; min-height: 700px; position: relative; overflow: clip; }
+-.frame { height: 100%; position: relative; }
+-.locator { position: absolute; top: 19%; left: 0; }
+-.locator span { display: block; margin-top: var(--space-2); letter-spacing: 0.13em; }
+-.manifesto { position: absolute; right: 0; top: 19%; text-align: right; line-height: 1.85; }
+-.mark { position: absolute; width: min(35svh, 30vw); height: min(35svh, 30vw); top: 11%; left: 48.5%; perspective: 1100px; }
++.hero { position: relative; height: 100dvh; min-height: 0; }
++.stage { height: 100%; position: relative; overflow: clip; }
++.frame { height: 100%; position: relative; isolation: isolate; }
++.background { position: absolute; top: 50%; left: 50%; width: max-content; max-width: none; transform: translate(-50%, -50%); z-index: 0; pointer-events: none; }
++.background h1 { font-size: clamp(7rem, 17vw, 26rem); line-height: 0.83; font-weight: 400; white-space: nowrap; color: var(--color-fg); }
++.mark { position: absolute; width: min(61svh, 57vw); height: min(61svh, 57vw); top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1; perspective: 1100px; pointer-events: none; }
+ .mark > div { width: 100%; height: 100%; transform-style: preserve-3d; }
+-.name { position: absolute; left: -0.006em; bottom: 20%; width: 100%; }
+-.name h1 { font-size: clamp(7rem, min(16.55vw, 25.5svh), 25rem); font-weight: 400; }
+-.phrase { margin-top: var(--space-6); margin-left: 0.6%; letter-spacing: 0.37em; }
+-.bottom { position: absolute; bottom: 5%; width: 100%; display: flex; align-items: flex-end; justify-content: space-between; }
++.locator { position: absolute; top: 18%; left: 0; z-index: 2; }
++.locator span { display: block; margin-top: var(--space-2); letter-spacing: 0.13em; }
++.manifesto { position: absolute; right: 0; top: 18%; text-align: right; line-height: 1.85; z-index: 2; }
++.phrase { position: absolute; left: 50%; bottom: 14%; transform: translateX(-50%); white-space: nowrap; letter-spacing: 0.37em; z-index: 2; }
++.bottom { position: absolute; bottom: 5%; width: 100%; display: flex; align-items: flex-end; justify-content: space-between; z-index: 2; }
+ .descriptor { line-height: 1.7; }
+ .scroll { margin-bottom: -0.625rem; gap: var(--space-6); }
+-.edition { position: absolute; right: 0; bottom: 20.5%; writing-mode: vertical-rl; }
++.edition { position: absolute; right: 0; bottom: 24%; writing-mode: vertical-rl; z-index: 2; }
+ 
+-@media (min-width: 1920px) { .name h1 { font-size: clamp(16rem, min(16vw, 25.5svh), 25rem); } }
+ @media (max-width: 1023px) {
+-  .mark { width: min(43svh, 48vw); height: min(43svh, 48vw); top: 20%; left: 35%; }
+-  .name h1 { font-size: 16.65vw; }
+-  .name { bottom: 21%; }
+-  .manifesto { top: 15%; }
+-  .locator { top: 15%; }
+-  .edition { bottom: 28%; }
++  .mark { width: min(49svh, 53vw); height: min(49svh, 53vw); }
++  .background h1 { font-size: 17vw; }
++  .locator, .manifesto { top: 15%; }
+ }
+ @media (max-width: 767px) {
+-  .hero, .stage { min-height: 680px; }
+-  .locator { top: 15%; font-size: 10px; }
++  .hero, .stage { min-height: 0; }
++  .locator { font-size: 10px; }
+   .locator span { display: none; }
+-  .manifesto { top: 15%; font-size: 10px; line-height: 1.7; }
+-  .mark { top: 25%; left: 24%; width: min(58vw, 33svh); height: min(58vw, 33svh); }
+-  .name { bottom: 24%; }
+-  .name h1 { font-size: 16.5vw; }
+-  .phrase { margin-top: var(--space-5); letter-spacing: 0.28em; max-width: 18ch; font-size: var(--text-xs); line-height: 1.7; }
+-  .bottom { bottom: 5%; align-items: flex-end; }
++  .manifesto { font-size: 10px; line-height: 1.7; }
++  .mark { top: 43%; width: min(58vw, 33svh); height: min(58vw, 33svh); }
++  .background { top: 62%; }
++  .background h1 { font-size: 16.5vw; }
++  .phrase { bottom: 21%; font-size: var(--text-xs); letter-spacing: 0.23em; }
++  .bottom { bottom: 5%; }
+   .descriptor { font-size: 10px; letter-spacing: 0.16em; }
+   .descriptor span { display: block; margin-top: var(--space-2); max-width: 18ch; }
+   .scroll { gap: var(--space-4); font-size: 10px; letter-spacing: 0.16em; max-width: 125px; }
+   .scroll > span:first-child { max-width: 9ch; }
+   .edition { display: none; }
+ }
+-@media (max-height: 650px) and (min-width: 768px) {
+-  .hero, .stage { min-height: 600px; }
+-  .mark { width: 245px; height: 245px; top: 15%; }
+-  .name h1 { font-size: min(14.5vw, 200px); }
++@media (max-height: 620px) and (min-width: 768px) {
++  .mark { width: min(59svh, 33vw); height: min(59svh, 33vw); }
++  .background h1 { font-size: min(16vw, 27svh); }
++  .phrase { bottom: 13%; }
+ }
+diff --git a/src/components/sections/Hero/Hero.tsx b/src/components/sections/Hero/Hero.tsx
+index 835f9ed..ab25e71 100644
+--- a/src/components/sections/Hero/Hero.tsx
++++ b/src/components/sections/Hero/Hero.tsx
+@@ -8,13 +8,11 @@ export function Hero() {
+     <section id="top" aria-labelledby="hero-title" className={styles.hero} data-hero tabIndex={-1}>
+       <div className={styles.stage} data-hero-stage>
+         <div className={`${styles.frame} page-width`}>
++          <div className={styles.background} data-hero-wordmark><h1 id="hero-title"><Wordmark /></h1></div>
++          <div className={styles.mark} data-mark-stage><LogoScene /></div>
+           <p className={`${styles.locator} eyebrow`} data-hero-edge>Quetta / Pakistan<br /><span className="muted">30.18° N &nbsp; 66.98° E</span></p>
+           <p className={`${styles.manifesto} eyebrow`} data-hero-edge>Ideas<br />People<br />Progress</p>
+-          <div className={styles.mark} data-mark-stage><LogoScene /></div>
+-          <div className={styles.name} data-hero-wordmark>
+-            <h1 id="hero-title" data-hero-entry><Wordmark /></h1>
+-            <p className={`${styles.phrase} eyebrow`}>Ideas fuel progress</p>
+-          </div>
++          <p className={`${styles.phrase} eyebrow`} data-hero-edge>Ideas fuel progress</p>
+           <div className={styles.bottom} data-hero-edge>
+             <p className={`${styles.descriptor} eyebrow`}>Student-led.<br />Built in Quetta.<br /><span className="muted">A Hack Club community.</span></p>
+             <a href="#now" className={`${styles.scroll} text-link eyebrow`}><span>Scroll to explore</span><span><Arrow /></span></a>
+diff --git a/src/hooks/useLogoTransition.ts b/src/hooks/useLogoTransition.ts
+index b007487..02ad066 100644
+--- a/src/hooks/useLogoTransition.ts
++++ b/src/hooks/useLogoTransition.ts
+@@ -3,152 +3,78 @@
+ import { useLayoutEffect, type RefObject } from "react";
+ import { gsap, ScrollTrigger } from "@/lib/gsap";
+ import { ease } from "@/lib/easing";
+-import { motion, movement } from "@/lib/motion";
+-import { mountainCrop, openCrop } from "@/components/brand/geometry";
++import { movement } from "@/lib/motion";
+ import { scrollToSection } from "@/lib/navigation";
+ 
+-// Measure layout, not transformed bounds: refresh can happen halfway through
+-// the scene, after a resize or a font load.
+-function layoutBox(element: HTMLElement, stage: HTMLElement) {
+-  let x = 0;
+-  let y = 0;
+-  let node: HTMLElement | null = element;
+-  while (node && node !== stage) {
+-    x += node.offsetLeft;
+-    y += node.offsetTop;
+-    node = node.offsetParent as HTMLElement | null;
+-  }
+-  return { x, y, width: element.offsetWidth, height: element.offsetHeight };
+-}
+-
+-/** One native-scroll scene. The real workshop media is the transition surface:
+- * no cloned content, scroll interception, animation loop, or WebGL context.
+- */
++/** Native document scrolling drives a viewport-sized sticky hero. NOW stays in flow. */
+ export function useLogoTransition(ref: RefObject<HTMLDivElement | null>) {
+   useLayoutEffect(() => {
+     const root = ref.current;
+     if (!root) return;
+-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+-    const mediaQueries = gsap.matchMedia();
+-    let intro: gsap.Context | undefined;
++    const media = gsap.matchMedia();
+     let disposed = false;
+ 
+-    const setupIntro = () => {
+-      if (disposed || reduced.matches || window.scrollY > 10 || location.hash === "#now") return;
+-      let returning = false;
+-      try { returning = sessionStorage.getItem("hackistan:entered:v1") === "1"; sessionStorage.setItem("hackistan:entered:v1", "1"); } catch { /* Privacy mode: visual entry still works. */ }
+-      intro = gsap.context(() => {
+-        const duration = returning ? motion.instant : motion.slow;
+-        const timeline = gsap.timeline({ defaults: { ease: ease.cinematic, duration } });
+-        timeline.from("[data-hero-mark] [data-assembly-part='left']", { x: -movement.fragment, y: 20 }, 0)
+-          .from("[data-hero-mark] [data-assembly-part='right']", { x: movement.fragment, y: -20 }, 0)
+-          .from("[data-hero-mark] [data-assembly-part='bridge']", { y: 18, scale: 0.93, transformOrigin: "50% 50%" }, 0)
+-          .from("[data-hero-entry]", { clipPath: "inset(100% 0 0 0)", y: 24 }, returning ? 0 : motion.fast);
+-      }, root);
+-    };
+-
+-    mediaQueries.add({
+-      desktop: "(min-width: 1024px)",
+-      mobile: "(max-width: 1023px)",
+-      reduced: "(prefers-reduced-motion: reduce)",
+-    }, (context) => {
+-      const { desktop, reduced: reduce } = context.conditions!;
+-      const now = root.querySelector<HTMLElement>("[data-now]");
++    media.add("(prefers-reduced-motion: no-preference)", () => {
+       const hero = root.querySelector<HTMLElement>("[data-hero]");
+       const mark = root.querySelector<HTMLElement>("[data-mark-stage]");
+-      const media = root.querySelector<HTMLElement>("[data-workshop-media]");
+-      const stage = root.firstElementChild as HTMLElement;
+-      if (reduce || !now || !hero || !mark || !media || !stage) return;
+-
+-      const distance = () => Math.round(window.innerHeight * (desktop ? movement.desktopScroll : movement.mobileScroll));
+-      root.dataset.enhanced = "true";
+-      let placement = { x: 0, y: 0, scale: 1 };
++      if (!hero || !mark) return;
++      const distance = () => Math.round(window.innerHeight * (window.matchMedia("(min-width: 1024px)").matches ? movement.desktopScroll : movement.mobileScroll));
+       const measure = () => {
+-        root.style.setProperty("--scene-height", `${Math.max(window.innerHeight, now.offsetHeight, hero.offsetHeight)}px`);
+         root.style.setProperty("--scroll-distance", `${distance()}px`);
+         root.dataset.scrollDistance = String(distance());
+-        const markBox = layoutBox(mark, stage);
+-        const mediaBox = layoutBox(media, stage);
+-        placement = {
+-          x: markBox.x + markBox.width / 2 - (mediaBox.x + mediaBox.width / 2),
+-          y: markBox.y + markBox.height * 0.53 - (mediaBox.y + mediaBox.height / 2),
+-          scale: markBox.width / mediaBox.width * 0.97,
+-        };
+       };
+       measure();
++      root.dataset.enhanced = "true";
+ 
+-      gsap.set(now, { pointerEvents: "none" });
+-      gsap.set(media, { autoAlpha: 0 });
+-      gsap.set(root.querySelectorAll("[data-now-reveal]"), { autoAlpha: 0, y: 22 });
+-      gsap.set(root.querySelectorAll("[data-now-title]"), { yPercent: 110 });
+       const timeline = gsap.timeline({
+-        defaults: { ease: ease.linear },
++        defaults: { ease: "none" },
+         scrollTrigger: {
+-          trigger: root, start: "top top", end: () => `+=${distance()}`,
+-          scrub: true, invalidateOnRefresh: true,
++          trigger: root,
++          start: "top top",
++          end: () => `+=${distance()}`,
++          scrub: true,
++          invalidateOnRefresh: true,
+           onRefreshInit: measure,
+-          onUpdate: (self) => {
+-            const incoming = self.progress > 0.65;
+-            now.style.pointerEvents = incoming ? "auto" : "none";
+-            hero.style.pointerEvents = incoming ? "none" : "auto";
+-          },
+         },
+       });
+-      timeline.to("[data-hero-edge]", { y: -24, autoAlpha: 0, duration: 0.22 }, 0)
+-        .to("[data-hero-wordmark]", { y: 60, clipPath: "inset(0 0 100% 0)", duration: 0.3 }, 0)
+-        .to(mark, { scale: desktop ? 1.45 : 1.15, duration: 0.44 }, 0)
+-        .to("[data-hero-mark] [data-logo-part='left']", { x: () => -window.innerWidth * 0.75, duration: 0.48, ease: ease.exit }, 0.14)
+-        .to("[data-hero-mark] [data-logo-part='right']", { x: () => window.innerWidth * 0.75, duration: 0.48, ease: ease.exit }, 0.14)
+-        .to("[data-hero-mark] [data-logo-part='bridge']", { y: () => -window.innerHeight, scale: 1.6, duration: 0.49, ease: ease.exit }, 0.19)
+-        .to(media, { autoAlpha: 1, duration: 0.08 }, 0.18)
+-        .fromTo(media,
+-          { x: () => placement.x, y: () => placement.y, scale: () => placement.scale, clipPath: mountainCrop },
+-          { x: 0, y: 0, scale: 1, clipPath: openCrop, duration: 0.61, ease: ease.standard }, 0.27)
+-        .to("[data-now-title]", { yPercent: 0, stagger: 0.035, duration: 0.22, ease: ease.standard }, 0.69)
+-        .to("[data-now-reveal]", { autoAlpha: 1, y: 0, stagger: 0.018, duration: 0.2, ease: ease.standard }, 0.74)
+-        .set(hero, { visibility: "hidden" }, 1);
++      timeline
++        .to(mark, { scale: 1.09, duration: 0.35 }, 0.2)
++        .to("[data-hero-edge]", { y: -16, autoAlpha: 0, duration: 0.22 }, 0.67)
++        .to("[data-hero-wordmark]", { y: -26, autoAlpha: 0, duration: 0.27 }, 0.68)
++        .to(mark, { y: -35, autoAlpha: 0, duration: 0.29, ease: ease.standard }, 0.71)
++        .to(hero, { autoAlpha: 0, duration: 0.12 }, 0.88);
+ 
+-      const image = root.querySelector("[data-workshop-image]");
+-      if (image && desktop) gsap.fromTo(image, { scale: movement.mediaScale }, { scale: 1, ease: ease.linear, scrollTrigger: { trigger: root, start: () => `top+=${distance() * 0.5} top`, end: "bottom top", scrub: true } });
+-      const resizeObserver = new ResizeObserver(() => ScrollTrigger.refresh());
+-      // Observe content, never the height we write, to avoid a resize feedback loop.
+-      const composition = now.firstElementChild;
+-      if (composition) resizeObserver.observe(composition);
+       return () => {
+-        resizeObserver.disconnect();
+         timeline.kill();
++        gsap.set([hero, mark, ...root.querySelectorAll("[data-hero-edge], [data-hero-wordmark]")], { clearProps: "all" });
+         delete root.dataset.enhanced;
+         delete root.dataset.scrollDistance;
+-        root.style.removeProperty("--scene-height");
+         root.style.removeProperty("--scroll-distance");
+-        hero.style.removeProperty("pointer-events");
+-        now.style.removeProperty("pointer-events");
+       };
+     }, root);
+ 
+-    void document.fonts.ready.then(() => { if (!disposed) { ScrollTrigger.refresh(); setupIntro(); } });
+-    const motionChanged = () => { if (reduced.matches) intro?.revert(); };
+-    reduced.addEventListener("change", motionChanged);
+-    const hashJump = () => { if (location.hash === "#now" || location.hash === "#top") scrollToSection(location.hash.slice(1), true); };
++    const hashJump = () => {
++      if (location.hash === "#now" || location.hash === "#top") scrollToSection(location.hash.slice(1), true);
++    };
+     const anchorClick = (event: MouseEvent) => {
+       if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+-      const anchor = (event.target as Element).closest<HTMLAnchorElement>('a[href="#now"], a[href="#top"]');
++      const target = event.target;
++      if (!(target instanceof Element)) return;
++      const anchor = target.closest<HTMLAnchorElement>('a[href="#now"], a[href="#top"]');
+       if (!anchor) return;
+       event.preventDefault();
+-      intro?.revert();
+       scrollToSection(anchor.hash.slice(1));
+     };
+     document.addEventListener("click", anchorClick);
+     window.addEventListener("hashchange", hashJump);
+     const frame = requestAnimationFrame(() => { ScrollTrigger.refresh(); hashJump(); });
++    void document.fonts.ready.then(() => { if (!disposed) { ScrollTrigger.refresh(); hashJump(); } });
+     return () => {
+       disposed = true;
+       cancelAnimationFrame(frame);
+-      intro?.revert();
+-      mediaQueries.revert();
++      media.revert();
+       document.removeEventListener("click", anchorClick);
+       window.removeEventListener("hashchange", hashJump);
+-      reduced.removeEventListener("change", motionChanged);
+     };
+   }, [ref]);
+ }
+diff --git a/src/lib/motion.ts b/src/lib/motion.ts
+index a6481df..ee4e457 100644
+--- a/src/lib/motion.ts
++++ b/src/lib/motion.ts
+@@ -9,9 +9,6 @@ export const motion = {
+ 
+ export const movement = {
+   pointer: { x: 8, y: 6, rotation: 3 },
+-  fragment: 14,
+-  reveal: 36,
+-  mediaScale: 1.035,
+-  desktopScroll: 1.12,
+-  mobileScroll: 0.65,
++  desktopScroll: 1.8,
++  mobileScroll: 1.05,
+ } as const;
+-- 
+2.51.1
+
