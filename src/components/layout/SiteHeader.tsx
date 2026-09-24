@@ -51,7 +51,7 @@ export function SiteHeader() {
           <a href="#top" onClick={(event) => navigate(event, "top")}><span className="eyebrow muted">00</span><span>Top</span><span className={styles.navArrow} aria-hidden="true">↗</span></a>
           <a href="#now" onClick={(event) => navigate(event, "now")}><span className="eyebrow muted">01</span><span>Now</span><span className={styles.navArrow} aria-hidden="true">↘</span></a>
         </nav>
-        <p className={`${styles.menuEnd} eyebrow muted`}>Ideas fuel progress.<br />Student-led. Built in Quetta.</p>
+        <p className={`${styles.menuEnd} eyebrow muted`}>Student-led. Built in Quetta.</p>
       </dialog>
     </>
   );

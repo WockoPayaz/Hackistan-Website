@@ -16,7 +16,6 @@
 .locator { position: absolute; top: 18%; left: 0; z-index: 3; }
 .locator span { display: block; margin-top: var(--space-2); letter-spacing: 0.13em; }
 .manifesto { position: absolute; right: 0; top: 18%; text-align: right; line-height: 1.85; z-index: 3; }
-.phrase { position: absolute; left: 0; bottom: 32%; white-space: nowrap; letter-spacing: 0.37em; z-index: 3; }
 .bottom { position: absolute; bottom: 5%; width: 100%; display: flex; align-items: flex-end; justify-content: space-between; z-index: 3; }
 .descriptor { line-height: 1.7; }
 .scroll { margin-bottom: -0.625rem; gap: var(--space-6); }
@@ -39,7 +38,6 @@
   .background { top: 43%; }
   .background h1 { font-size: 17vw; color: rgba(255, 255, 253, 0.98); }
   .background h1 span { letter-spacing: -0.048em; }
-  .phrase { left: 50%; bottom: 17%; transform: translateX(-50%); font-size: var(--text-xs); letter-spacing: 0.23em; }
   .bottom { bottom: 5%; }
   .descriptor { font-size: 10px; letter-spacing: 0.16em; }
   .descriptor span { display: block; margin-top: var(--space-2); max-width: 18ch; }
@@ -50,5 +48,14 @@
 @media (max-height: 620px) and (min-width: 768px) {
   .mark { width: min(59svh, 33vw); height: min(59svh, 33vw); }
   .background h1 { font-size: min(16vw, 27svh); }
-  .phrase { bottom: 13%; }
 }
+@media (scripting: enabled) {
+  .hero[data-intro="pending"] .mark,
+  .hero[data-intro="pending"] .background,
+  .hero[data-intro="pending"] .ribbonField,
+  .hero[data-intro="pending"] [data-hero-edge] { opacity: 0; }
+}
+.construction { position: absolute; inset: 0; z-index: 3; pointer-events: none; opacity: 0; overflow: visible; }
+.construction path, .construction line, .construction circle { fill: none; stroke: rgba(235,234,229,.55); stroke-width: .65; vector-effect: non-scaling-stroke; }
+.construction circle { fill: rgba(235,234,229,.7); stroke: none; }
+@media (max-width: 767px) { .construction [data-intro-desktop] { display: none; } }
