@@ -32,7 +32,6 @@ export function HeroEntrance() {
     if (!hero) return;
     if (hero.dataset.intro === "done") return;
     const curtain = hero.querySelector<HTMLElement>("[data-hero-curtain]");
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
     const mark = hero.querySelector<HTMLElement>("[data-mark-stage]");
     const ribbons = hero.querySelector<HTMLElement>("[class*='ribbonField']");
     const wordmark = hero.querySelector<HTMLElement>("[data-hero-wordmark]");
@@ -85,7 +84,6 @@ export function HeroEntrance() {
       window.dispatchEvent(new Event("hackistan:intro-finished"));
       ScrollTrigger.update();
     };
-    const introReduced = reduced.matches;
     const shouldSkip = () => (location.hash && location.hash !== "#top") ||
       window.scrollY > 24 || hero.getBoundingClientRect().top < -24;
     if (shouldSkip()) {
@@ -102,7 +100,7 @@ export function HeroEntrance() {
       if (finished || timeline) return;
       if (window.scrollY > 24) { finish(); return; }
       window.clearTimeout(timer);
-      const duration = introReduced ? 1.35 : 2.9;
+      const duration = 2.9;
       hero.dataset.intro = "running";
       gsap.set(targets, { opacity: 0 });
       gsap.set(drawing, { opacity: 1 });
@@ -113,20 +111,7 @@ export function HeroEntrance() {
       const length = bridge.getTotalLength();
       gsap.set(bridge, { opacity: 0.8, strokeDasharray: length, strokeDashoffset: length });
       timeline = gsap.timeline({ onUpdate: () => progress(timeline!.progress()), onComplete: finish });
-      if (introReduced) {
-        // Retain the construction idea without the full-width guide extrapolation.
-        if (curtain) timeline.to(curtain, { opacity: 0, duration: 0.09, ease: "none", onComplete: () => { curtain.style.display = "none"; } }, 0);
-        timeline.to(guides, { opacity: 0.46, duration: 0.2 }, 0.08)
-          .to(bridge, { strokeDashoffset: 0, duration: 0.34, ease: "power1.inOut" }, 0.21)
-          .to(guides, { opacity: 0, duration: 0.24 }, 0.72)
-          .to(bridge, { opacity: 0, duration: 0.25 }, 0.76)
-          .to([ribbons, wordmark], { opacity: 1, duration: 0.2 }, 1.01)
-          .to(edges, { opacity: 1, duration: 0.12 }, 1.12)
-          .call(() => { hero.dataset.introHeader = "visible"; }, [], 1.12);
-        timeline.duration(duration);
-        return;
-      }
-      // Normalized full-motion phases leave the same final DOM and Three.js values as Pass B.
+      // Normalized phases leave the same final DOM and Three.js values as Pass B.
       if (curtain) timeline.to(curtain, { opacity: 0, duration: 0.12, ease: "none", onComplete: () => { curtain.style.display = "none"; } }, 0);
       timeline.to(guides, { opacity: 0.65, duration: duration * .14 }, duration * .05)
         .to(bridge, { strokeDashoffset: 0, duration: duration * .24, ease: "power1.inOut" }, duration * .18)
@@ -143,11 +128,9 @@ export function HeroEntrance() {
       timeline.duration(duration);
     };
     const onScroll = () => { if (window.scrollY > 24 || hero.getBoundingClientRect().top < -24) finish(); };
-    const onMotion = () => { if (reduced.matches !== introReduced) finish(); };
     window.addEventListener("hackistan:webgl-ready", begin);
     window.addEventListener("hackistan:webgl-failed", finish);
     window.addEventListener("scroll", onScroll, { passive: true });
-    reduced.addEventListener("change", onMotion);
     timer = window.setTimeout(finish, 1700); // WebGL failure keeps the usable SVG hero.
     if (hero.querySelector('[data-scene-ready="true"]')) begin();
     return () => {
@@ -155,7 +138,6 @@ export function HeroEntrance() {
       window.removeEventListener("hackistan:webgl-ready", begin);
       window.removeEventListener("hackistan:webgl-failed", finish);
       window.removeEventListener("scroll", onScroll);
-      reduced.removeEventListener("change", onMotion);
       finish();
     };
   }, []);
