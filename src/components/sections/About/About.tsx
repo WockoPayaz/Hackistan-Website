@@ -20,7 +20,7 @@ export function About() {
             <div className={styles.hackistan} data-about-copy>
               <h2 id="about-title" className={styles.heading} data-about-heading><span className={styles.headingLine} data-about-heading-line>Hackistan</span><span className={`${styles.headingLine} ${styles.headingSuffix}`} data-about-heading-line>/ Quetta</span></h2>
               <p data-about-description><span className={styles.desktopCopy}>A student-led maker community in Quetta where ideas become things you can actually build.</span><span className={styles.mobileCopy}>A student-led maker community in Quetta building games, hardware, experiments and hackathons together.</span></p>
-              <p className={styles.desktopCopy} data-about-description>Workshops, games, hardware, experiments and hackathons — built by learning together.</p>
+              <p className={styles.desktopCopy} data-about-description>Workshops, games, hardware, experiments and hackathons. Built by learning together.</p>
             </div>
             <div className={styles.hackClub} data-about-copy>
               <h3 className={`${styles.heading} ${styles.clubHeading}`} data-about-heading><span className={styles.headingLine} data-about-heading-line>Hack Club</span><span className={`${styles.headingLine} ${styles.headingSuffix}`} data-about-heading-line>/ Worldwide</span></h3>

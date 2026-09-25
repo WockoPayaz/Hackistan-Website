@@ -41,8 +41,10 @@ export function AboutTransition() {
         scrub: 0.6,
         invalidateOnRefresh: true,
       };
-      gsap.fromTo(grid, { y: 0 }, { y: () => -window.innerHeight * 0.45, ease: "none", scrollTrigger: { ...holdTrigger } });
-      gsap.fromTo(pluses, { y: 0 }, { y: () => -window.innerHeight * 1.35, ease: "none", scrollTrigger: { ...holdTrigger } });
+      // Scale travel with the shorter hold so each plane keeps its prior speed.
+      const gridTravel = () => window.innerHeight * 0.45 * (window.matchMedia("(max-width: 767px)").matches ? 70 / 180 : 100 / 220);
+      gsap.fromTo(grid, { y: 0 }, { y: () => -gridTravel(), ease: "none", scrollTrigger: { ...holdTrigger } });
+      gsap.fromTo(pluses, { y: 0 }, { y: () => -gridTravel() * 3, ease: "none", scrollTrigger: { ...holdTrigger } });
     }, section);
 
     return () => context.revert();
