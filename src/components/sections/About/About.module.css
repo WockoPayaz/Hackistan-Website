@@ -1,37 +1,37 @@
 .section { position: relative; z-index: 4; margin-top: -100svh; }
 .runway { position: relative; height: 420svh; }
 .scene { position: sticky; top: 0; height: 100svh; overflow: clip; isolation: isolate; pointer-events: none; }
-.world { position: absolute; inset: 0; overflow: clip; background: #f2f0ea; --grid-cell: 72px; --plus-cell: clamp(76px, 6.2vw, 112px); }
+.world { position: absolute; inset: 0; overflow: clip; background: #f2f0ea; --grid-cell: 22px; --plus-cell: calc(4 * var(--grid-cell)); }
 .gridPlane, .plusPlane { position: absolute; pointer-events: none; top: -100svh; height: 400svh; will-change: transform; }
 .gridPlane { z-index: 1; inset-inline: 0; background-image: linear-gradient(to right, rgb(11 12 13 / 6%) 1px, transparent 1px), linear-gradient(to bottom, rgb(11 12 13 / 6%) 1px, transparent 1px), linear-gradient(to right, rgb(11 12 13 / 9%) 1px, transparent 1px), linear-gradient(to bottom, rgb(11 12 13 / 9%) 1px, transparent 1px); background-size: var(--grid-cell) var(--grid-cell), var(--grid-cell) var(--grid-cell), calc(4 * var(--grid-cell)) calc(4 * var(--grid-cell)), calc(4 * var(--grid-cell)) calc(4 * var(--grid-cell)); }
-.plusPlane { z-index: 2; left: calc(-1 * var(--plus-cell)); width: calc(100% + 2 * var(--plus-cell)); background: url('/about-plus-tile.svg') repeat 0 0 / var(--plus-cell) var(--plus-cell); }
+.plusPlane { z-index: 2; left: calc(-1 * var(--plus-cell)); width: calc(100% + 2 * var(--plus-cell)); background: url('/about-plus-tile.svg') repeat calc(var(--plus-cell) / 2) calc(var(--plus-cell) / 2) / var(--plus-cell) var(--plus-cell); }
 .outline { position: absolute; z-index: 3; width: min(68svh, 68vw); height: min(68svh, 68vw); top: 50%; left: 50%; transform: translate(-50%, -50%); overflow: visible; pointer-events: none; }
 .outline path { fill: none; stroke: rgb(11 12 13 / 44%); stroke-width: 2.15; stroke-linejoin: miter; vector-effect: non-scaling-stroke; }
 .outline path:nth-child(2) { stroke: rgb(11 12 13 / 57%); stroke-width: 2.35; }
 .information { position: relative; z-index: 4; height: 100%; color: #151718; pointer-events: none; }
 .index { position: absolute; top: clamp(5rem, 10svh, 8rem); left: 0; color: #292a27; }
 .hackistan, .hackClub { position: absolute; line-height: 1.42; }
-.hackistan { top: 60%; left: 0; width: min(35vw, 660px); }
-.hackClub { top: 51%; right: 0; width: min(44vw, 840px); }
+.hackistan { top: 60%; left: 0; width: min(29vw, 550px); }
+.hackClub { top: 51%; right: 0; width: min(27vw, 510px); }
 .heading { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.08em 0.12em; width: 100%; margin-bottom: clamp(0.75rem, 1.6vw, 1.5rem); font-size: clamp(2.25rem, 3.4vw, 4.75rem); font-weight: 450; line-height: 1.04; letter-spacing: -0.065em; text-transform: uppercase; }
 .clubHeading { font-size: clamp(2.25rem, 3.1vw, 4.2rem); }
 .headingLine { display: inline-block; max-width: 100%; padding: 0.1em 0.18em 0.14em; overflow: clip; white-space: nowrap; color: #f2f0ea; background: #151718; }
 .headingSuffix { font-size: 0.64em; font-weight: 400; letter-spacing: -0.04em; }
-.hackistan p, .hackClub p { max-width: 45ch; font-size: clamp(1.0625rem, 1.35vw, 1.375rem); line-height: 1.44; }
+.hackistan p, .hackClub p { max-width: 28ch; font-size: clamp(1.0625rem, 1.35vw, 1.375rem); line-height: 1.44; }
 .hackistan p + p, .hackClub p + p { margin-top: 0.8rem; }
 .hackClub .supporting { font-size: clamp(0.9rem, 1.05vw, 1.125rem); line-height: 1.5; }
 .externalLink { display: inline-flex; gap: 0.55em; align-items: center; min-height: 44px; margin-top: 0.7rem; color: #151718; pointer-events: auto; text-underline-offset: 4px; }
 .externalLink:hover { text-decoration: underline; }
 
 @media (max-width: 1023px) {
-  .hackistan { top: 58%; width: 40vw; }
-  .hackClub { top: 52%; width: 46vw; }
+  .hackistan { top: 58%; width: 32vw; }
+  .hackClub { top: 52%; width: 32vw; }
   .heading, .clubHeading { font-size: clamp(2rem, 3.4vw, 3.5rem); }
   .hackistan p, .hackClub p { font-size: clamp(1rem, 1.7vw, 1.2rem); }
 }
 @media (max-width: 767px) {
   .runway { height: 380svh; }
-  .world { --grid-cell: 56px; --plus-cell: 56px; }
+  .world { --grid-cell: 20px; }
   .plusPlane { background-image: url('/about-plus-tile-mobile.svg'); }
   .outline { width: min(58svh, 112vw); height: min(58svh, 112vw); top: 50%; left: 50%; transform: translate(-50%, -50%); }
   .index { top: clamp(4.5rem, 10svh, 6rem); font-size: 10px; }

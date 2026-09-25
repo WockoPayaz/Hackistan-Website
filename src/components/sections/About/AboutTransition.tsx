@@ -16,15 +16,15 @@ export function AboutTransition() {
 
     const hackistanLines = headings[0].querySelectorAll<HTMLElement>("[data-about-heading-line]");
     const clubLines = headings[1].querySelectorAll<HTMLElement>("[data-about-heading-line]");
-    const entranceDistance = () => window.innerHeight * 0.85;
+    const entranceDistance = () => window.innerHeight;
     const entranceTrigger = { trigger: section, start: "top top", end: () => "+=" + entranceDistance(), scrub: true, invalidateOnRefresh: true };
 
     const context = gsap.context(() => {
-      // The section overlaps NOW's final viewport. Its sticky stage never changes
-      // positioning; clipping this entire world exposes NOW above the rising edge.
+      // The section overlaps NOW's final viewport. The complete light world
+      // physically rises from below while the stage itself remains sticky.
       gsap.fromTo(world,
-        { clipPath: "inset(100% 0 0 0)" },
-        { clipPath: "inset(0% 0 0 0)", ease: "none", scrollTrigger: entranceTrigger },
+        { yPercent: 100 },
+        { yPercent: 0, ease: "none", scrollTrigger: entranceTrigger },
       );
 
       gsap.timeline({ scrollTrigger: { ...entranceTrigger }, defaults: { ease: "none" } })
@@ -38,11 +38,11 @@ export function AboutTransition() {
         trigger: section,
         start: () => "top top-=" + entranceDistance(),
         end: "bottom bottom",
-        scrub: true,
+        scrub: 0.6,
         invalidateOnRefresh: true,
       };
-      gsap.fromTo(grid, { y: 0 }, { y: () => -window.innerHeight * 0.75, ease: "none", scrollTrigger: { ...holdTrigger } });
-      gsap.fromTo(pluses, { y: 0 }, { y: () => -window.innerHeight * 1.55, ease: "none", scrollTrigger: { ...holdTrigger } });
+      gsap.fromTo(grid, { y: 0 }, { y: () => -window.innerHeight * 0.45, ease: "none", scrollTrigger: { ...holdTrigger } });
+      gsap.fromTo(pluses, { y: 0 }, { y: () => -window.innerHeight * 1.35, ease: "none", scrollTrigger: { ...holdTrigger } });
     }, section);
 
     return () => context.revert();
