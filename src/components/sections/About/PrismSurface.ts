@@ -14,6 +14,7 @@ export type PrismFrame = {
   takeover: number;
   markOpacity: number;
   yaw: number;
+  scale: number;
   markSize: number;
   rail: number;
   panel: number;
@@ -23,7 +24,7 @@ export type PrismFrame = {
 };
 
 export type PrismSurface = {
-  projectLeftWall: (markSize: number, yaw: number) => PrismQuad;
+  projectLeftWall: (markSize: number, yaw: number, scale: number) => PrismQuad;
   render: (frame: PrismFrame) => void;
   dispose: () => void;
 };
@@ -205,10 +206,11 @@ export function createPrismSurface(canvas: HTMLCanvasElement): PrismSurface | nu
     };
 
     return {
-      projectLeftWall(markSize, yaw) {
+      projectLeftWall(markSize, yaw, scale) {
         const width = canvas.clientWidth, height = canvas.clientHeight;
         configureCamera(markSize, width, height);
         group.rotation.y = yaw;
+        group.scale.setScalar(scale);
         group.updateMatrixWorld(true);
         // x=0 is the outside of the left pillar in markGeometry. The four
         // actual extrusion corners bound its outer wall (front z+, back z-).
@@ -243,6 +245,7 @@ export function createPrismSurface(canvas: HTMLCanvasElement): PrismSurface | nu
         uniforms.uDpr.value = dpr;
         configureCamera(frame.markSize, width, height);
         group.rotation.y = frame.yaw;
+        group.scale.setScalar(frame.scale);
         group.updateMatrixWorld(true);
         faceMaterial.opacity = 0.025 * frame.markOpacity;
         wallMaterial.opacity = 0.12 * frame.markOpacity;

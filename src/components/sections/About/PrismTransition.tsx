@@ -36,6 +36,7 @@ export function PrismTransition() {
       progress = position.value;
       const mobile = window.matchMedia("(max-width: 767px)").matches;
       const yaw = (mobile ? 65 : 70) * Math.PI / 180 * smooth(0.2, 0.44, progress);
+      const scale = 1 + (mobile ? 1.2 : 1.6) * smooth(0.38, 0.68, progress);
       const width = scene.clientWidth;
       const height = scene.clientHeight;
       if (!width || !height) return;
@@ -45,7 +46,9 @@ export function PrismTransition() {
       const fallbackX = rect.left - sceneRect.left + markSize * 8 / 420;
       const fallbackTop = rect.top - sceneRect.top + markSize * 8 / 420;
       const fallbackBottom = rect.top - sceneRect.top + markSize * 408 / 420;
-      const wall: PrismQuad = surface?.projectLeftWall(markSize, yaw) ?? [
+      // The pane stays on the projected, scaled extrusion wall until the
+      // mark has finished growing; projection and rendering share one group.
+      const wall: PrismQuad = surface?.projectLeftWall(markSize, yaw, scale) ?? [
         [fallbackX - 3, fallbackTop], [fallbackX + 3, fallbackTop],
         [fallbackX + 3, fallbackBottom], [fallbackX - 3, fallbackBottom],
       ];
@@ -54,29 +57,33 @@ export function PrismTransition() {
       const wallHalfWidth = Math.abs(wall[1][0] - wall[0][0]) / 2;
       const wallHalfLength = (wall[3][1] + wall[2][1] - wall[0][1] - wall[1][1]) / 4;
       const corners = [[0, 0], [width, 0], [0, height], [width, height]];
-      const coverWidth = Math.max(...corners.map(([x]) => Math.abs(x - spineX))) + 16;
-      const coverLength = Math.max(...corners.map(([, y]) => Math.abs(y - spineY))) + 16;
-      let halfWidth = wallHalfWidth;
-      if (progress >= 0.44 && progress < 0.62) halfWidth += width * 0.09 * smooth(0.44, 0.62, progress);
-      else if (progress >= 0.62 && progress < 0.8) halfWidth += width * (0.09 + 0.25 * smooth(0.62, 0.8, progress));
-      else if (progress >= 0.8) halfWidth = wallHalfWidth + width * 0.34 + (coverWidth - wallHalfWidth - width * 0.34) * smooth(0.8, 0.94, progress);
-      const halfLength = wallHalfLength + (coverLength - wallHalfLength) * smooth(0.43, 0.72, progress);
+      const coverWidth = Math.max(...corners.map(([x]) => Math.abs(x - spineX))) + width * 0.05;
+      const coverLength = Math.max(wallHalfLength, Math.max(...corners.map(([, y]) => Math.abs(y - spineY))) + height * 0.05);
+      const halfWidth = wallHalfWidth + width * 0.34 * smooth(0.68, 0.82, progress) +
+        (coverWidth - wallHalfWidth - width * 0.34) * smooth(0.82, 0.88, progress);
+      const halfLength = wallHalfLength + (coverLength - wallHalfLength) * smooth(0.68, 0.88, progress);
       const rectangle: PrismQuad = [
         [spineX - halfWidth, spineY - halfLength], [spineX + halfWidth, spineY - halfLength],
         [spineX + halfWidth, spineY + halfLength], [spineX - halfWidth, spineY + halfLength],
       ];
-      const straighten = smooth(0.43, 0.51, progress);
+      const straighten = smooth(0.68, 0.76, progress);
       const quad = wall.map(([x, y], i) => [
         x + (rectangle[i][0] - x) * straighten,
         y + (rectangle[i][1] - y) * straighten,
       ]) as PrismQuad;
+      const leftRail = Math.min(quad[0][0], quad[3][0]);
+      const rightRail = Math.max(quad[1][0], quad[2][0]);
+      // Both walls must have passed the viewport plus 4vw before any
+      // fullscreen blend can escape the projected slab.
+      const beyondSides = Math.min(-leftRail, rightRail - width) - width * 0.04;
+      const takeover = smooth(0, width * 0.01, beyondSides) * smooth(0.86, 0.95, progress);
       const peak = smooth(0.45, 0.7, progress) * (1 - smooth(0.82, 1, progress));
       const handoff = surface && !contextLost ? smooth(0.18, 0.26, progress) : 0;
       outline.style.opacity = String((1 - handoff) * (1 - smooth(0.76, 0.86, progress)));
       const frame: PrismFrame = {
-        quad, yaw, markSize,
+        quad, yaw, scale, markSize,
         markOpacity: handoff * (1 - smooth(0.76, 0.86, progress)),
-        takeover: smooth(0.82, 0.94, progress),
+        takeover,
         rail: smooth(0.3, 0.4, progress) * (1 - smooth(0.88, 1, progress)),
         panel: smooth(0.3, 0.39, progress),
         warp: peak * (mobile ? 0.83 : 1),
@@ -103,7 +110,7 @@ export function PrismTransition() {
       }
       if (!surface || contextLost) {
         // The same rail geometry gives a navigable, reversible fallback.
-        fallback.style.clipPath = progress >= 0.94 ? "inset(0)" : `polygon(${quad.map(([x, y]) => `${x}px ${y}px`).join(", ")})`;
+        fallback.style.clipPath = takeover >= 1 ? "inset(0)" : `polygon(${quad.map(([x, y]) => `${x}px ${y}px`).join(", ")})`;
         fallback.style.visibility = progress > 0.3 ? "visible" : "hidden";
       }
     };
