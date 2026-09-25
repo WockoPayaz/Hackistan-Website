@@ -2,6 +2,7 @@
 
 import { useLayoutEffect } from "react";
 import { gsap } from "@/lib/gsap";
+import { aboutHoldEnd } from "./aboutScroll";
 
 /** A scroll-scrubbed light reveal, then two independent vertical field layers. */
 export function AboutTransition() {
@@ -37,7 +38,7 @@ export function AboutTransition() {
       const holdTrigger = {
         trigger: section,
         start: () => "top top-=" + entranceDistance(),
-        end: "bottom bottom",
+        end: () => "top top-=" + aboutHoldEnd(),
         scrub: 0.6,
         invalidateOnRefresh: true,
       };

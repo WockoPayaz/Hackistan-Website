@@ -1,10 +1,12 @@
 import { markGeometry } from "@/components/brand/geometry";
 import { AboutTransition } from "./AboutTransition";
+import { PrismTransition } from "./PrismTransition";
 import styles from "./About.module.css";
 
 export function About() {
   return <section id="about" className={styles.section} aria-labelledby="about-title" data-about>
     <AboutTransition />
+    <PrismTransition />
     <div className={styles.runway} data-about-runway>
       <div className={styles.scene} data-about-scene>
         <div className={styles.world} data-about-world>
@@ -29,6 +31,9 @@ export function About() {
               <a className={`${styles.externalLink} eyebrow`} data-about-description href="https://hackclub.com/" target="_blank" rel="noopener noreferrer" aria-label="Explore Hack Club (opens in a new tab)">Explore Hack Club <span aria-hidden="true">↗</span></a>
             </div>
           </div>
+          <div className={styles.prismFallback} data-prism-fallback aria-hidden="true" />
+          <canvas className={styles.prismCanvas} data-prism-canvas aria-hidden="true" />
+          <div className={styles.destination} data-prism-destination aria-hidden="true"><span className={styles.destinationLabel}>03 / UPCOMING</span></div>
         </div>
       </div>
     </div>
