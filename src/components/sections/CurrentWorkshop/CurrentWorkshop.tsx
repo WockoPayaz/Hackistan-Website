@@ -9,7 +9,7 @@ export function CurrentWorkshop({ workshop }: { workshop?: Workshop }) {
 
   return (
     <section id="now" className={styles.section} data-now aria-labelledby="workshop-title" tabIndex={-1}>
-      <article className={`${styles.composition} page-width page-grid`}>
+      <article className={`${styles.composition} page-width page-grid`} data-now-composition>
         <div className={styles.index} data-now-reveal><span className="eyebrow">01 / Now</span><span className={`${styles.status} eyebrow`}><span aria-hidden="true">●</span> Current</span></div>
         <div className={styles.kicker} data-now-reveal><p className="eyebrow">Current workshop</p><p className="eyebrow muted">{workshop.tags.join(" / ")}</p></div>
         <figure className={styles.figure}>

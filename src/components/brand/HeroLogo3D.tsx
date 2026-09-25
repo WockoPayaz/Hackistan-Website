@@ -307,7 +307,8 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       if (!contextAvailable || !onScreen || document.hidden) { lastTime = time; return; }
       const elapsed = Math.min(0.05, (time - lastTime) / 1000);
       lastTime = time;
-      const atRest = getProgress() < hero3d.pointerCutoff;
+      const progress = getProgress();
+      const atRest = progress < hero3d.pointerCutoff;
       if (!atRest && drag) { drag = null; touchX = 0; touchY = 0; }
       const touchActive = !introActive && atRest && drag?.intent === "rotate" && !reduced.matches;
       const mouseActive = !introActive && atRest && pointerInside && hover.matches && !reduced.matches;
@@ -318,12 +319,16 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       pointerGroup.rotation.y += ((touchActive ? touchX : mouseActive ? pointerResponse(pointerX) * hero3d.rotationY : 0) - pointerGroup.rotation.y) * amount;
       pointerGroup.rotation.x += ((touchActive ? touchY : mouseActive ? -pointerResponse(pointerY) * hero3d.rotationX : 0) - pointerGroup.rotation.x) * amount;
       let changed = firstFrame || Math.abs(pointerGroup.rotation.x - previousX) > 0.00005 || Math.abs(pointerGroup.rotation.y - previousY) > 0.00005;
+      // GSAP owns the SVG x/y positions. WebGL owns only this small scroll-driven Z offset.
+      const release = reduced.matches ? 0 : Math.max(0, Math.min(1, (progress - 0.1) / 0.82));
+      const depth = release * release * release * (hover.matches ? 1 : 0.6);
       for (const name of partNames) {
         const element = svgParts[name]!;
         const x = Number(gsap.getProperty(element, "x")) || 0;
         const y = Number(gsap.getProperty(element, "y")) || 0;
-        if (x !== meshes[name].position.x || -y !== meshes[name].position.y) changed = true;
-        meshes[name].position.set(x, -y, 0);
+        const z = name === "bridge" ? -14 * depth : 12 * depth;
+        if (x !== meshes[name].position.x || -y !== meshes[name].position.y || z !== meshes[name].position.z) changed = true;
+        meshes[name].position.set(x, -y, z);
       }
       if (changed) renderer.render(scene, camera);
       if (firstFrame && !shaderFailed) { firstFrame = false; onReadyChange(true); }

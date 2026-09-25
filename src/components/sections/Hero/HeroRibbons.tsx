@@ -75,7 +75,7 @@ export function HeroRibbons() {
     };
   }, []);
 
-  return <div ref={fieldRef} className={styles.ribbonField} aria-hidden="true">
+  return <div ref={fieldRef} className={styles.ribbonField} data-hero-ribbons aria-hidden="true">
     <Curves bands={desktop} prefix="hackistan-desktop-curve" viewBox="0 0 1600 900" svgRef={desktopRef} className={styles.desktopRibbons} />
     <Curves bands={mobile} prefix="hackistan-mobile-curve" viewBox="0 0 720 1280" svgRef={mobileRef} className={styles.mobileRibbons} />
   </div>;
