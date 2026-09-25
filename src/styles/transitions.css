@@ -3,6 +3,7 @@
 @media (hover: hover) { .text-link:hover span:last-child { transform: translate(3px, 3px); } }
 .text-link:active { transform: scale(0.99); }
 .grain { position: fixed; inset: 0; pointer-events: none; z-index: 101; opacity: 0.032; background-image: url('/images/grain.svg'); }
+@media (scripting: enabled) { body:has([data-hero][data-intro="pending"]) .grain { visibility: hidden; } }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }

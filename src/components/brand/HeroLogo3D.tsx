@@ -80,8 +80,11 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
     // A nearly frontal view still exposes a sliver of the real extrusion at rest.
     camera.position.set(hero3d.cameraX, hero3d.cameraY, hero3d.cameraZ);
     camera.lookAt(0, 0, 0);
+    // Entrance transforms live outside the approved pointer/scroll hierarchy.
+    const introGroup = new THREE.Group();
     const pointerGroup = new THREE.Group();
-    scene.add(pointerGroup);
+    scene.add(introGroup);
+    introGroup.add(pointerGroup);
     let environment: THREE.WebGLRenderTarget;
     let backdrop: ReturnType<typeof createGlassBackdrop>;
     let front: ReturnType<typeof createGlassMaterial>;
@@ -112,15 +115,29 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       console.error("Hackistan glass shader failed:", gl.getProgramInfoLog(program));
     };
     const meshes = {} as Record<Part, THREE.Mesh<THREE.ExtrudeGeometry>>;
+    const introEnabled = hero.dataset.intro === "pending" && !window.matchMedia("(prefers-reduced-motion: reduce)").matches &&
+      (!location.hash || location.hash === "#top") && window.scrollY < 24;
+    const wires: THREE.LineSegments[] = [];
+    let introActive = introEnabled;
+    const finalOpacity = front.opacity;
     try {
       for (const name of partNames) {
         const mesh = new THREE.Mesh(makeGeometry(markGeometry[name]), [front, sides]);
         mesh.name = `logo-${name}`;
         pointerGroup.add(mesh);
         meshes[name] = mesh;
+        if (introEnabled) {
+          mesh.visible = false;
+          const line = new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry, 24),
+            new THREE.LineBasicMaterial({ color: 0xecebe6, transparent: true, opacity: 0, depthWrite: false }));
+          line.name = name;
+          introGroup.add(line);
+          wires.push(line);
+        }
       }
     } catch {
       for (const name of partNames) meshes[name]?.geometry.dispose();
+      for (const line of wires) { line.geometry.dispose(); (line.material as THREE.Material).dispose(); }
       front.dispose();
       sides.dispose();
       bufferTarget.dispose();
@@ -140,6 +157,50 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
     const rim = new THREE.DirectionalLight(0xffffff, 0.32);
     rim.position.set(270, 180, -420);
     scene.add(rim);
+
+    const clamp = (value: number) => Math.max(0, Math.min(1, value));
+    const introProgress = (value: number) => {
+      if (!introActive) return;
+      const depth = clamp((value - 0.53) / 0.23);
+      introGroup.position.z = -24 * (1 - depth);
+      introGroup.scale.setScalar(0.96 + 0.04 * depth);
+      for (const line of wires) {
+        const bridge = line.name === "bridge";
+        const reveal = clamp((value - (bridge ? 0.24 : 0.42)) / (bridge ? 0.18 : 0.19));
+        const fade = 1 - clamp((value - 0.69) / 0.17);
+        line.visible = reveal * fade > 0;
+        (line.material as THREE.LineBasicMaterial).opacity = reveal * fade * 0.6;
+        const settle = 1 - clamp((value - 0.55) / 0.19);
+        line.position.set(bridge ? 0 : line.name === "left" ? -14 * settle : 14 * settle,
+          bridge ? 12 * settle : 0, bridge ? -12 * settle : 0);
+      }
+      const glass = clamp((value - 0.68) / 0.18);
+      front.opacity = finalOpacity * glass;
+      sides.transparent = true;
+      sides.opacity = glass;
+      for (const mesh of Object.values(meshes)) mesh.visible = glass > 0;
+      renderer.render(scene, camera);
+    };
+    const onIntroProgress = (event: Event) => introProgress((event as CustomEvent<number>).detail);
+    const finishIntro = () => {
+      if (!introActive) return;
+      introActive = false;
+      introGroup.position.set(0, 0, 0);
+      introGroup.scale.setScalar(1);
+      front.opacity = finalOpacity;
+      sides.opacity = 1;
+      sides.transparent = false;
+      for (const mesh of Object.values(meshes)) mesh.visible = true;
+      for (const line of wires) {
+        introGroup.remove(line);
+        line.geometry.dispose();
+        (line.material as THREE.Material).dispose();
+      }
+      wires.length = 0;
+      renderer.render(scene, camera);
+    };
+    window.addEventListener("hackistan:intro-progress", onIntroProgress);
+    window.addEventListener("hackistan:intro-finished", finishIntro);
 
     const resize = () => {
       const width = container.clientWidth;
@@ -197,7 +258,7 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       if (!event.relatedTarget) pointerInside = false;
     };
     const touchStart = (event: PointerEvent) => {
-      if (event.pointerType !== "touch" || !event.isPrimary || reduced.matches || getProgress() >= hero3d.pointerCutoff) return;
+      if (introActive || event.pointerType !== "touch" || !event.isPrimary || reduced.matches || getProgress() >= hero3d.pointerCutoff) return;
       pointerInside = false;
       drag = { id: event.pointerId, startX: event.clientX, startY: event.clientY, intent: "pending" };
       touchTarget.setPointerCapture(event.pointerId);
@@ -220,10 +281,12 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
     const lost = (event: Event) => {
       event.preventDefault();
       contextAvailable = false;
+      canvas.style.display = "none";
       onReadyChange(false);
     };
     const restored = () => {
       contextAvailable = true;
+      canvas.style.display = "";
       resize();
       onReadyChange(true);
     };
@@ -246,8 +309,8 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       lastTime = time;
       const atRest = getProgress() < hero3d.pointerCutoff;
       if (!atRest && drag) { drag = null; touchX = 0; touchY = 0; }
-      const touchActive = atRest && drag?.intent === "rotate" && !reduced.matches;
-      const mouseActive = atRest && pointerInside && hover.matches && !reduced.matches;
+      const touchActive = !introActive && atRest && drag?.intent === "rotate" && !reduced.matches;
+      const mouseActive = !introActive && atRest && pointerInside && hover.matches && !reduced.matches;
       const damping = touchActive || mouseActive ? hero3d.pointerDamping : atRest ? hero3d.touchReleaseDamping : hero3d.scrollDamping;
       const amount = 1 - Math.exp(-elapsed / damping);
       const previousX = pointerGroup.rotation.x;
@@ -264,11 +327,15 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       }
       if (changed) renderer.render(scene, camera);
       if (firstFrame && !shaderFailed) { firstFrame = false; onReadyChange(true); }
+      if (shaderFailed) { contextAvailable = false; canvas.style.display = "none"; onReadyChange(false); }
     };
     frame = requestAnimationFrame(update);
 
     return () => {
       cancelAnimationFrame(frame);
+      window.removeEventListener("hackistan:intro-progress", onIntroProgress);
+      window.removeEventListener("hackistan:intro-finished", finishIntro);
+      for (const line of wires) { line.geometry.dispose(); (line.material as THREE.Material).dispose(); }
       resizeObserver.disconnect();
       visibilityObserver.disconnect();
       window.removeEventListener("pointermove", move);

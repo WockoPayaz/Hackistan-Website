@@ -16,11 +16,11 @@ const geist = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Hackistan — Ideas fuel progress",
+  title: "Hackistan",
   description: "A student-led Hack Club in Quetta, Pakistan. Discover what we're designing, building and shipping together.",
   applicationName: "Hackistan",
   icons: { icon: "/brand/hackistan-icon.svg" },
-  openGraph: { title: "Hackistan — Ideas fuel progress", description: "Student-led. Built in Quetta. See what we're making now.", type: "website", locale: "en_PK" },
+  openGraph: { title: "Hackistan", description: "Student-led. Built in Quetta. See what we're making now.", type: "website", locale: "en_PK" },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
