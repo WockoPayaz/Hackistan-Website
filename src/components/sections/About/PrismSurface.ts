@@ -6,9 +6,9 @@ import {
 export type PrismFrame = {
   spineX: number;
   spineY: number;
-  angle: number;
   halfWidth: number;
   halfLength: number;
+  takeover: number;
   rail: number;
   panel: number;
   warp: number;
@@ -30,6 +30,7 @@ uniform vec2 uSpine;
 uniform vec2 uNormal;
 uniform float uHalfWidth;
 uniform float uHalfLength;
+uniform float uTakeover;
 uniform float uRail;
 uniform float uPanel;
 uniform float uWarp;
@@ -46,6 +47,9 @@ void main() {
   float lengthMask = 1.0 - smoothstep(uHalfLength - 5.0 * uDpr, uHalfLength + 3.0 * uDpr, abs(along));
   float body = 1.0 - smoothstep(uHalfWidth - 2.0 * uDpr, uHalfWidth + 2.0 * uDpr, abs(across));
   body *= lengthMask;
+  // The measured rail rectangle reaches every corner; the final blend also
+  // guarantees opaque coverage despite subpixel clipping at the viewport rim.
+  body = mix(body, 1.0, uTakeover);
 
   vec2 uv = point / uResolution;
   vec2 bend = vec2(
@@ -127,7 +131,7 @@ export function createPrismSurface(canvas: HTMLCanvasElement): PrismSurface | nu
       uResolution: { value: new Vector2(1, 1) },
       uSpine: { value: new Vector2() },
       uNormal: { value: new Vector2(1, 0) },
-      uHalfWidth: { value: 0 }, uHalfLength: { value: 0 },
+      uHalfWidth: { value: 0 }, uHalfLength: { value: 0 }, uTakeover: { value: 0 },
       uRail: { value: 0 }, uPanel: { value: 0 },
       uWarp: { value: 0 }, uChromatic: { value: 0 },
       uRainbow: { value: 0 }, uDpr: { value: 1 },
@@ -153,9 +157,10 @@ export function createPrismSurface(canvas: HTMLCanvasElement): PrismSurface | nu
         }
         uniforms.uResolution.value.set(width * dpr, height * dpr);
         uniforms.uSpine.value.set(frame.spineX * dpr, (height - frame.spineY) * dpr);
-        uniforms.uNormal.value.set(Math.cos(frame.angle), -Math.sin(frame.angle));
+        uniforms.uNormal.value.set(1, 0);
         uniforms.uHalfWidth.value = frame.halfWidth * dpr;
         uniforms.uHalfLength.value = frame.halfLength * dpr;
+        uniforms.uTakeover.value = frame.takeover;
         uniforms.uRail.value = frame.rail;
         uniforms.uPanel.value = frame.panel;
         uniforms.uWarp.value = frame.warp;

@@ -10,12 +10,15 @@ const smooth = (start: number, end: number, value: number) => {
   return t * t * (3 - 2 * t);
 };
 
-/** The Pass E H stays in the DOM. Its outer right pillar becomes the prism spine. */
+/** The Pass E H turns in perspective. Projected pillar-edge anchors become the prism spine. */
 export function PrismTransition() {
   useLayoutEffect(() => {
     const section = document.querySelector<HTMLElement>("[data-about]");
     const scene = section?.querySelector<HTMLElement>("[data-about-scene]");
     const outline = section?.querySelector<SVGSVGElement>("[data-about-outline]");
+    const turn = section?.querySelector<HTMLElement>("[data-about-turn]");
+    const edgeTop = section?.querySelector<HTMLElement>("[data-about-edge-top]");
+    const edgeBottom = section?.querySelector<HTMLElement>("[data-about-edge-bottom]");
     const grid = section?.querySelector<HTMLElement>("[data-about-grid-plane]");
     const pluses = section?.querySelector<HTMLElement>("[data-about-plus-plane]");
     const index = section?.querySelector<HTMLElement>("[data-about-index]");
@@ -24,7 +27,7 @@ export function PrismTransition() {
     const canvas = section?.querySelector<HTMLCanvasElement>("[data-prism-canvas]");
     const fallback = section?.querySelector<HTMLElement>("[data-prism-fallback]");
     const destination = section?.querySelector<HTMLElement>("[data-prism-destination]");
-    if (!section || !scene || !outline || !grid || !pluses || !index || !canvas || !fallback || !destination || !lines || !descriptions) return;
+    if (!section || !scene || !outline || !turn || !edgeTop || !edgeBottom || !grid || !pluses || !index || !canvas || !fallback || !destination || !lines || !descriptions) return;
 
     let surface: PrismSurface | null = null;
     let attempted = false;
@@ -36,32 +39,36 @@ export function PrismTransition() {
     const update = () => {
       progress = position.value;
       const mobile = window.matchMedia("(max-width: 767px)").matches;
-      const angle = (mobile ? 34 : 44) * Math.PI / 180 * smooth(0.2, 0.38, progress);
-      outline.style.setProperty("--prism-rotation", `${angle * 180 / Math.PI}deg`);
+      const yaw = (mobile ? 65 : 70) * smooth(0.2, 0.42, progress);
+      turn.style.setProperty("--prism-yaw", `${yaw}deg`);
       const width = scene.clientWidth;
       const height = scene.clientHeight;
       if (!width || !height) return;
-      const markSize = parseFloat(getComputedStyle(outline).width);
-      // SVG viewBox -8 -8 420 420: the right pillar's x=400 outer edge
-      // sits 198 units to the right of the 202-unit viewBox center.
-      const edgeX = markSize * 198 / 420;
-      const edgeY = -markSize * 2 / 420;
-      const spineX = width / 2 + edgeX * Math.cos(angle) - edgeY * Math.sin(angle);
-      const spineY = height / 2 + edgeX * Math.sin(angle) + edgeY * Math.cos(angle);
-      const maximum = Math.hypot(width, height) * 1.6;
+      // The zero-size anchors follow the browser's own rotateY/perspective
+      // projection, including its foreshortening and responsive mark size.
+      const sceneRect = scene.getBoundingClientRect();
+      const topRect = edgeTop.getBoundingClientRect();
+      const bottomRect = edgeBottom.getBoundingClientRect();
+      const spineX = (topRect.left + bottomRect.left) / 2 - sceneRect.left;
+      const spineY = (topRect.top + bottomRect.top) / 2 - sceneRect.top;
+      const markHalfLength = (bottomRect.top - topRect.top) / 2;
+      const corners = [[0, 0], [width, 0], [0, height], [width, height]];
+      const coverWidth = Math.max(...corners.map(([x]) => Math.abs(x - spineX))) + 16;
+      const coverLength = Math.max(...corners.map(([, y]) => Math.abs(y - spineY))) + 16;
       let halfWidth = 0;
       if (progress >= 0.42 && progress < 0.62) halfWidth = width * 0.09 * smooth(0.42, 0.62, progress);
       else if (progress >= 0.62 && progress < 0.8) halfWidth = width * (0.09 + 0.25 * smooth(0.62, 0.8, progress));
-      else if (progress >= 0.8) halfWidth = width * 0.34 + (maximum - width * 0.34) * smooth(0.8, 0.94, progress);
-      const halfLength = markSize * 200 / 420 + (maximum - markSize * 200 / 420) * smooth(0.4, 0.72, progress);
+      else if (progress >= 0.8) halfWidth = width * 0.34 + (coverWidth - width * 0.34) * smooth(0.8, 0.94, progress);
+      const halfLength = markHalfLength + (coverLength - markHalfLength) * smooth(0.4, 0.72, progress);
       const peak = smooth(0.45, 0.7, progress) * (1 - smooth(0.82, 1, progress));
       const frame: PrismFrame = {
-        spineX, spineY, angle, halfWidth, halfLength,
-        rail: smooth(0.32, 0.45, progress) * (1 - smooth(0.88, 1, progress)),
+        spineX, spineY, halfWidth, halfLength,
+        takeover: smooth(0.82, 0.94, progress),
+        rail: smooth(0.38, 0.48, progress) * (1 - smooth(0.88, 1, progress)),
         panel: smooth(0.42, 0.54, progress),
         warp: peak * (mobile ? 0.83 : 1),
         chromatic: peak * (mobile ? 0.008 : 0.012),
-        rainbow: smooth(0.35, 0.57, progress) * (1 - smooth(0.83, 1, progress)),
+        rainbow: smooth(0.4, 0.57, progress) * (1 - smooth(0.83, 1, progress)),
       };
 
       // Fetch the optional renderer as the H starts turning, before the rail
@@ -74,7 +81,7 @@ export function PrismTransition() {
           update();
         }).catch(() => { if (!disposed) update(); });
       }
-      if (progress <= 0.31) {
+      if (progress <= 0.37) {
         canvas.style.visibility = "hidden";
         fallback.style.visibility = "hidden";
         return;
@@ -89,12 +96,10 @@ export function PrismTransition() {
       }
       if (!surface || contextLost) {
         // The same rail geometry gives a navigable, reversible fallback.
-        const normalX = Math.cos(angle), normalY = Math.sin(angle);
-        const tangentX = -normalY, tangentY = normalX;
         const points = [
           [-1, -1], [1, -1], [1, 1], [-1, 1],
-        ].map(([side, along]) => `${spineX + side * halfWidth * normalX + along * halfLength * tangentX}px ${spineY + side * halfWidth * normalY + along * halfLength * tangentY}px`);
-        fallback.style.clipPath = `polygon(${points.join(", ")})`;
+        ].map(([side, along]) => `${spineX + side * halfWidth}px ${spineY + along * halfLength}px`);
+        fallback.style.clipPath = progress >= 0.94 ? "inset(0)" : `polygon(${points.join(", ")})`;
         fallback.style.visibility = "visible";
       }
     };
@@ -139,7 +144,7 @@ export function PrismTransition() {
       window.removeEventListener("resize", onResize);
       document.removeEventListener("visibilitychange", onVisibility);
       canvas.removeEventListener("webglcontextlost", onContextLost);
-      outline.style.removeProperty("--prism-rotation");
+      turn.style.removeProperty("--prism-yaw");
       canvas.style.removeProperty("visibility");
       fallback.style.removeProperty("visibility");
       fallback.style.removeProperty("clip-path");

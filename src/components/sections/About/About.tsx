@@ -12,11 +12,17 @@ export function About() {
         <div className={styles.world} data-about-world>
           <div className={styles.gridPlane} data-about-grid-plane aria-hidden="true" />
           <div className={styles.plusPlane} data-about-plus-plane aria-hidden="true" />
-          <svg className={styles.outline} data-about-outline viewBox="-8 -8 420 420" fill="none" aria-hidden="true" focusable="false">
-            <path d={markGeometry.left} />
-            <path d={markGeometry.bridge} />
-            <path d={markGeometry.right} />
-          </svg>
+          <div className={styles.markPerspective} data-about-mark aria-hidden="true">
+            <div className={styles.markTurn} data-about-turn>
+              <svg className={styles.outline} data-about-outline viewBox="-8 -8 420 420" fill="none" focusable="false">
+                <path d={markGeometry.left} />
+                <path d={markGeometry.bridge} />
+                <path d={markGeometry.right} />
+              </svg>
+              <span className={`${styles.edgeAnchor} ${styles.edgeTop}`} data-about-edge-top />
+              <span className={`${styles.edgeAnchor} ${styles.edgeBottom}`} data-about-edge-bottom />
+            </div>
+          </div>
           <div className={`${styles.information} page-width`}>
             <span className={`${styles.index} eyebrow`} data-about-index>02 / About</span>
             <div className={styles.hackistan} data-about-copy>
