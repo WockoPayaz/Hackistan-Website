@@ -1,14 +1,20 @@
 import {
-  CanvasTexture, LinearFilter, Mesh, OrthographicCamera, PlaneGeometry,
-  Scene, ShaderMaterial, SRGBColorSpace, Vector2, WebGLRenderer,
+  CanvasTexture, DoubleSide, EdgesGeometry, ExtrudeGeometry, Group, LinearFilter,
+  LineBasicMaterial, LineSegments, Mesh, MeshBasicMaterial, OrthographicCamera,
+  PerspectiveCamera, PlaneGeometry, Scene, ShaderMaterial, SRGBColorSpace,
+  Vector2, Vector3, WebGLRenderer,
 } from "three";
+import { markGeometry } from "@/components/brand/geometry";
+import { extrudeMarkPath } from "@/components/brand/markExtrusion";
+
+export type PrismQuad = [[number, number], [number, number], [number, number], [number, number]];
 
 export type PrismFrame = {
-  spineX: number;
-  spineY: number;
-  halfWidth: number;
-  halfLength: number;
+  quad: PrismQuad;
   takeover: number;
+  markOpacity: number;
+  yaw: number;
+  markSize: number;
   rail: number;
   panel: number;
   warp: number;
@@ -16,7 +22,14 @@ export type PrismFrame = {
   rainbow: number;
 };
 
-export type PrismSurface = { render: (frame: PrismFrame) => void; dispose: () => void };
+export type PrismSurface = {
+  projectLeftWall: (markSize: number, yaw: number) => PrismQuad;
+  render: (frame: PrismFrame) => void;
+  dispose: () => void;
+};
+
+const extrusionDepth = 26;
+const cameraFov = 32;
 
 const vertexShader = `
 void main() { gl_Position = vec4(position.xy, 0.0, 1.0); }
@@ -26,10 +39,10 @@ const fragmentShader = `
 precision highp float;
 uniform sampler2D uBackdrop;
 uniform vec2 uResolution;
-uniform vec2 uSpine;
-uniform vec2 uNormal;
-uniform float uHalfWidth;
-uniform float uHalfLength;
+uniform vec2 uA;
+uniform vec2 uB;
+uniform vec2 uC;
+uniform vec2 uD;
 uniform float uTakeover;
 uniform float uRail;
 uniform float uPanel;
@@ -40,13 +53,13 @@ uniform float uDpr;
 
 void main() {
   vec2 point = gl_FragCoord.xy;
-  vec2 tangent = vec2(-uNormal.y, uNormal.x);
-  float across = dot(point - uSpine, uNormal);
-  float along = dot(point - uSpine, tangent);
-  float edgeDistance = abs(across) - uHalfWidth;
-  float lengthMask = 1.0 - smoothstep(uHalfLength - 5.0 * uDpr, uHalfLength + 3.0 * uDpr, abs(along));
-  float body = 1.0 - smoothstep(uHalfWidth - 2.0 * uDpr, uHalfWidth + 2.0 * uDpr, abs(across));
-  body *= lengthMask;
+  float direction = sign((uB.x-uA.x)*(uD.y-uA.y)-(uB.y-uA.y)*(uD.x-uA.x));
+  float top = direction * ((uB.x-uA.x)*(point.y-uA.y)-(uB.y-uA.y)*(point.x-uA.x)) / max(length(uB-uA), 0.001);
+  float right = direction * ((uC.x-uB.x)*(point.y-uB.y)-(uC.y-uB.y)*(point.x-uB.x)) / max(length(uC-uB), 0.001);
+  float bottom = direction * ((uD.x-uC.x)*(point.y-uC.y)-(uD.y-uC.y)*(point.x-uC.x)) / max(length(uD-uC), 0.001);
+  float left = direction * ((uA.x-uD.x)*(point.y-uD.y)-(uA.y-uD.y)*(point.x-uD.x)) / max(length(uA-uD), 0.001);
+  float cap = smoothstep(-2.0*uDpr, 2.0*uDpr, min(top, bottom));
+  float body = smoothstep(-2.0*uDpr, 2.0*uDpr, min(min(top,right), min(bottom,left)));
   // The measured rail rectangle reaches every corner; the final blend also
   // guarantees opaque coverage despite subpixel clipping at the viewport rim.
   body = mix(body, 1.0, uTakeover);
@@ -57,23 +70,30 @@ void main() {
     cos(uv.x * 10.0 + sin(uv.y * 6.5) * 1.5) - 0.38 * cos(uv.x * 21.0 + uv.y * 7.0)
   );
   vec2 warped = clamp(uv + bend * (0.028 * uWarp), 0.002, 0.998);
-  vec2 split = uNormal * uChromatic * (0.7 + 0.3 * sin(uv.x * 9.0 + uv.y * 6.0));
+  vec2 split = vec2(uChromatic, 0.0) * (0.7 + 0.3 * sin(uv.x * 9.0 + uv.y * 6.0));
   vec3 destination = vec3(
     texture2D(uBackdrop, clamp(warped + split, 0.002, 0.998)).r,
     texture2D(uBackdrop, warped).g,
     texture2D(uBackdrop, clamp(warped - split, 0.002, 0.998)).b
   );
 
-  float core = exp(-pow(edgeDistance / (1.7 * uDpr), 2.0)) * lengthMask;
-  float fringe = exp(-pow(edgeDistance / (14.0 * uDpr), 2.0)) * lengthMask;
+  float edgeDistance = min(abs(left), abs(right));
+  float core = exp(-pow(edgeDistance / (1.7 * uDpr), 2.0)) * cap;
+  float fringe = exp(-pow(edgeDistance / (14.0 * uDpr), 2.0)) * cap;
   vec3 spectral = vec3(
     exp(-pow((edgeDistance - 7.0 * uDpr) / (7.0 * uDpr), 2.0)),
     exp(-pow((edgeDistance + 3.0 * uDpr) / (7.0 * uDpr), 2.0)),
     exp(-pow((edgeDistance + 9.0 * uDpr) / (8.0 * uDpr), 2.0))
-  ) * lengthMask;
+  ) * cap;
   vec3 edge = vec3(0.83, 0.88, 0.91) * core + spectral * uRainbow * 0.72 * fringe;
   float alpha = max(body * uPanel, uRail * (core * 0.95 + fringe * uRainbow * 0.22));
-  vec3 color = destination * body * uPanel + edge * uRail;
+  float across = left / max(left + right, 0.001);
+  vec3 innerSpectrum = vec3(
+    exp(-pow((across - 0.18) / 0.24, 2.0)),
+    exp(-pow((across - 0.52) / 0.23, 2.0)),
+    exp(-pow((across - 0.82) / 0.24, 2.0))
+  );
+  vec3 color = mix(destination, innerSpectrum, uRainbow * 0.38) * body * uPanel + edge * uRail;
   gl_FragColor = vec4(color, clamp(alpha, 0.0, 1.0));
 }
 `;
@@ -125,26 +145,81 @@ export function createPrismSurface(canvas: HTMLCanvasElement): PrismSurface | nu
   }
 
   try {
+    let shaderFailed = false;
+    renderer.debug.onShaderError = () => { shaderFailed = true; };
     const texture = makeBackdrop();
     const uniforms = {
       uBackdrop: { value: texture },
       uResolution: { value: new Vector2(1, 1) },
-      uSpine: { value: new Vector2() },
-      uNormal: { value: new Vector2(1, 0) },
-      uHalfWidth: { value: 0 }, uHalfLength: { value: 0 }, uTakeover: { value: 0 },
+      uA: { value: new Vector2() }, uB: { value: new Vector2() },
+      uC: { value: new Vector2() }, uD: { value: new Vector2() },
+      uTakeover: { value: 0 },
       uRail: { value: 0 }, uPanel: { value: 0 },
       uWarp: { value: 0 }, uChromatic: { value: 0 },
       uRainbow: { value: 0 }, uDpr: { value: 1 },
     };
     const material = new ShaderMaterial({ vertexShader, fragmentShader, uniforms, transparent: true, depthTest: false, depthWrite: false });
     const geometry = new PlaneGeometry(2, 2);
-    const scene = new Scene();
-    scene.add(new Mesh(geometry, material));
-    const camera = new OrthographicCamera(-1, 1, 1, -1, 0, 2);
-    camera.position.z = 1;
+    const prismScene = new Scene();
+    prismScene.add(new Mesh(geometry, material));
+    const prismCamera = new OrthographicCamera(-1, 1, 1, -1, 0, 2);
+    prismCamera.position.z = 1;
+    const markScene = new Scene();
+    const group = new Group();
+    group.position.set(-2, 2, 0); // Match the SVG's -8 -8 420 420 viewBox center.
+    markScene.add(group);
+    const markCamera = new PerspectiveCamera(cameraFov, 1, 1, 5000);
+    const faceMaterial = new MeshBasicMaterial({ color: 0x576063, transparent: true, opacity: 0.025, depthWrite: false, side: DoubleSide });
+    const wallMaterial = new MeshBasicMaterial({ color: 0x626b6e, transparent: true, opacity: 0.12, depthWrite: false, side: DoubleSide });
+    const edgeMaterial = new LineBasicMaterial({ color: 0x62686a, transparent: true, opacity: 0.57, depthWrite: false });
+    const markGeometries: ExtrudeGeometry[] = [];
+    const edgeGeometries: EdgesGeometry[] = [];
+    try {
+      for (const path of Object.values(markGeometry)) {
+        const part = extrudeMarkPath(path, extrusionDepth, 0);
+        markGeometries.push(part);
+        group.add(new Mesh(part, [faceMaterial, wallMaterial]));
+        const edges = new EdgesGeometry(part, 20);
+        edgeGeometries.push(edges);
+        group.add(new LineSegments(edges, edgeMaterial));
+      }
+    } catch {
+      markGeometries.forEach((item) => item.dispose());
+      edgeGeometries.forEach((item) => item.dispose());
+      faceMaterial.dispose(); wallMaterial.dispose(); edgeMaterial.dispose();
+      geometry.dispose(); material.dispose(); texture.dispose();
+      throw new Error("Transition mark geometry unavailable");
+    }
     let previousWidth = 0, previousHeight = 0, previousDpr = 0;
 
+    const configureCamera = (markSize: number, width: number, height: number) => {
+      markCamera.aspect = width / height;
+      markCamera.position.set(0, 0, height * 420 / (2 * Math.tan(cameraFov * Math.PI / 360) * markSize));
+      markCamera.lookAt(0, 0, 0);
+      markCamera.updateProjectionMatrix();
+      group.updateMatrixWorld(true);
+    };
+    const project = (point: Vector3, width: number, height: number): [number, number] => {
+      const projected = group.localToWorld(point).project(markCamera);
+      return [(projected.x + 1) * width / 2, (1 - projected.y) * height / 2];
+    };
+
     return {
+      projectLeftWall(markSize, yaw) {
+        const width = canvas.clientWidth, height = canvas.clientHeight;
+        configureCamera(markSize, width, height);
+        group.rotation.y = yaw;
+        group.updateMatrixWorld(true);
+        // x=0 is the outside of the left pillar in markGeometry. The four
+        // actual extrusion corners bound its outer wall (front z+, back z-).
+        const x = -200, front = extrusionDepth / 2, back = -front;
+        return [
+          project(new Vector3(x, 200, back), width, height),
+          project(new Vector3(x, 200, front), width, height),
+          project(new Vector3(x, -200, front), width, height),
+          project(new Vector3(x, -200, back), width, height),
+        ];
+      },
       render(frame) {
         const width = canvas.clientWidth;
         const height = canvas.clientHeight;
@@ -156,10 +231,9 @@ export function createPrismSurface(canvas: HTMLCanvasElement): PrismSurface | nu
           previousWidth = width; previousHeight = height; previousDpr = dpr;
         }
         uniforms.uResolution.value.set(width * dpr, height * dpr);
-        uniforms.uSpine.value.set(frame.spineX * dpr, (height - frame.spineY) * dpr);
-        uniforms.uNormal.value.set(1, 0);
-        uniforms.uHalfWidth.value = frame.halfWidth * dpr;
-        uniforms.uHalfLength.value = frame.halfLength * dpr;
+        ([uniforms.uA, uniforms.uB, uniforms.uC, uniforms.uD] as const).forEach((uniform, i) => {
+          uniform.value.set(frame.quad[i][0] * dpr, (height - frame.quad[i][1]) * dpr);
+        });
         uniforms.uTakeover.value = frame.takeover;
         uniforms.uRail.value = frame.rail;
         uniforms.uPanel.value = frame.panel;
@@ -167,9 +241,24 @@ export function createPrismSurface(canvas: HTMLCanvasElement): PrismSurface | nu
         uniforms.uChromatic.value = frame.chromatic;
         uniforms.uRainbow.value = frame.rainbow;
         uniforms.uDpr.value = dpr;
-        renderer.render(scene, camera);
+        configureCamera(frame.markSize, width, height);
+        group.rotation.y = frame.yaw;
+        group.updateMatrixWorld(true);
+        faceMaterial.opacity = 0.025 * frame.markOpacity;
+        wallMaterial.opacity = 0.12 * frame.markOpacity;
+        edgeMaterial.opacity = 0.57 * frame.markOpacity;
+        renderer.autoClear = false;
+        renderer.setClearColor(0x000000, 0);
+        renderer.clear();
+        renderer.render(prismScene, prismCamera);
+        renderer.clearDepth();
+        if (frame.markOpacity > 0) renderer.render(markScene, markCamera);
+        if (shaderFailed) throw new Error("Transition shader unavailable");
       },
       dispose() {
+        markGeometries.forEach((item) => item.dispose());
+        edgeGeometries.forEach((item) => item.dispose());
+        faceMaterial.dispose(); wallMaterial.dispose(); edgeMaterial.dispose();
         geometry.dispose();
         material.dispose();
         texture.dispose();

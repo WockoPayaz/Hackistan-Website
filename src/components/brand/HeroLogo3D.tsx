@@ -3,31 +3,18 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
-import { SVGLoader } from "three/addons/loaders/SVGLoader.js";
 import { gsap } from "@/lib/gsap";
 import { hero3d, pointerResponse, touchDragIntent } from "@/lib/hero-3d";
 import { createGlassBackdrop, createGlassMaterial } from "@/lib/hero-glass";
 import { markGeometry } from "./geometry";
+import { extrudeMarkPath } from "./markExtrusion";
 import styles from "./LogoScene.module.css";
 
 type Part = keyof typeof markGeometry;
 const partNames = Object.keys(markGeometry) as Part[];
 
 function makeGeometry(path: string) {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg"><path d="${path}"/></svg>`;
-  const shapes = SVGLoader.createShapes(new SVGLoader().parse(svg).paths[0]);
-  const geometry = new THREE.ExtrudeGeometry(shapes, {
-    depth: hero3d.depth,
-    bevelEnabled: true,
-    bevelThickness: hero3d.bevel,
-    bevelSize: hero3d.bevel,
-    bevelSegments: 3,
-    curveSegments: 2,
-    steps: 1,
-  });
-  // SVG uses downward-positive Y. Keep the original logo centered in 3D.
-  geometry.scale(1, -1, 1);
-  geometry.translate(-200, 200, -hero3d.depth / 2);
+  const geometry = extrudeMarkPath(path, hero3d.depth, hero3d.bevel);
   const positions = geometry.getAttribute("position");
   const uv = geometry.getAttribute("uv");
   const sideShade = new Float32Array(positions.count * 3);
