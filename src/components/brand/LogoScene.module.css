@@ -7,5 +7,4 @@
 .scene[data-scene-ready="true"] .touchTarget { pointer-events: auto; }
 @media (prefers-reduced-motion: reduce) {
   .fallback { transition: none; }
-  .scene[data-scene-ready="true"] .touchTarget { pointer-events: none; }
 }

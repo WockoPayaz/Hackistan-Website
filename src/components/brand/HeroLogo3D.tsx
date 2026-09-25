@@ -115,7 +115,8 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       console.error("Hackistan glass shader failed:", gl.getProgramInfoLog(program));
     };
     const meshes = {} as Record<Part, THREE.Mesh<THREE.ExtrudeGeometry>>;
-    const introEnabled = hero.dataset.intro === "pending" && !window.matchMedia("(prefers-reduced-motion: reduce)").matches &&
+    const introReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const introEnabled = hero.dataset.intro === "pending" &&
       (!location.hash || location.hash === "#top") && window.scrollY < 24;
     const wires: THREE.LineSegments[] = [];
     let introActive = introEnabled;
@@ -162,8 +163,8 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
     const introProgress = (value: number) => {
       if (!introActive) return;
       const depth = clamp((value - 0.53) / 0.23);
-      introGroup.position.z = -24 * (1 - depth);
-      introGroup.scale.setScalar(0.96 + 0.04 * depth);
+      introGroup.position.z = (introReduced ? -10 : -24) * (1 - depth);
+      introGroup.scale.setScalar((introReduced ? 0.985 : 0.96) + (introReduced ? 0.015 : 0.04) * depth);
       for (const line of wires) {
         const bridge = line.name === "bridge";
         const reveal = clamp((value - (bridge ? 0.24 : 0.42)) / (bridge ? 0.18 : 0.19));
@@ -171,8 +172,9 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
         line.visible = reveal * fade > 0;
         (line.material as THREE.LineBasicMaterial).opacity = reveal * fade * 0.6;
         const settle = 1 - clamp((value - 0.55) / 0.19);
-        line.position.set(bridge ? 0 : line.name === "left" ? -14 * settle : 14 * settle,
-          bridge ? 12 * settle : 0, bridge ? -12 * settle : 0);
+        const wireTravel = introReduced ? 0.45 : 1;
+        line.position.set(bridge ? 0 : line.name === "left" ? -14 * settle * wireTravel : 14 * settle * wireTravel,
+          bridge ? 12 * settle * wireTravel : 0, bridge ? -12 * settle * wireTravel : 0);
       }
       const glass = clamp((value - 0.68) / 0.18);
       front.opacity = finalOpacity * glass;
@@ -258,7 +260,7 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       if (!event.relatedTarget) pointerInside = false;
     };
     const touchStart = (event: PointerEvent) => {
-      if (introActive || event.pointerType !== "touch" || !event.isPrimary || reduced.matches || getProgress() >= hero3d.pointerCutoff) return;
+      if (introActive || event.pointerType !== "touch" || !event.isPrimary || getProgress() >= hero3d.pointerCutoff) return;
       pointerInside = false;
       drag = { id: event.pointerId, startX: event.clientX, startY: event.clientY, intent: "pending" };
       touchTarget.setPointerCapture(event.pointerId);
@@ -269,8 +271,8 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       const dy = event.clientY - drag.startY;
       if (drag.intent === "pending") drag.intent = touchDragIntent(dx, dy);
       if (drag.intent !== "rotate" || getProgress() >= hero3d.pointerCutoff) return;
-      touchX = pointerResponse(dx / (mark.clientWidth * 0.23)) * hero3d.rotationY;
-      touchY = -pointerResponse(dy / (mark.clientHeight * 0.36)) * hero3d.rotationX * 0.85;
+      touchX = pointerResponse(dx / (mark.clientWidth * 0.23)) * (reduced.matches ? hero3d.reducedRotationY : hero3d.rotationY);
+      touchY = -pointerResponse(dy / (mark.clientHeight * 0.36)) * (reduced.matches ? hero3d.reducedRotationX : hero3d.rotationX) * 0.85;
     };
     const touchEnd = (event: PointerEvent) => {
       if (drag?.id !== event.pointerId) return;
@@ -310,14 +312,14 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       const progress = getProgress();
       const atRest = progress < hero3d.pointerCutoff;
       if (!atRest && drag) { drag = null; touchX = 0; touchY = 0; }
-      const touchActive = !introActive && atRest && drag?.intent === "rotate" && !reduced.matches;
-      const mouseActive = !introActive && atRest && pointerInside && hover.matches && !reduced.matches;
+      const touchActive = !introActive && atRest && drag?.intent === "rotate";
+      const mouseActive = !introActive && atRest && pointerInside && hover.matches;
       const damping = touchActive || mouseActive ? hero3d.pointerDamping : atRest ? hero3d.touchReleaseDamping : hero3d.scrollDamping;
       const amount = 1 - Math.exp(-elapsed / damping);
       const previousX = pointerGroup.rotation.x;
       const previousY = pointerGroup.rotation.y;
-      pointerGroup.rotation.y += ((touchActive ? touchX : mouseActive ? pointerResponse(pointerX) * hero3d.rotationY : 0) - pointerGroup.rotation.y) * amount;
-      pointerGroup.rotation.x += ((touchActive ? touchY : mouseActive ? -pointerResponse(pointerY) * hero3d.rotationX : 0) - pointerGroup.rotation.x) * amount;
+      pointerGroup.rotation.y += ((touchActive ? touchX : mouseActive ? pointerResponse(pointerX) * (reduced.matches ? hero3d.reducedRotationY : hero3d.rotationY) : 0) - pointerGroup.rotation.y) * amount;
+      pointerGroup.rotation.x += ((touchActive ? touchY : mouseActive ? -pointerResponse(pointerY) * (reduced.matches ? hero3d.reducedRotationX : hero3d.rotationX) : 0) - pointerGroup.rotation.x) * amount;
       let changed = firstFrame || Math.abs(pointerGroup.rotation.x - previousX) > 0.00005 || Math.abs(pointerGroup.rotation.y - previousY) > 0.00005;
       // GSAP owns the SVG x/y positions. WebGL owns only this small scroll-driven Z offset.
       const release = reduced.matches ? 0 : Math.max(0, Math.min(1, (progress - 0.1) / 0.82));

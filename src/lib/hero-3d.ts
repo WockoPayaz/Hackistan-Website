@@ -8,6 +8,8 @@ export const hero3d = {
   bevel: 2.4,
   rotationY: 29 * Math.PI / 180,
   rotationX: 18 * Math.PI / 180,
+  reducedRotationY: 9 * Math.PI / 180,
+  reducedRotationX: 6 * Math.PI / 180,
   pointerDamping: 0.09,
   touchReleaseDamping: 0.19,
   scrollDamping: 0.04,
