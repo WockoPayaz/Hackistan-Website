@@ -14,12 +14,6 @@ export default defineConfig({
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
         const url = new URL(req.url ?? '/', 'http://terminal.local');
-        if (url.pathname === '/' && url.searchParams.get('review-motion') === 'reduce') {
-          const script = `<script>const nativeMatchMedia=window.matchMedia.bind(window);window.matchMedia=(q)=>nativeMatchMedia(q.replace(/\\(prefers-reduced-motion:\\s*reduce\\)/g,'(min-width:0px)').replace(/\\(prefers-reduced-motion:\\s*no-preference\\)/g,'(max-width:0px)'));<\/script><style>html{scroll-behavior:auto!important}*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}</style>`;
-          res.setHeader('Content-Type', 'text/html');
-          res.end(readFileSync(resolve('out/index.html'), 'utf8').replace('<head>', '<head>' + script));
-          return;
-        }
         if (url.pathname === '/__review') {
           res.setHeader('Content-Type', 'text/html');
           res.end(readFileSync(resolve('scripts/design-review.html'), 'utf8'));

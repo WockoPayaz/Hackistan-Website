@@ -12,4 +12,3 @@ img { max-width: 100%; }
 button, a { touch-action: manipulation; }
 ::selection { background: var(--color-fg); color: var(--color-bg); }
 :focus-visible { outline: 2px solid currentColor; outline-offset: 7px; }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }

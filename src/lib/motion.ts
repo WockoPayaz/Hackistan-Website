@@ -11,5 +11,4 @@ export const movement = {
   pointer: { x: 8, y: 6, rotation: 3 },
   desktopScroll: 2.4,
   mobileScroll: 2.2,
-  reducedScroll: 1.5,
 } as const;

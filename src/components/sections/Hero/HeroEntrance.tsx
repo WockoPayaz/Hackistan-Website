@@ -32,7 +32,6 @@ export function HeroEntrance() {
     if (!hero) return;
     if (hero.dataset.intro === "done") return;
     const curtain = hero.querySelector<HTMLElement>("[data-hero-curtain]");
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
     const mark = hero.querySelector<HTMLElement>("[data-mark-stage]");
     const ribbons = hero.querySelector<HTMLElement>("[class*='ribbonField']");
     const wordmark = hero.querySelector<HTMLElement>("[data-hero-wordmark]");
@@ -85,7 +84,7 @@ export function HeroEntrance() {
       window.dispatchEvent(new Event("hackistan:intro-finished"));
       ScrollTrigger.update();
     };
-    const shouldSkip = () => reduced.matches || (location.hash && location.hash !== "#top") ||
+    const shouldSkip = () => (location.hash && location.hash !== "#top") ||
       window.scrollY > 24 || hero.getBoundingClientRect().top < -24;
     if (shouldSkip()) {
       finish();
@@ -129,11 +128,9 @@ export function HeroEntrance() {
       timeline.duration(duration);
     };
     const onScroll = () => { if (window.scrollY > 24 || hero.getBoundingClientRect().top < -24) finish(); };
-    const onMotion = () => { if (reduced.matches) finish(); };
     window.addEventListener("hackistan:webgl-ready", begin);
     window.addEventListener("hackistan:webgl-failed", finish);
     window.addEventListener("scroll", onScroll, { passive: true });
-    reduced.addEventListener("change", onMotion);
     timer = window.setTimeout(finish, 1700); // WebGL failure keeps the usable SVG hero.
     if (hero.querySelector('[data-scene-ready="true"]')) begin();
     return () => {
@@ -141,7 +138,6 @@ export function HeroEntrance() {
       window.removeEventListener("hackistan:webgl-ready", begin);
       window.removeEventListener("hackistan:webgl-failed", finish);
       window.removeEventListener("scroll", onScroll);
-      reduced.removeEventListener("change", onMotion);
       finish();
     };
   }, []);

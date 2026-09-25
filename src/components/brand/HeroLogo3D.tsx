@@ -115,7 +115,7 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       console.error("Hackistan glass shader failed:", gl.getProgramInfoLog(program));
     };
     const meshes = {} as Record<Part, THREE.Mesh<THREE.ExtrudeGeometry>>;
-    const introEnabled = hero.dataset.intro === "pending" && !window.matchMedia("(prefers-reduced-motion: reduce)").matches &&
+    const introEnabled = hero.dataset.intro === "pending" &&
       (!location.hash || location.hash === "#top") && window.scrollY < 24;
     const wires: THREE.LineSegments[] = [];
     let introActive = introEnabled;
@@ -229,7 +229,6 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
     document.fonts.ready.then(() => { if (canvas.isConnected) resize(); });
 
     const hover = window.matchMedia("(hover: hover) and (pointer: fine)");
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
     let pointerX = 0;
     let pointerY = 0;
     let pointerInside = false;
@@ -258,7 +257,7 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       if (!event.relatedTarget) pointerInside = false;
     };
     const touchStart = (event: PointerEvent) => {
-      if (introActive || event.pointerType !== "touch" || !event.isPrimary || reduced.matches || getProgress() >= hero3d.pointerCutoff) return;
+      if (introActive || event.pointerType !== "touch" || !event.isPrimary || getProgress() >= hero3d.pointerCutoff) return;
       pointerInside = false;
       drag = { id: event.pointerId, startX: event.clientX, startY: event.clientY, intent: "pending" };
       touchTarget.setPointerCapture(event.pointerId);
@@ -310,8 +309,8 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       const progress = getProgress();
       const atRest = progress < hero3d.pointerCutoff;
       if (!atRest && drag) { drag = null; touchX = 0; touchY = 0; }
-      const touchActive = !introActive && atRest && drag?.intent === "rotate" && !reduced.matches;
-      const mouseActive = !introActive && atRest && pointerInside && hover.matches && !reduced.matches;
+      const touchActive = !introActive && atRest && drag?.intent === "rotate";
+      const mouseActive = !introActive && atRest && pointerInside && hover.matches;
       const damping = touchActive || mouseActive ? hero3d.pointerDamping : atRest ? hero3d.touchReleaseDamping : hero3d.scrollDamping;
       const amount = 1 - Math.exp(-elapsed / damping);
       const previousX = pointerGroup.rotation.x;
@@ -320,7 +319,7 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       pointerGroup.rotation.x += ((touchActive ? touchY : mouseActive ? -pointerResponse(pointerY) * hero3d.rotationX : 0) - pointerGroup.rotation.x) * amount;
       let changed = firstFrame || Math.abs(pointerGroup.rotation.x - previousX) > 0.00005 || Math.abs(pointerGroup.rotation.y - previousY) > 0.00005;
       // GSAP owns the SVG x/y positions. WebGL owns only this small scroll-driven Z offset.
-      const release = reduced.matches ? 0 : Math.max(0, Math.min(1, (progress - 0.1) / 0.82));
+      const release = Math.max(0, Math.min(1, (progress - 0.1) / 0.82));
       const depth = release * release * release * (hover.matches ? 1 : 0.6);
       for (const name of partNames) {
         const element = svgParts[name]!;
