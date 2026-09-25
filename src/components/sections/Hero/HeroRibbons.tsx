@@ -43,12 +43,11 @@ export function HeroRibbons() {
   const mobileRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
     const small = window.matchMedia("(max-width: 767px)");
     let started = false;
     let onScreen = true;
     const sync = () => {
-      if (!reduce.matches && !started) {
+      if (!started) {
         for (const svg of [desktopRef.current, mobileRef.current]) {
           svg?.querySelectorAll<SVGAnimationElement>("animate").forEach((animation) => animation.beginElement());
         }
@@ -56,7 +55,7 @@ export function HeroRibbons() {
       }
       for (const [svg, visible] of [[desktopRef.current, !small.matches], [mobileRef.current, small.matches]] as const) {
         if (!svg) continue;
-        if (reduce.matches || !visible || !onScreen) svg.pauseAnimations();
+        if (!visible || !onScreen) svg.pauseAnimations();
         else svg.unpauseAnimations();
       }
     };
@@ -66,16 +65,14 @@ export function HeroRibbons() {
       sync();
     });
     if (fieldRef.current) observer.observe(fieldRef.current);
-    reduce.addEventListener("change", sync);
     small.addEventListener("change", sync);
     return () => {
       observer.disconnect();
-      reduce.removeEventListener("change", sync);
       small.removeEventListener("change", sync);
     };
   }, []);
 
-  return <div ref={fieldRef} className={styles.ribbonField} aria-hidden="true">
+  return <div ref={fieldRef} className={styles.ribbonField} data-hero-ribbons aria-hidden="true">
     <Curves bands={desktop} prefix="hackistan-desktop-curve" viewBox="0 0 1600 900" svgRef={desktopRef} className={styles.desktopRibbons} />
     <Curves bands={mobile} prefix="hackistan-mobile-curve" viewBox="0 0 720 1280" svgRef={mobileRef} className={styles.mobileRibbons} />
   </div>;

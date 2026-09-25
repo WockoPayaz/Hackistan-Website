@@ -2,4 +2,4 @@
 .part { transform-box: fill-box; transform-origin: center; }
 .depth { fill: var(--color-fg-muted); opacity: 0.24; }
 .wordmark { display: block; font-weight: 400; letter-spacing: -0.065em; line-height: 0.83; }
-@media (max-width: 1023px), (prefers-reduced-motion: reduce) { .depth { display: none; } }
+@media (max-width: 1023px) { .depth { display: none; } }

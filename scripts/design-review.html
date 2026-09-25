@@ -7,7 +7,7 @@ body{background:#252525;color:white;font:13px system-ui;margin:0}header{display:
 </style>
 <header>
 <label>Viewport <select id="size"><option>375×812</option><option>430×932</option><option>768×1024</option><option>1366×768</option><option selected>1440×900</option><option>1920×1080</option><option>2560×1440</option></select></label>
-<label>Mode <select id="mode"><option value="animated">Motion on</option><option value="reduced">Reduced motion</option><option value="static">JavaScript disabled</option></select></label>
+<label>Mode <select id="mode"><option value="animated">Motion on</option><option value="static">JavaScript disabled</option></select></label>
 <button id="top">Top</button><button id="early">Early transition</button><button id="middle">Transition</button><button id="now">Now</button><button id="report">Inspect layout</button><a style="color:white" href="/">Open site</a>
 </header>
 <div id="stage"><iframe id="frame" title="Hackistan preview" src="/"></iframe></div><output id="result"></output>
@@ -15,7 +15,7 @@ body{background:#252525;color:white;font:13px system-ui;margin:0}header{display:
 const frame=document.querySelector('#frame'),stage=document.querySelector('#stage'),select=document.querySelector('#size'),mode=document.querySelector('#mode');
 function resize(){const [w,h]=select.value.split('×').map(Number),scale=Math.min(1,(innerWidth-28)/w,(innerHeight-92)/h);frame.width=w;frame.height=h;frame.style.transform=`scale(${scale})`;stage.style.width=w*scale+'px';stage.style.height=h*scale+'px';}
 function scrollToScene(ratio){const win=frame.contentWindow,root=win.document.querySelector('[data-journey]'),now=win.document.querySelector('#now');const distance=root.dataset.enhanced==='true'?Number(root.dataset.scrollDistance):now.getBoundingClientRect().top+win.scrollY;win.scrollTo({top:distance*ratio,behavior:'instant'});}
-function loadMode(){frame.setAttribute('sandbox',mode.value==='static'?'allow-same-origin':'allow-same-origin allow-scripts');frame.src=mode.value==='reduced'?'/?review-motion=reduce':'/';}
+function loadMode(){frame.setAttribute('sandbox',mode.value==='static'?'allow-same-origin':'allow-same-origin allow-scripts');frame.src='/';}
 select.onchange=resize;mode.onchange=loadMode;window.onresize=resize;resize();
 document.querySelector('#top').onclick=()=>scrollToScene(0);document.querySelector('#early').onclick=()=>scrollToScene(.25);document.querySelector('#middle').onclick=()=>scrollToScene(.5);document.querySelector('#now').onclick=()=>scrollToScene(1);
 document.querySelector('#report').onclick=()=>{const doc=frame.contentDocument,w=frame.contentWindow;const rect=s=>{let r=doc.querySelector(s).getBoundingClientRect();return{x:Math.round(r.x),y:Math.round(r.y),width:Math.round(r.width),height:Math.round(r.height)}};const media=doc.querySelector('[data-workshop-image]');document.querySelector('#result').textContent=JSON.stringify({viewport:[w.innerWidth,w.innerHeight],mode:mode.value,documentWidth:doc.documentElement.scrollWidth,overflow:doc.documentElement.scrollWidth>w.innerWidth,scrollY:w.scrollY,hero:rect('[data-hero-wordmark]'),mark:rect('[data-mark-stage]'),media:rect('[data-workshop-media]'),workshopTitle:rect('#workshop-title'),loaded:media.complete&&media.naturalWidth>0,sceneDistance:doc.querySelector('[data-journey]').dataset.scrollDistance,focus:doc.activeElement?.getAttribute('id')||doc.activeElement?.textContent?.trim().slice(0,50)},null,2)};
