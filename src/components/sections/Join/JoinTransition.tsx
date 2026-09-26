@@ -14,6 +14,11 @@ export function JoinTransition() {
     let exiting = false;
     const position = { value: 0 };
     const update = () => {
+      // The fully opaque shelf masks Join as it begins sliding. Keep Join
+      // hidden throughout About, the prism, and the settled browsing hold.
+      const visible = position.value > 0;
+      join.style.visibility = visible ? "visible" : "hidden";
+      join.style.opacity = visible ? "1" : "0";
       const leaving = position.value > 0.015;
       const arrived = position.value >= 0.98;
       about.dataset.joinExit = leaving ? "true" : "false";
@@ -45,6 +50,8 @@ export function JoinTransition() {
       delete about.dataset.joinExit;
       shelf.style.removeProperty("pointer-events");
       join.style.removeProperty("pointer-events");
+      join.style.removeProperty("opacity");
+      join.style.removeProperty("visibility");
       shelf.inert = true;
       join.inert = true;
     };
