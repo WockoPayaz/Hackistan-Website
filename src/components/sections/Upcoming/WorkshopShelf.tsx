@@ -86,7 +86,7 @@ export function WorkshopShelf({ items }: { items: readonly ShelfItem[] }) {
       <h3>{openItem.title}</h3>
       <p className={styles.date}>{openItem.dateLabel}</p>
       <p>{openItem.shortDescription}</p>
-      {openItem.href ? <a href={openItem.href} target={openItem.external ? "_blank" : undefined} rel={openItem.external ? "noopener noreferrer" : undefined}>{openItem.ctaLabel}</a> : <span className={styles.pending}>{openItem.ctaLabel}</span>}
+      {openItem.href ? <a className={styles.actionLink} href={openItem.href} target={openItem.external ? "_blank" : undefined} rel={openItem.external ? "noopener noreferrer" : undefined} aria-label={`${openItem.ctaLabel} — ${openItem.title}${openItem.external ? " (opens in a new tab)" : ""}`}>{openItem.ctaLabel}</a> : <span className={styles.pending}>{openItem.ctaLabel}</span>}
     </div>}
     <ol className={`${styles.catalog} ${ready && !failed ? styles.catalogAccessible : ""}`} aria-label="Upcoming shelf catalog">
       {items.map((item, index) => <li key={item.id}>
