@@ -1,5 +1,5 @@
 import {
-  CanvasTexture, DoubleSide, EdgesGeometry, ExtrudeGeometry, Group, LinearFilter,
+  CanvasTexture, DoubleSide, EdgesGeometry, ExtrudeGeometry, Group, LinearFilter, NoColorSpace,
   LineBasicMaterial, LineSegments, Mesh, MeshBasicMaterial, OrthographicCamera,
   PerspectiveCamera, PlaneGeometry, Scene, ShaderMaterial, SRGBColorSpace,
   Vector2, Vector3, WebGLRenderer,
@@ -21,10 +21,12 @@ export type PrismFrame = {
   warp: number;
   chromatic: number;
   rainbow: number;
+  shelfMix: number;
 };
 
 export type PrismSurface = {
   projectLeftWall: (markSize: number, yaw: number, scale: number) => PrismQuad;
+  setShelfSource: (canvas: HTMLCanvasElement) => void;
   render: (frame: PrismFrame) => void;
   dispose: () => void;
 };
@@ -39,6 +41,7 @@ void main() { gl_Position = vec4(position.xy, 0.0, 1.0); }
 const fragmentShader = `
 precision highp float;
 uniform sampler2D uBackdrop;
+uniform sampler2D uShelf;
 uniform vec2 uResolution;
 uniform vec2 uA;
 uniform vec2 uB;
@@ -50,6 +53,7 @@ uniform float uPanel;
 uniform float uWarp;
 uniform float uChromatic;
 uniform float uRainbow;
+uniform float uShelfMix;
 uniform float uDpr;
 
 void main() {
@@ -72,11 +76,17 @@ void main() {
   );
   vec2 warped = clamp(uv + bend * (0.028 * uWarp), 0.002, 0.998);
   vec2 split = vec2(uChromatic, 0.0) * (0.7 + 0.3 * sin(uv.x * 9.0 + uv.y * 6.0));
-  vec3 destination = vec3(
+  vec3 generated = vec3(
     texture2D(uBackdrop, clamp(warped + split, 0.002, 0.998)).r,
     texture2D(uBackdrop, warped).g,
     texture2D(uBackdrop, clamp(warped - split, 0.002, 0.998)).b
   );
+  vec3 shelf = vec3(
+    texture2D(uShelf, clamp(warped + split, 0.002, 0.998)).r,
+    texture2D(uShelf, warped).g,
+    texture2D(uShelf, clamp(warped - split, 0.002, 0.998)).b
+  );
+  vec3 destination = mix(generated, shelf, uShelfMix);
 
   float edgeDistance = min(abs(left), abs(right));
   float core = exp(-pow(edgeDistance / (1.7 * uDpr), 2.0)) * cap;
@@ -149,15 +159,17 @@ export function createPrismSurface(canvas: HTMLCanvasElement): PrismSurface | nu
     let shaderFailed = false;
     renderer.debug.onShaderError = () => { shaderFailed = true; };
     const texture = makeBackdrop();
+    let shelfTexture: CanvasTexture | null = null;
     const uniforms = {
       uBackdrop: { value: texture },
+      uShelf: { value: texture },
       uResolution: { value: new Vector2(1, 1) },
       uA: { value: new Vector2() }, uB: { value: new Vector2() },
       uC: { value: new Vector2() }, uD: { value: new Vector2() },
       uTakeover: { value: 0 },
       uRail: { value: 0 }, uPanel: { value: 0 },
       uWarp: { value: 0 }, uChromatic: { value: 0 },
-      uRainbow: { value: 0 }, uDpr: { value: 1 },
+      uRainbow: { value: 0 }, uShelfMix: { value: 0 }, uDpr: { value: 1 },
     };
     const material = new ShaderMaterial({ vertexShader, fragmentShader, uniforms, transparent: true, depthTest: false, depthWrite: false });
     const geometry = new PlaneGeometry(2, 2);
@@ -206,6 +218,18 @@ export function createPrismSurface(canvas: HTMLCanvasElement): PrismSurface | nu
     };
 
     return {
+      setShelfSource(source) {
+        if (shelfTexture?.image === source) return;
+        shelfTexture?.dispose();
+        shelfTexture = new CanvasTexture(source);
+        // The source is already an sRGB WebGL framebuffer. The custom shader
+        // writes its sampled values directly during the final crossfade.
+        shelfTexture.colorSpace = NoColorSpace;
+        shelfTexture.minFilter = LinearFilter;
+        shelfTexture.magFilter = LinearFilter;
+        shelfTexture.generateMipmaps = false;
+        uniforms.uShelf.value = shelfTexture;
+      },
       projectLeftWall(markSize, yaw, scale) {
         const width = canvas.clientWidth, height = canvas.clientHeight;
         configureCamera(markSize, width, height);
@@ -242,6 +266,8 @@ export function createPrismSurface(canvas: HTMLCanvasElement): PrismSurface | nu
         uniforms.uWarp.value = frame.warp;
         uniforms.uChromatic.value = frame.chromatic;
         uniforms.uRainbow.value = frame.rainbow;
+        uniforms.uShelfMix.value = shelfTexture ? frame.shelfMix : 0;
+        if (shelfTexture && frame.shelfMix > 0) shelfTexture.needsUpdate = true;
         uniforms.uDpr.value = dpr;
         configureCamera(frame.markSize, width, height);
         group.rotation.y = frame.yaw;
@@ -265,6 +291,7 @@ export function createPrismSurface(canvas: HTMLCanvasElement): PrismSurface | nu
         geometry.dispose();
         material.dispose();
         texture.dispose();
+        shelfTexture?.dispose();
         renderer.dispose();
         renderer.forceContextLoss();
       },
