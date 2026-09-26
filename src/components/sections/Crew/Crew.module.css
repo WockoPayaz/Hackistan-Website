@@ -1,0 +1,48 @@
+.section { position: relative; z-index: 5; isolation: isolate; min-height: 100svh; background: #0b0c0d; color: #f2f0ea; }
+.inner { padding-block: max(116px, 12svh) clamp(5rem, 8svh, 9rem); }
+.topRule { height: 1px; background: rgb(242 240 234 / 22%); }
+.intro { display: flex; justify-content: space-between; gap: 3rem; margin-block: clamp(2rem, 4svh, 4rem) clamp(2rem, 4svh, 4rem); }
+.index, .readout, .role, .portraitNumber, .portraitTicks, .placeholderLabel, .bio a { font-size: .65rem; font-weight: 500; letter-spacing: .2em; line-height: 1.4; }
+.index { margin: 0 0 clamp(1.25rem, 2svh, 2rem); }
+.intro h2 { margin: 0; font-size: clamp(3rem, 4.45vw, 6.25rem); font-weight: 500; line-height: .98; letter-spacing: -.065em; }
+.lead { margin: clamp(1rem, 2svh, 1.6rem) 0 0; color: #bec0bc; font-size: clamp(.85rem, 1vw, 1rem); letter-spacing: .1em; line-height: 1.5; }
+.readout { display: grid; align-content: center; justify-items: end; gap: .65rem; min-width: 13rem; color: #9a9d9a; white-space: nowrap; text-align: right; }
+.grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.member { position: relative; display: flex; flex-direction: column; min-width: 0; padding-inline: clamp(.75rem, 1.6vw, 1.75rem); }
+.member:not(:first-child)::before { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 1px; background: rgb(242 240 234 / 22%); }
+.portrait { position: relative; flex: none; width: 100%; aspect-ratio: 1; overflow: hidden; border: 1px solid #595d5b; background: #171a1a; }
+.portrait img { display: block; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.08); transition: filter .5s ease, transform .5s ease; }
+.portraitNumber, .portraitTicks { position: absolute; z-index: 1; top: 1rem; color: #f2f0ea; text-shadow: 0 1px 8px #0b0c0d; }
+.portraitNumber { left: 1rem; }
+.portraitTicks { right: 1rem; }
+.placeholder { background: radial-gradient(ellipse at 58% 30%, #292d2c, transparent 65%), linear-gradient(145deg, #1e2221, #0d0f0e 75%); }
+.placeholder::before, .placeholder::after { content: ""; position: absolute; background: rgb(242 240 234 / 9%); }
+.placeholder::before { top: 50%; left: 0; right: 0; height: 1px; }
+.placeholder::after { left: 50%; top: 0; bottom: 0; width: 1px; }
+.placeholderLabel { position: absolute; z-index: 1; left: 0; right: 0; bottom: 1rem; color: #a0a4a0; text-align: center; }
+.bio { display: flex; flex: 1; flex-direction: column; padding-top: 1.15rem; }
+.bio h3 { margin: 0; font-size: clamp(1rem, 1.15vw, 1.35rem); font-weight: 550; line-height: 1.2; letter-spacing: .13em; }
+.role { min-height: 2.7em; margin: .85rem 0 0; text-transform: uppercase; }
+.shortRule { width: 2.25rem; height: 1px; margin: .5rem 0 .9rem; background: #b9bcb7; }
+.description { min-height: 6.2rem; max-width: 34ch; margin: 0; color: #aeb1ad; font-size: clamp(.82rem, .94vw, 1rem); line-height: 1.52; }
+.bio a { align-self: flex-start; min-height: 44px; margin-top: .5rem; padding-top: .65rem; color: #f2f0ea; text-decoration: underline; text-underline-offset: .4em; }
+.bio a:focus-visible { outline: 2px solid #f2f0ea; outline-offset: 4px; }
+@media (hover: hover) { .member:hover .portrait img { filter: grayscale(.86) contrast(1.12); transform: scale(1.012); } }
+@media (max-width: 1023px) { .intro h2 { font-size: clamp(2.6rem, 4.6vw, 4rem); } .readout { min-width: 9rem; } }
+@media (max-width: 767px) {
+  .inner { padding-block: 96px 5rem; }
+  .intro { display: block; margin-block: 1.5rem 2.5rem; }
+  .intro h2 { font-size: clamp(2.6rem, 10vw, 4.5rem); line-height: .95; }
+  .intro h2 span { display: block; }
+  .lead { max-width: 33ch; font-size: .9rem; letter-spacing: .025em; }
+  .readout { display: none; }
+  .grid { display: block; }
+  .member { padding: 0; }
+  .member + .member { margin-top: 3.25rem; }
+  .member:not(:first-child)::before { display: none; }
+  .member + .member::after { content: ""; position: absolute; top: -1.65rem; left: 0; right: 0; height: 1px; background: rgb(242 240 234 / 22%); }
+  .bio { padding-top: 1rem; }
+  .bio h3 { font-size: 1.15rem; }
+  .role { min-height: 0; margin-top: .65rem; }
+  .description { min-height: 0; max-width: 40ch; font-size: .9rem; }
+}
