@@ -23,17 +23,32 @@ export function PrismTransition() {
     const descriptions = section?.querySelectorAll<HTMLElement>("[data-about-description]");
     const canvas = section?.querySelector<HTMLCanvasElement>("[data-prism-canvas]");
     const fallback = section?.querySelector<HTMLElement>("[data-prism-fallback]");
-    const destination = section?.querySelector<HTMLElement>("[data-prism-destination]");
-    if (!section || !scene || !outline || !grid || !pluses || !index || !canvas || !fallback || !destination || !lines || !descriptions) return;
+    const shelf = section?.querySelector<HTMLElement>("[data-upcoming]");
+    const shelfCanvas = shelf?.querySelector<HTMLCanvasElement>("[data-shelf-canvas]");
+    if (!section || !scene || !outline || !grid || !pluses || !index || !canvas || !fallback || !shelf || !shelfCanvas || !lines || !descriptions) return;
 
     let surface: PrismSurface | null = null;
     let contextLost = false;
     let disposed = false;
     let progress = 0;
+    let shelfInteractive = false;
     const position = { value: 0 };
 
     const update = () => {
       progress = position.value;
+      const shelfReady = shelf.dataset.shelfReady === "true";
+      if (surface && shelfReady) surface.setShelfSource(shelfCanvas);
+      shelf.style.opacity = String(smooth(0.84, 0.94, progress));
+      const interactive = progress >= 0.98;
+      shelf.style.pointerEvents = interactive ? "auto" : "none";
+      shelf.inert = !interactive;
+      if (shelfInteractive && !interactive) window.dispatchEvent(new Event("hackistan:shelf-exit"));
+      shelfInteractive = interactive;
+      // The live shelf is already behind this canvas. At the end, dissolve
+      // its aligned distorted capture into the actual interactive scene.
+      const prismOpacity = 1 - smooth(0.95, 1, progress);
+      canvas.style.opacity = String(prismOpacity);
+      fallback.style.opacity = String(prismOpacity);
       const mobile = window.matchMedia("(max-width: 767px)").matches;
       const yaw = (mobile ? 65 : 70) * Math.PI / 180 * smooth(0.2, 0.44, progress);
       const scale = 1 + (mobile ? 1.2 : 1.6) * smooth(0.38, 0.68, progress);
@@ -89,6 +104,7 @@ export function PrismTransition() {
         warp: peak * (mobile ? 0.83 : 1),
         chromatic: peak * (mobile ? 0.008 : 0.012),
         rainbow: smooth(0.3, 0.42, progress) * (1 - smooth(0.83, 1, progress)),
+        shelfMix: shelfReady ? smooth(0.8, 0.96, progress) : 0,
       };
 
       if (progress <= 0.17) {
@@ -122,9 +138,11 @@ export function PrismTransition() {
     };
     const onVisibility = () => { if (!document.hidden) update(); };
     const onResize = () => update();
+    const onShelfReady = () => update();
     canvas.addEventListener("webglcontextlost", onContextLost);
     document.addEventListener("visibilitychange", onVisibility);
     window.addEventListener("resize", onResize);
+    window.addEventListener("hackistan:shelf-ready", onShelfReady);
 
     // Prepare the optional GPU scene as About approaches, well before its
     // pinned hold ends. Keep the rest of the homepage free of this context.
@@ -162,8 +180,7 @@ export function PrismTransition() {
         .fromTo(lines, { clipPath: "inset(0 0% 0 0)" }, { clipPath: "inset(0 100% 0 0)", duration: 0.08, stagger: 0.005, immediateRender: false }, 0.08)
         .fromTo(index, { opacity: 1 }, { opacity: 0, duration: 0.06, immediateRender: false }, 0.12)
         .fromTo([grid, pluses], { opacity: 1 }, { opacity: 0.28, duration: 0.14, immediateRender: false }, 0.14)
-        .to([grid, pluses], { opacity: 0, duration: 0.12 }, 0.76)
-        .to(destination, { opacity: 1, duration: 0.1 }, 0.9);
+        .to([grid, pluses], { opacity: 0, duration: 0.12 }, 0.76);
     }, section);
 
     update();
@@ -172,12 +189,18 @@ export function PrismTransition() {
       observer?.disconnect();
       context.revert();
       window.removeEventListener("resize", onResize);
+      window.removeEventListener("hackistan:shelf-ready", onShelfReady);
       document.removeEventListener("visibilitychange", onVisibility);
       canvas.removeEventListener("webglcontextlost", onContextLost);
       outline.style.removeProperty("opacity");
       canvas.style.removeProperty("visibility");
+      canvas.style.removeProperty("opacity");
       fallback.style.removeProperty("visibility");
+      fallback.style.removeProperty("opacity");
       fallback.style.removeProperty("clip-path");
+      shelf.style.removeProperty("opacity");
+      shelf.style.removeProperty("pointer-events");
+      shelf.inert = true;
       surface?.dispose();
     };
   }, []);

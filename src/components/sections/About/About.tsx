@@ -1,4 +1,6 @@
 import { markGeometry } from "@/components/brand/geometry";
+import { shelfItems } from "@/data/shelfItems";
+import { WorkshopShelf } from "@/components/sections/Upcoming/WorkshopShelf";
 import { AboutTransition } from "./AboutTransition";
 import { PrismTransition } from "./PrismTransition";
 import styles from "./About.module.css";
@@ -31,9 +33,9 @@ export function About() {
               <a className={`${styles.externalLink} eyebrow`} data-about-description href="https://hackclub.com/" target="_blank" rel="noopener noreferrer" aria-label="Explore Hack Club (opens in a new tab)">Explore Hack Club <span aria-hidden="true">↗</span></a>
             </div>
           </div>
+          <WorkshopShelf items={shelfItems} />
           <div className={styles.prismFallback} data-prism-fallback aria-hidden="true" />
           <canvas className={styles.prismCanvas} data-prism-canvas aria-hidden="true" />
-          <div className={styles.destination} data-prism-destination aria-hidden="true"><span className={styles.destinationLabel}>03 / UPCOMING</span></div>
         </div>
       </div>
     </div>
