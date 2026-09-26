@@ -19,7 +19,7 @@ export function Join() {
       <div className={styles.intro}>
         <span className={styles.index}>04 / JOIN</span>
         <h2 id="join-title">BUILD<br />WITH US.</h2>
-        <p>Hackistan is open to students aged 13–18 in Quetta who are interested in building things. No prior experience is required — just curiosity and a willingness to learn by making.</p>
+        <p>Hackistan is open to students aged 13–18 in Quetta who are interested in building things. No prior experience is required. Just curiosity and a willingness to learn by making.</p>
         <a className={styles.cta} href="https://clubs.hackclub.com/auth/member?join=J55HAA" target="_blank" rel="noopener noreferrer" aria-label="Apply to join through the official Hack Club application (opens in a new tab)">APPLY TO JOIN <span aria-hidden="true">↗</span></a>
         <span className={styles.ctaLabel}>OFFICIAL HACK CLUB APPLICATION</span>
       </div>

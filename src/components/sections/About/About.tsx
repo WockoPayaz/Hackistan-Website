@@ -8,7 +8,7 @@ import { PrismTransition } from "./PrismTransition";
 import styles from "./About.module.css";
 
 export function About() {
-  return <section id="about" className={styles.section} aria-labelledby="about-title" data-about>
+  return <section id="about" className={styles.section} aria-labelledby="about-title" data-about tabIndex={-1}>
     <AboutTransition />
     <PrismTransition />
     <JoinTransition />

@@ -1,8 +1,9 @@
-import { aboutHoldEnd, joinSettledOffset, prismScrollDistance } from "@/components/sections/About/aboutScroll";
+import { aboutEntranceDistance, aboutHoldEnd, joinSettledOffset, prismScrollDistance } from "@/components/sections/About/aboutScroll";
 
 export function sectionScrollTop(id: string): number | undefined {
   const section = document.getElementById(id);
   if (!section) return;
+  if (id === "about") return section.getBoundingClientRect().top + window.scrollY + aboutEntranceDistance();
   if (id === "upcoming" || id === "join") {
     const about = section.closest<HTMLElement>("[data-about]");
     if (about) {
