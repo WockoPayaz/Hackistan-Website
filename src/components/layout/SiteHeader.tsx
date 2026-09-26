@@ -33,6 +33,7 @@ export function SiteHeader() {
 
   return (
     <>
+      <div className={styles.headerBacking} aria-hidden="true" />
       <header className={styles.header}>
         <a href="#top" className={styles.home} aria-label="Hackistan — back to top"><span className={styles.headerMark}><HackistanMark /></span><span>Hackistan</span></a>
         <button type="button" ref={button} className={`${styles.menuButton} eyebrow`} aria-haspopup="dialog" aria-expanded={open} aria-controls="site-menu" onClick={() => setOpen(true)}><span>Menu</span><span className={styles.plus} aria-hidden="true">+</span></button>
@@ -50,6 +51,7 @@ export function SiteHeader() {
         <nav aria-label="Main navigation" className={styles.menuLinks}>
           <a href="#top" onClick={(event) => navigate(event, "top")}><span className="eyebrow muted">00</span><span>Top</span><span className={styles.navArrow} aria-hidden="true">↗</span></a>
           <a href="#now" onClick={(event) => navigate(event, "now")}><span className="eyebrow muted">01</span><span>Now</span><span className={styles.navArrow} aria-hidden="true">↘</span></a>
+          <a href="#upcoming" onClick={(event) => navigate(event, "upcoming")}><span className="eyebrow muted">03</span><span>Upcoming<small className={styles.navMeta}>Workshops / YSWS</small></span><span className={styles.navArrow} aria-hidden="true">↘</span></a>
         </nav>
         <p className={`${styles.menuEnd} eyebrow muted`}>Student-led. Built in Quetta.</p>
       </dialog>
