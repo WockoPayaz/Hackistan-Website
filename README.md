@@ -17,11 +17,11 @@ npm run build
 
 ## Content and assets
 
-- `src/data/workshops.ts` supplies the current workshop. Its credited Hack Club / Outernet image is community reference photography, not a claim to depict a Hackistan workshop. Replace it when local photography is available. Source: https://hackclub.com/press/
+- `src/data/workshops.ts` supplies the current Boba Drops workshop. Its color banner is `public/images/boba-drops.webp`.
 - `src/data/shelfItems.ts` supplies the Upcoming books. Their cover artwork lives in `public/shelf/covers/`.
 - `src/data/crew.ts` supplies the public roster. Portraits live in `public/crew/`; missing files use a neutral placeholder at build time.
 - Geist is self-hosted. Its SIL Open Font License is in `public/fonts/OFL.txt`.
 
 ## Launch URLs
 
-Set `NEXT_PUBLIC_SITE_URL` to the confirmed HTTPS production origin before the final production build, for example `https://<confirmed-domain>`. The build then emits an absolute canonical URL and absolute Open Graph/Twitter image URLs for `public/og-image.png`. Do not set it to a preview deployment URL. `public/robots.txt` works without a domain; add a sitemap after the public production origin is confirmed.
+The production origin is `https://hackistan.vercel.app`. Static builds emit a canonical URL, Open Graph/Twitter image URLs, `robots.txt`, and a homepage-only `sitemap.xml` from that origin by default. If Hackistan later moves to a custom domain, set `NEXT_PUBLIC_SITE_URL` to its HTTPS origin at build time. Do not set it to a preview deployment URL.

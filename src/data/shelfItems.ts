@@ -38,10 +38,10 @@ export const shelfItems: readonly ShelfItem[] = [
 
   status: "current",
   statusLabel: "UP NEXT",
-  dateLabel: "DATE TO BE ANNOUNCED",
+  dateLabel: "05–09 OCT 2026",
 
   shortDescription:
-    "Build your own personal website with HTML & CSS, publish it online, and submit it through Boba Drops.",
+    "Build and publish your own website with HTML, then submit it through Boba Drops.",
 
   coverImage: "/shelf/covers/boba-drops.webp",
 

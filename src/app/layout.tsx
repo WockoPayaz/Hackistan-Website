@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { SiteHeader } from "@/components/layout/SiteHeader";
+import { siteOrigin } from "@/lib/site-url";
 import "@/styles/tokens.css";
 import "@/styles/reset.css";
 import "@/styles/typography.css";
@@ -15,26 +16,23 @@ const geist = localFont({
   preload: true,
 });
 
-// Set this at build time once the public production domain is confirmed.
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/$/, "");
-const metadataBase = siteUrl && /^https:\/\/[^/]+$/.test(siteUrl) ? new URL(siteUrl) : undefined;
 const description = "Hackistan is a student-led Hack Club maker community in Quetta, Pakistan. Explore what we're building, workshops, and ways to join.";
 
 export const metadata: Metadata = {
   title: "Hackistan",
   description,
   applicationName: "Hackistan",
-  metadataBase,
-  ...(metadataBase ? { alternates: { canonical: "/" } } : {}),
+  metadataBase: new URL(siteOrigin),
+  alternates: { canonical: "/" },
   icons: { icon: "/brand/hackistan-icon.svg" },
   openGraph: {
     title: "Hackistan | Student-led in Quetta", description, type: "website", locale: "en_PK", siteName: "Hackistan",
-    ...(metadataBase ? { url: "/", images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Hackistan — Student-led. Built in Quetta." }] } : {}),
+    url: "/", images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Hackistan — Student-led. Built in Quetta." }],
   },
   twitter: {
-    card: metadataBase ? "summary_large_image" : "summary",
+    card: "summary_large_image",
     title: "Hackistan | Student-led in Quetta", description,
-    ...(metadataBase ? { images: ["/og-image.png"] } : {}),
+    images: ["/og-image.png"],
   },
   robots: { index: true, follow: true },
 };
