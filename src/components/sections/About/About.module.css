@@ -1,5 +1,5 @@
 .section { position: relative; z-index: 4; margin-top: -100svh; }
-.runway { position: relative; height: 300svh; }
+.runway { position: relative; height: 485svh; }
 .scene { position: sticky; top: 0; height: 100svh; overflow: clip; isolation: isolate; pointer-events: none; }
 .world { position: absolute; inset: 0; overflow: clip; background: #f2f0ea; --grid-cell: 22px; --plus-cell: calc(4 * var(--grid-cell)); }
 .gridPlane, .plusPlane { position: absolute; pointer-events: none; top: -100svh; height: 400svh; will-change: transform; }
@@ -23,6 +23,11 @@
 .mobileCopy { display: none; }
 .externalLink { display: inline-flex; gap: 0.55em; align-items: center; min-height: 44px; margin-top: 0.7rem; color: #151718; pointer-events: auto; text-underline-offset: 4px; }
 .externalLink:hover { text-decoration: underline; }
+.prismFallback, .prismCanvas, .destination { position: absolute; inset: 0; pointer-events: none; }
+.prismFallback { z-index: 5; visibility: hidden; background: #111519; clip-path: polygon(50% 50%, 50% 50%, 50% 50%, 50% 50%); }
+.prismCanvas { z-index: 6; visibility: hidden; width: 100%; height: 100%; }
+.destination { z-index: 7; display: flex; align-items: flex-end; padding: 0 var(--page-x) max(3rem, 8svh); opacity: 0; color: #f2f0ea; }
+.destinationLabel { font-size: clamp(1.125rem, 1.8vw, 2rem); font-weight: 450; letter-spacing: -0.04em; }
 
 @media (max-width: 1023px) {
   .hackistan { top: 58%; width: 32vw; }
@@ -31,10 +36,10 @@
   .hackistan p, .hackClub p { font-size: clamp(1rem, 1.7vw, 1.2rem); }
 }
 @media (max-width: 767px) {
-  .runway { height: 270svh; }
+  .runway { height: 455svh; }
   .world { --grid-cell: 20px; }
   .plusPlane { background-image: url('/about-plus-tile-mobile.svg'); }
-  .outline { width: min(36svh, 84vw); height: min(36svh, 84vw); top: 50%; left: 50%; transform: translate(-50%, -50%); }
+  .outline { width: min(36svh, 84vw); height: min(36svh, 84vw); }
   .index { top: calc(80px + 12px); font-size: 10px; }
   .hackistan, .hackClub { width: min(88vw, 100%); }
   .hackistan { top: calc(80px + 40px); left: 0; transform: none; }
