@@ -5,7 +5,7 @@ import styles from "./Crew.module.css";
 
 function Member({ member }: { member: CrewMember }) {
   const portrait = member.image && existsSync(path.join(process.cwd(), "public", member.image.slice(1))) ? member.image : null;
-  const nameProvided = !/^MEMBER 0[1-4]$/.test(member.name);
+  const nameProvided = !/^MEMBER \d+$/.test(member.name);
   return <article className={styles.member}>
     <div className={`${styles.portrait} ${portrait ? styles.hasPortrait : styles.placeholder}`}>
       <span className={styles.portraitNumber} aria-hidden="true">{member.number}</span>
