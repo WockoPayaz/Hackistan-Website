@@ -2,7 +2,7 @@
 
 import { useLayoutEffect } from "react";
 import { gsap } from "@/lib/gsap";
-import { aboutHoldEnd } from "./aboutScroll";
+import { aboutEntranceDistance, aboutHoldEnd } from "./aboutScroll";
 
 /** A scroll-scrubbed light reveal, then two independent vertical field layers. */
 export function AboutTransition() {
@@ -17,8 +17,7 @@ export function AboutTransition() {
 
     const hackistanLines = headings[0].querySelectorAll<HTMLElement>("[data-about-heading-line]");
     const clubLines = headings[1].querySelectorAll<HTMLElement>("[data-about-heading-line]");
-    const entranceDistance = () => window.innerHeight;
-    const entranceTrigger = { trigger: section, start: "top top", end: () => "+=" + entranceDistance(), scrub: true, invalidateOnRefresh: true };
+    const entranceTrigger = { trigger: section, start: "top top", end: () => "+=" + aboutEntranceDistance(), scrub: true, invalidateOnRefresh: true };
 
     const context = gsap.context(() => {
       // The section overlaps NOW's final viewport. The complete light world
@@ -37,7 +36,7 @@ export function AboutTransition() {
 
       const holdTrigger = {
         trigger: section,
-        start: () => "top top-=" + entranceDistance(),
+        start: () => "top top-=" + aboutEntranceDistance(),
         end: () => "top top-=" + aboutHoldEnd(),
         scrub: 0.6,
         invalidateOnRefresh: true,

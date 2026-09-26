@@ -1,14 +1,16 @@
-import { aboutHoldEnd, prismScrollDistance } from "@/components/sections/About/aboutScroll";
+import { aboutEntranceDistance, aboutHoldEnd, joinSettledOffset, prismScrollDistance } from "@/components/sections/About/aboutScroll";
 
 export function sectionScrollTop(id: string): number | undefined {
   const section = document.getElementById(id);
   if (!section) return;
-  if (id === "upcoming") {
+  if (id === "about") return section.getBoundingClientRect().top + window.scrollY + aboutEntranceDistance();
+  if (id === "upcoming" || id === "join") {
     const about = section.closest<HTMLElement>("[data-about]");
     if (about) {
-      // The shelf is nested in About's sticky scene. Its DOM rectangle is
-      // unchanged during the prism, so use the ScrollTrigger's actual end.
-      return about.getBoundingClientRect().top + window.scrollY + aboutHoldEnd() + prismScrollDistance();
+      // Both destinations live in the pinned scene, so their DOM rectangles
+      // cannot express the end of their respective scroll transitions.
+      return about.getBoundingClientRect().top + window.scrollY +
+        (id === "join" ? joinSettledOffset() : aboutHoldEnd() + prismScrollDistance());
     }
   }
   const journey = section.closest<HTMLElement>("[data-journey]");

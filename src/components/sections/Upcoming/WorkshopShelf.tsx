@@ -19,7 +19,7 @@ export function WorkshopShelf({ items }: { items: readonly ShelfItem[] }) {
     if (!element || !target || items.length === 0) return;
     let disposed = false;
     let started = false;
-    const onExit = () => controller.current?.close();
+    const onExit = () => controller.current?.prepareExit();
     window.addEventListener("hackistan:shelf-exit", onExit);
     const start = () => {
       if (started) return;

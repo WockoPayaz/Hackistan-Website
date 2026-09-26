@@ -1,14 +1,17 @@
 import { markGeometry } from "@/components/brand/geometry";
 import { shelfItems } from "@/data/shelfItems";
 import { WorkshopShelf } from "@/components/sections/Upcoming/WorkshopShelf";
+import { Join } from "@/components/sections/Join/Join";
+import { JoinTransition } from "@/components/sections/Join/JoinTransition";
 import { AboutTransition } from "./AboutTransition";
 import { PrismTransition } from "./PrismTransition";
 import styles from "./About.module.css";
 
 export function About() {
-  return <section id="about" className={styles.section} aria-labelledby="about-title" data-about>
+  return <section id="about" className={styles.section} aria-labelledby="about-title" data-about tabIndex={-1}>
     <AboutTransition />
     <PrismTransition />
+    <JoinTransition />
     <div className={styles.runway} data-about-runway>
       <div className={styles.scene} data-about-scene>
         <div className={styles.world} data-about-world>
@@ -33,6 +36,7 @@ export function About() {
               <a className={`${styles.externalLink} eyebrow`} data-about-description href="https://hackclub.com/" target="_blank" rel="noopener noreferrer" aria-label="Explore Hack Club (opens in a new tab)">Explore Hack Club <span aria-hidden="true">↗</span></a>
             </div>
           </div>
+          <Join />
           <WorkshopShelf items={shelfItems} />
           <div className={styles.prismFallback} data-prism-fallback aria-hidden="true" />
           <canvas className={styles.prismCanvas} data-prism-canvas aria-hidden="true" />

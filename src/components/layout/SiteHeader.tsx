@@ -51,7 +51,9 @@ export function SiteHeader() {
         <nav aria-label="Main navigation" className={styles.menuLinks}>
           <a href="#top" onClick={(event) => navigate(event, "top")}><span className="eyebrow muted">00</span><span>Top</span><span className={styles.navArrow} aria-hidden="true">↗</span></a>
           <a href="#now" onClick={(event) => navigate(event, "now")}><span className="eyebrow muted">01</span><span>Now</span><span className={styles.navArrow} aria-hidden="true">↘</span></a>
+          <a href="#about" onClick={(event) => navigate(event, "about")}><span className="eyebrow muted">02</span><span>About</span><span className={styles.navArrow} aria-hidden="true">↘</span></a>
           <a href="#upcoming" onClick={(event) => navigate(event, "upcoming")}><span className="eyebrow muted">03</span><span>Upcoming<small className={styles.navMeta}>Workshops / YSWS</small></span><span className={styles.navArrow} aria-hidden="true">↘</span></a>
+          <a href="#join" onClick={(event) => navigate(event, "join")}><span className="eyebrow muted">04</span><span>Join<small className={styles.navMeta}>Membership</small></span><span className={styles.navArrow} aria-hidden="true">↘</span></a>
         </nav>
         <p className={`${styles.menuEnd} eyebrow muted`}>Student-led. Built in Quetta.</p>
       </dialog>

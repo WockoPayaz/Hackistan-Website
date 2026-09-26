@@ -6,6 +6,7 @@ export type ShelfController = {
   navigate: (direction: number) => void;
   open: (index: number) => void;
   close: () => void;
+  prepareExit: () => void;
   requestFrame: () => void;
   dispose: () => void;
 };
@@ -185,6 +186,18 @@ export async function createWorkshopShelfScene(canvas: HTMLCanvasElement, items:
     openTarget = 0;
     requestFrame();
   };
+  const prepareExit = () => {
+    if (wheelSettle) { clearTimeout(wheelSettle); wheelSettle = null; }
+    if (pointerStart && canvas.hasPointerCapture(pointerStart.id)) canvas.releasePointerCapture(pointerStart.id);
+    pointerStart = null;
+    delete canvas.dataset.dragging;
+    hoveredIndex = -1;
+    targetPosition = clamp(Math.round(targetPosition), 0, items.length - 1);
+    activeIndex = targetPosition;
+    events.onActive(activeIndex);
+    close();
+    requestFrame();
+  };
   const onPointerMove = (event: PointerEvent) => {
     if (openIndex !== null) return;
     if (pointerStart && event.pointerId === pointerStart.id) {
@@ -268,7 +281,7 @@ export async function createWorkshopShelfScene(canvas: HTMLCanvasElement, items:
   if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
   frame(performance.now());
   return {
-    navigate, open, close, requestFrame,
+    navigate, open, close, prepareExit, requestFrame,
     dispose() {
       disposed = true;
       if (rafId) cancelAnimationFrame(rafId);
