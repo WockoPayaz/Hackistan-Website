@@ -14,8 +14,8 @@ export function CurrentWorkshop({ workshop }: { workshop?: Workshop }) {
         <div className={styles.kicker} data-now-reveal><p className="eyebrow">Current workshop</p><p className="eyebrow muted">{workshop.tags.join(" / ")}</p></div>
         <figure className={styles.figure}>
           <div className={styles.media} data-workshop-media>
-            {workshop.coverImage ? <Image src={workshop.coverImage} alt={workshop.coverAlt ?? workshop.title} fill sizes="(max-width: 767px) 90vw, (max-width: 1023px) 85vw, 66vw" className={styles.image} loading="lazy" data-workshop-image /> : <div className={styles.mediaFallback}><span className="eyebrow">Work in progress</span></div>}
-            <span className={`${styles.mediaIndex} eyebrow`} aria-hidden="true">In good company.</span>
+            {workshop.coverImage ? <Image src={workshop.coverImage} alt={workshop.coverAlt ?? workshop.title} fill sizes="(max-width: 767px) 90vw, (max-width: 1023px) 85vw, 66vw" className={`${styles.image} ${workshop.coverImage === "/images/boba-drops.webp" ? styles.imageGraphic : ""}`} unoptimized={workshop.coverImage === "/images/boba-drops.webp"} loading="lazy" data-workshop-image /> : <div className={styles.mediaFallback}><span className="eyebrow">Work in progress</span></div>}
+            <span className={`${styles.mediaIndex} eyebrow`} aria-hidden="true">WORKSHOP 01</span>
           </div>
           {workshop.coverCredit && <figcaption className={styles.credit} data-now-reveal><a href={workshop.coverCredit.url} target="_blank" rel="noreferrer">{workshop.coverCredit.label}<span className="sr-only"> (opens in a new tab)</span></a></figcaption>}
         </figure>

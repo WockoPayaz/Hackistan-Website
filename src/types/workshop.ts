@@ -24,6 +24,7 @@ export interface Workshop {
   status: WorkshopStatus;
   startDate: string;
   endDate?: string;
+  difficulty?: string;
   session?: number;
   totalSessions?: number;
   tags: readonly string[];

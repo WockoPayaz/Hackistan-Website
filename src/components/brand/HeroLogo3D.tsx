@@ -275,13 +275,24 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       canvas.style.display = "";
       resize();
       onReadyChange(true);
+      requestFrame();
     };
     const visibilityObserver = new IntersectionObserver(([entry]) => {
       onScreen = entry.isIntersecting;
+      if (onScreen) { lastTime = performance.now(); requestFrame(); }
+      else if (frame) { cancelAnimationFrame(frame); frame = 0; }
     });
+    const onVisibility = () => {
+      if (document.hidden) { if (frame) cancelAnimationFrame(frame); frame = 0; }
+      else { lastTime = performance.now(); requestFrame(); }
+    };
+    const requestFrame = () => {
+      if (!frame && contextAvailable && onScreen && !document.hidden) frame = requestAnimationFrame(update);
+    };
     visibilityObserver.observe(hero);
     canvas.addEventListener("webglcontextlost", lost);
     canvas.addEventListener("webglcontextrestored", restored);
+    document.addEventListener("visibilitychange", onVisibility);
     window.addEventListener("pointermove", move, { passive: true });
     document.addEventListener("pointerout", leave);
     touchTarget.addEventListener("pointerdown", touchStart);
@@ -289,8 +300,9 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
     touchTarget.addEventListener("pointerup", touchEnd);
     touchTarget.addEventListener("pointercancel", touchEnd);
     const update = (time: number) => {
-      frame = requestAnimationFrame(update);
+      frame = 0;
       if (!contextAvailable || !onScreen || document.hidden) { lastTime = time; return; }
+      requestFrame();
       const elapsed = Math.min(0.05, (time - lastTime) / 1000);
       lastTime = time;
       const progress = getProgress();
@@ -320,7 +332,7 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       if (firstFrame && !shaderFailed) { firstFrame = false; onReadyChange(true); }
       if (shaderFailed) { contextAvailable = false; canvas.style.display = "none"; onReadyChange(false); }
     };
-    frame = requestAnimationFrame(update);
+    requestFrame();
 
     return () => {
       cancelAnimationFrame(frame);
@@ -337,6 +349,7 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       touchTarget.removeEventListener("pointercancel", touchEnd);
       canvas.removeEventListener("webglcontextlost", lost);
       canvas.removeEventListener("webglcontextrestored", restored);
+      document.removeEventListener("visibilitychange", onVisibility);
       for (const name of partNames) meshes[name].geometry.dispose();
       front.dispose();
       sides.dispose();
