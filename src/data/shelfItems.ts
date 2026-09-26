@@ -1,55 +1,321 @@
-import { getCurrentWorkshop } from "./workshops";
-
 export type ShelfItemKind = "workshop" | "ysws";
-export type ShelfItemStatus = "current" | "active" | "planned";
+export type ShelfItemStatus = "current" | "planned" | "active";
+export type ShelfItemGroup = "hackistan-workshops" | "featured-ysws";
 
 export type ShelfItem = {
   id: string;
   slug: string;
-  kind: ShelfItemKind;
-  status: ShelfItemStatus;
   title: string;
-  shortDescription: string;
+  kind: ShelfItemKind;
+  group: ShelfItemGroup;
+  status: ShelfItemStatus;
+  statusLabel: string;
   dateLabel: string;
+  shortDescription: string;
+  coverImage: string;
   href: string | null;
-  coverImage?: string;
-  logoImage?: string;
+  ctaLabel: string;
+  external: boolean;
+  sourceUrl: string;
+  spineLabel: string;
   color: string;
   foil: string;
   width: number;
   height: number;
   depth: number;
-  seed: number;
-  temporary?: boolean;
+  emphasis?: boolean;
 };
 
-const currentWorkshop = getCurrentWorkshop();
-const dateLabel = (date: string) => new Intl.DateTimeFormat("en", {
-  month: "short", day: "numeric", year: "numeric", timeZone: "UTC",
-}).format(new Date(`${date}T00:00:00Z`));
-
-/** Replace these isolated temporary entries when actual programs are confirmed. */
-const temporaryItems: ShelfItem[] = [
-  { id: "ysws-placeholder-01", slug: "ysws-placeholder-01", kind: "ysws", status: "active", title: "YSWS program 01", shortDescription: "Program information will be added when this Hack Club YSWS is confirmed.", dateLabel: "Details to follow", href: null, color: "#252c31", foil: "#e8e8e2", width: 0.93, height: 1.52, depth: 0.22, seed: 13, temporary: true },
-  { id: "ysws-placeholder-02", slug: "ysws-placeholder-02", kind: "ysws", status: "active", title: "YSWS program 02", shortDescription: "Program information will be added when this Hack Club YSWS is confirmed.", dateLabel: "Details to follow", href: null, color: "#354047", foil: "#f1efe7", width: 0.98, height: 1.58, depth: 0.25, seed: 21, temporary: true },
-  { id: "planned-placeholder-01", slug: "planned-placeholder-01", kind: "workshop", status: "planned", title: "Planned workshop 01", shortDescription: "The topic and schedule for this workshop are still being planned.", dateLabel: "Date to be announced", href: null, color: "#413a38", foil: "#f2f0ea", width: 1.00, height: 1.55, depth: 0.23, seed: 34, temporary: true },
-  { id: "planned-placeholder-02", slug: "planned-placeholder-02", kind: "workshop", status: "planned", title: "Planned workshop 02", shortDescription: "The topic and schedule for this workshop are still being planned.", dateLabel: "Date to be announced", href: null, color: "#323a38", foil: "#eeeae0", width: 0.95, height: 1.49, depth: 0.24, seed: 55, temporary: true },
-  { id: "planned-placeholder-03", slug: "planned-placeholder-03", kind: "workshop", status: "planned", title: "Planned workshop 03", shortDescription: "The topic and schedule for this workshop are still being planned.", dateLabel: "Date to be announced", href: null, color: "#393a42", foil: "#f2f0ea", width: 1.02, height: 1.61, depth: 0.26, seed: 89, temporary: true },
-];
-
+/** Final editorial order and values from the shelf manifest. */
 export const shelfItems: readonly ShelfItem[] = [
-  ...(currentWorkshop ? [{
-    id: currentWorkshop.id,
-    slug: currentWorkshop.slug,
-    kind: "workshop" as const,
-    status: "current" as const,
-    title: currentWorkshop.title,
-    shortDescription: currentWorkshop.shortDescription,
-    dateLabel: currentWorkshop.endDate ? `${dateLabel(currentWorkshop.startDate)} – ${dateLabel(currentWorkshop.endDate)}` : dateLabel(currentWorkshop.startDate),
-    href: currentWorkshop.href ?? null,
-    coverImage: "/images/web-workshop-960.webp",
-    color: "#202b30", foil: "#f2f0ea",
-    width: 1.06, height: 1.68, depth: 0.28, seed: 5,
-  }] : []),
-  ...temporaryItems,
+{
+  id: "boba-drops",
+  slug: "boba-drops",
+  title: "Boba Drops",
+
+  kind: "workshop",
+  group: "hackistan-workshops",
+
+  status: "current",
+  statusLabel: "UP NEXT",
+  dateLabel: "DATE TO BE ANNOUNCED",
+
+  shortDescription:
+    "Build your own personal website with HTML & CSS, publish it online, and submit it through Boba Drops.",
+
+  coverImage: "/shelf/covers/boba-drops.webp",
+
+  href: null,
+  ctaLabel: "DETAILS COMING SOON",
+  external: false,
+
+  sourceUrl: "https://boba.hackclub.com/",
+
+  spineLabel: "WORKSHOP 01",
+
+  color: "#B96717",
+  foil: "#F4D39B",
+
+  width: 1.04,
+  height: 1.64,
+  depth: 0.28,
+
+  emphasis: true
+},
+{
+  id: "vibes",
+  slug: "vibes",
+  title: "Vibes",
+
+  kind: "workshop",
+  group: "hackistan-workshops",
+
+  status: "planned",
+  statusLabel: "PLANNED",
+  dateLabel: "AFTER BOBA DROPS · DATE TBA",
+
+  shortDescription:
+    "Start with an AI-assisted website, edit the code yourself, and add your own features to make it truly yours.",
+
+  coverImage: "/shelf/covers/vibes.webp",
+
+  href: null,
+  ctaLabel: "DETAILS COMING SOON",
+  external: false,
+
+  sourceUrl: "https://vibes.hackclub.com/",
+
+  spineLabel: "WORKSHOP 02",
+
+  color: "#21132C",
+  foil: "#F2DFF0",
+
+  width: 1.10,
+  height: 1.51,
+  depth: 0.23
+},
+{
+  id: "fusering",
+  slug: "fusering",
+  title: "FuseRing",
+
+  kind: "workshop",
+  group: "hackistan-workshops",
+
+  status: "planned",
+  statusLabel: "PLANNED",
+  dateLabel: "AFTER VIBES · DATE TBA",
+
+  shortDescription:
+    "Design a custom keyring in CAD, follow the project requirements, and get your creation printed and shipped.",
+
+  coverImage: "/shelf/covers/fusering.webp",
+
+  href: null,
+  ctaLabel: "DETAILS COMING SOON",
+  external: false,
+
+  sourceUrl: "https://fusering.hackclub.com/",
+
+  spineLabel: "WORKSHOP 03",
+
+  color: "#C7899F",
+  foil: "#F7F0DE",
+
+  width: 0.98,
+  height: 1.48,
+  depth: 0.31
+},
+{
+  id: "stardance",
+  slug: "stardance",
+  title: "Stardance",
+
+  kind: "ysws",
+  group: "featured-ysws",
+
+  status: "active",
+  statusLabel: "FEATURED PROGRAM",
+  dateLabel: "HACK CLUB YSWS",
+
+  shortDescription:
+    "Build any technical project you want, share your work, and earn rewards for shipping what you make.",
+
+  coverImage: "/shelf/covers/stardance.webp",
+
+  href: "https://stardance.hackclub.com/home",
+  ctaLabel: "OPEN PROGRAM ↗",
+  external: true,
+
+  sourceUrl: "https://stardance.hackclub.com/home",
+
+  spineLabel: "YSWS 01",
+
+  color: "#171B43",
+  foil: "#F6E3A2",
+
+  width: 1.06,
+  height: 1.60,
+  depth: 0.25
+},
+{
+  id: "haven",
+  slug: "haven",
+  title: "Haven",
+
+  kind: "ysws",
+  group: "featured-ysws",
+
+  status: "active",
+  statusLabel: "FEATURED PROGRAM",
+  dateLabel: "HACK CLUB PROGRAM",
+
+  shortDescription:
+    "Join a worldwide teen game jam, learn through workshops and teamwork, and build a game even if you are just getting started.",
+
+  coverImage: "/shelf/covers/haven.webp",
+
+  href: "https://haven.hackclub.com/",
+  ctaLabel: "OPEN PROGRAM ↗",
+  external: true,
+
+  sourceUrl: "https://haven.hackclub.com/",
+
+  spineLabel: "YSWS 02",
+
+  color: "#E85D17",
+  foil: "#FFF4DD",
+
+  width: 1.00,
+  height: 1.56,
+  depth: 0.27
+},
+{
+  id: "atlantis",
+  slug: "atlantis",
+  title: "Atlantis",
+
+  kind: "ysws",
+  group: "featured-ysws",
+
+  status: "active",
+  statusLabel: "FEATURED PROGRAM",
+  dateLabel: "CAD / 3D DESIGN",
+
+  shortDescription:
+    "Build your CAD skills through consistent project work and work toward earning your own 3D printer.",
+
+  coverImage: "/shelf/covers/atlantis.webp",
+
+  href: "https://atlantis.hackclub.com/",
+  ctaLabel: "OPEN PROGRAM ↗",
+  external: true,
+
+  sourceUrl: "https://atlantis.hackclub.com/",
+
+  spineLabel: "YSWS 03",
+
+  color: "#1578AC",
+  foil: "#E7F8FF",
+
+  width: 1.04,
+  height: 1.62,
+  depth: 0.26
+},
+{
+  id: "crescent",
+  slug: "crescent",
+  title: "Crescent",
+
+  kind: "ysws",
+  group: "featured-ysws",
+
+  status: "active",
+  statusLabel: "FEATURED PROGRAM",
+  dateLabel: "WEEKLY CHALLENGES",
+
+  shortDescription:
+    "Pick from a fresh set of challenges, choose what you want to make, and keep shipping new projects.",
+
+  coverImage: "/shelf/covers/crescent.webp",
+
+  href: "https://crescent.hackclub.com/",
+  ctaLabel: "OPEN PROGRAM ↗",
+  external: true,
+
+  sourceUrl: "https://crescent.hackclub.com/",
+
+  spineLabel: "YSWS 04",
+
+  color: "#24134F",
+  foil: "#F6ECDE",
+
+  width: 0.96,
+  height: 1.54,
+  depth: 0.24
+},
+{
+  id: "hackcraft",
+  slug: "hackcraft",
+  title: "Hackcraft",
+
+  kind: "ysws",
+  group: "featured-ysws",
+
+  status: "active",
+  statusLabel: "FEATURED PROGRAM",
+  dateLabel: "MINECRAFT MODDING",
+
+  shortDescription:
+    "Create and publish your own Minecraft mod, build something polished and original, and ship it for others to play.",
+
+  coverImage: "/shelf/covers/hackcraft.webp",
+
+  href: "https://hackcraft.hackclub.com/",
+  ctaLabel: "OPEN PROGRAM ↗",
+  external: true,
+
+  sourceUrl: "https://hackcraft.hackclub.com/",
+
+  spineLabel: "YSWS 05",
+
+  color: "#65482F",
+  foil: "#D8D7D0",
+
+  width: 1.08,
+  height: 1.50,
+  depth: 0.29
+},
+{
+  id: "re-dream",
+  slug: "re-dream",
+  title: "Re-Dream",
+
+  kind: "ysws",
+  group: "featured-ysws",
+
+  status: "active",
+  statusLabel: "FEATURED PROGRAM",
+  dateLabel: "GAME DEVELOPMENT",
+
+  shortDescription:
+    "Make your dream game come to life through Re-Dream.",
+
+  coverImage: "/shelf/covers/re-dream.webp",
+
+  href: "https://re-dream.hackclub.com/",
+  ctaLabel: "OPEN PROGRAM ↗",
+  external: true,
+
+  sourceUrl: "https://re-dream.hackclub.com/",
+
+  spineLabel: "YSWS 06",
+
+  color: "#574472",
+  foil: "#F2E8FF",
+
+  width: 1.02,
+  height: 1.58,
+  depth: 0.25
+},
 ];

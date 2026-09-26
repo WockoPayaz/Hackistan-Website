@@ -8,7 +8,11 @@
 .groups .groupActive { color: #f2f0ea; }
 .canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; pointer-events: none; touch-action: pan-y; outline: none; }
 .canvasReady { opacity: 1; pointer-events: auto; }
+.canvasReady { cursor: grab; }
+.canvasReady[data-dragging="true"] { cursor: grabbing; }
 .canvas:focus-visible { outline: 1px solid #f2f0ea; outline-offset: -6px; }
+.browseHint { position: absolute; z-index: 2; bottom: max(5.5rem, 13svh); left: var(--page-x); margin: 0; color: #a7b0b1; font-size: .62rem; letter-spacing: .12em; pointer-events: none; }
+.browseHint span + span { display: none; }
 .controls { position: absolute; z-index: 2; bottom: max(2rem, 5svh); left: var(--page-x); right: var(--page-x); display: flex; align-items: center; gap: 0.8rem; max-width: 640px; font-size: .8rem; letter-spacing: .02em; }
 .controls button, .close { border: 1px solid #677174; background: #0d1114; color: #f2f0ea; cursor: pointer; min-width: 44px; min-height: 44px; font: inherit; }
 .controls button:disabled { opacity: .35; cursor: default; }
@@ -40,7 +44,12 @@
   .controls { right: var(--page-x); bottom: 4svh; flex-wrap: wrap; gap: .45rem; max-width: none; }
   .controls span { flex-basis: calc(100% - 100px); }
   .controls .openButton { flex-basis: 100%; }
-  .detail { left: var(--page-x); right: var(--page-x); top: auto; bottom: 3svh; width: auto; max-height: 25svh; overflow: auto; padding: .8rem; font-size: .78rem; }
-  .detail h3 { font-size: 1.15rem; }
+  .browseHint { bottom: 14svh; font-size: .57rem; }
+  .browseHint span { display: none; }
+  .browseHint span + span { display: inline; }
+  .detail { left: var(--page-x); right: var(--page-x); top: auto; bottom: 3svh; width: auto; min-height: 44px; padding: 0; border: 0; background: none; box-shadow: none; font-size: .78rem; }
+  .detail h3, .detail p { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+  .detail a, .detail .pending { display: inline-flex; min-height: 44px; align-items: center; padding: 0 .7rem; background: #0d1114; border: 1px solid #677174; }
+  .detail .close { float: right; }
   .catalog { top: 24%; bottom: 15%; grid-template-columns: 1fr; }
 }

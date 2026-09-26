@@ -59,7 +59,7 @@ export async function createWorkshopShelfScene(canvas: HTMLCanvasElement, items:
     return null;
   }
   rigs.forEach((rig, index) => {
-    rig.root.position.set(index * spacing, 0.31 + rig.item.height / 2, rig.item.status === "current" ? 0.13 : 0.04);
+    rig.root.position.set(index * spacing, 0.31 + rig.item.height / 2, rig.item.emphasis ? 0.13 : 0.04);
     stage.add(rig.root);
   });
   const hitTargets = rigs.map((rig) => rig.hit);
@@ -78,6 +78,14 @@ export async function createWorkshopShelfScene(canvas: HTMLCanvasElement, items:
   let disposed = false;
   let visible = true;
   let pointerStart: { id: number; x: number; y: number; index: number; dragging: boolean; scroll: boolean } | null = null;
+  let wheelSettle: ReturnType<typeof setTimeout> | null = null;
+
+  const snapToNearest = () => {
+    targetPosition = clamp(Math.round(targetPosition), 0, items.length - 1);
+    activeIndex = targetPosition;
+    events.onActive(activeIndex);
+    requestFrame();
+  };
 
   const requestFrame = () => {
     if (!rafId && !disposed && visible && !document.hidden) rafId = requestAnimationFrame(frame);
@@ -102,9 +110,8 @@ export async function createWorkshopShelfScene(canvas: HTMLCanvasElement, items:
     const eased = smooth(clamp(openProgress, 0, 1));
     rigs.forEach((rig, index) => {
       const isOpen = index === openIndex;
-      const isCurrent = rig.item.status === "current";
-      const baseZ = isCurrent ? 0.13 : 0.04;
-      const emphasis = isCurrent ? 1.045 : 1;
+      const baseZ = rig.item.emphasis ? 0.13 : 0.04;
+      const emphasis = rig.item.emphasis ? 1.045 : 1;
       rig.root.position.z = damp(rig.root.position.z, baseZ + (isOpen ? eased * 1.35 : 0) + (hoveredIndex === index && openIndex === null ? 0.045 : 0), 12, delta);
       const scale = damp(rig.root.scale.x, emphasis + (isOpen ? eased * (canvas.clientWidth < 768 ? 0.055 : 0.14) : 0), 10, delta);
       rig.root.scale.setScalar(scale);
@@ -120,8 +127,8 @@ export async function createWorkshopShelfScene(canvas: HTMLCanvasElement, items:
     renderer.render(scene, camera);
     const moving = Math.abs(position - targetPosition) > 0.001 || Math.abs(openProgress - openTarget) > 0.001 || rigs.some((rig, index) => {
       const desiredCover = index === openIndex ? -Math.PI * 0.92 * smooth(clamp((openProgress - 0.22) / 0.78, 0, 1)) : (hoveredIndex === index && openIndex === null ? -0.09 : 0);
-      const desiredZ = (rig.item.status === "current" ? 0.13 : 0.04) + (index === openIndex ? eased * 1.35 : 0) + (hoveredIndex === index && openIndex === null ? 0.045 : 0);
-      const desiredScale = (rig.item.status === "current" ? 1.045 : 1) + (index === openIndex ? eased * (canvas.clientWidth < 768 ? 0.055 : 0.14) : 0);
+      const desiredZ = (rig.item.emphasis ? 0.13 : 0.04) + (index === openIndex ? eased * 1.35 : 0) + (hoveredIndex === index && openIndex === null ? 0.045 : 0);
+      const desiredScale = (rig.item.emphasis ? 1.045 : 1) + (index === openIndex ? eased * (canvas.clientWidth < 768 ? 0.055 : 0.14) : 0);
       return Math.abs(rig.frontPivot.rotation.y - desiredCover) > 0.002 || Math.abs(rig.root.position.z - desiredZ) > 0.002 || Math.abs(rig.root.scale.x - desiredScale) > 0.002;
     });
     if (moving) requestFrame();
@@ -148,8 +155,22 @@ export async function createWorkshopShelfScene(canvas: HTMLCanvasElement, items:
     events.onActive(activeIndex);
     requestFrame();
   };
+  const onWheel = (event: WheelEvent) => {
+    if (openIndex !== null) return;
+    const horizontal = Math.abs(event.deltaX) > 2 && Math.abs(event.deltaX) > Math.abs(event.deltaY) * 1.2;
+    if (!horizontal && !event.shiftKey) return; // Ordinary vertical page scroll remains native.
+    const delta = horizontal ? event.deltaX : (Math.abs(event.deltaX) > 2 ? event.deltaX : event.deltaY);
+    if (Math.abs(delta) < 0.5) return;
+    event.preventDefault();
+    const pixels = delta * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? canvas.clientWidth : 1);
+    targetPosition = clamp(targetPosition + pixels / Math.max(160, canvas.clientWidth * 0.3), 0, items.length - 1);
+    requestFrame();
+    if (wheelSettle) clearTimeout(wheelSettle);
+    wheelSettle = setTimeout(() => { wheelSettle = null; snapToNearest(); }, 170);
+  };
   const open = (index: number) => {
     if (openIndex !== null || index < 0 || index >= rigs.length) return;
+    if (wheelSettle) { clearTimeout(wheelSettle); wheelSettle = null; }
     openIndex = index;
     activeIndex = index;
     targetPosition = index;
@@ -173,6 +194,8 @@ export async function createWorkshopShelfScene(canvas: HTMLCanvasElement, items:
         else if (Math.abs(dx) > 9 && Math.abs(dx) > Math.abs(dy) * 1.25) pointerStart.dragging = true;
       }
       if (pointerStart.dragging) {
+        if (!canvas.hasPointerCapture(event.pointerId)) canvas.setPointerCapture(event.pointerId);
+        canvas.dataset.dragging = "true";
         targetPosition = clamp(pointerStart.index - dx / Math.max(125, canvas.clientWidth * 0.28), 0, items.length - 1);
         requestFrame();
       }
@@ -184,17 +207,16 @@ export async function createWorkshopShelfScene(canvas: HTMLCanvasElement, items:
     }
   };
   const onPointerDown = (event: PointerEvent) => {
+    if (wheelSettle) { clearTimeout(wheelSettle); wheelSettle = null; }
     pointerStart = { id: event.pointerId, x: event.clientX, y: event.clientY, index: targetPosition, dragging: false, scroll: false };
   };
   const onPointerUp = (event: PointerEvent) => {
     const gesture = pointerStart;
     pointerStart = null;
+    delete canvas.dataset.dragging;
     if (!gesture || gesture.scroll) return;
     if (gesture.dragging) {
-      targetPosition = clamp(Math.round(targetPosition), 0, items.length - 1);
-      activeIndex = targetPosition;
-      events.onActive(activeIndex);
-      requestFrame();
+      snapToNearest();
       return;
     }
     if (openIndex !== null) {
@@ -204,7 +226,11 @@ export async function createWorkshopShelfScene(canvas: HTMLCanvasElement, items:
       if (hit !== undefined) open(hit);
     }
   };
-  const onPointerCancel = () => { pointerStart = null; };
+  const onPointerCancel = () => {
+    if (pointerStart?.dragging) snapToNearest();
+    pointerStart = null;
+    delete canvas.dataset.dragging;
+  };
   const onPointerLeave = () => { if (hoveredIndex !== -1) { hoveredIndex = -1; requestFrame(); } };
   const onKeyDown = (event: KeyboardEvent) => {
     if (event.key === "ArrowLeft" || event.key === "ArrowRight") { event.preventDefault(); navigate(event.key === "ArrowLeft" ? -1 : 1); }
@@ -234,6 +260,7 @@ export async function createWorkshopShelfScene(canvas: HTMLCanvasElement, items:
   canvas.addEventListener("pointercancel", onPointerCancel);
   canvas.addEventListener("pointerleave", onPointerLeave);
   canvas.addEventListener("keydown", onKeyDown);
+  canvas.addEventListener("wheel", onWheel, { passive: false });
   canvas.addEventListener("webglcontextlost", onContextLost);
   document.addEventListener("visibilitychange", onVisibility);
   resize();
@@ -245,6 +272,8 @@ export async function createWorkshopShelfScene(canvas: HTMLCanvasElement, items:
     dispose() {
       disposed = true;
       if (rafId) cancelAnimationFrame(rafId);
+      if (wheelSettle) clearTimeout(wheelSettle);
+      delete canvas.dataset.dragging;
       observer.disconnect(); resizeObserver.disconnect();
       canvas.removeEventListener("pointermove", onPointerMove);
       canvas.removeEventListener("pointerdown", onPointerDown);
@@ -252,6 +281,7 @@ export async function createWorkshopShelfScene(canvas: HTMLCanvasElement, items:
       canvas.removeEventListener("pointercancel", onPointerCancel);
       canvas.removeEventListener("pointerleave", onPointerLeave);
       canvas.removeEventListener("keydown", onKeyDown);
+      canvas.removeEventListener("wheel", onWheel);
       canvas.removeEventListener("webglcontextlost", onContextLost);
       document.removeEventListener("visibilitychange", onVisibility);
       rigs.forEach((rig) => rig.dispose());

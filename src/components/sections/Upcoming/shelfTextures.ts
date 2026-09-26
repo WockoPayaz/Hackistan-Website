@@ -29,7 +29,6 @@ function wrap(context: CanvasRenderingContext2D, text: string, x: number, y: num
     const next = line ? `${line} ${word}` : word;
     if (context.measureText(next).width <= maxWidth || !line) line = next;
     else { lines.push(line); line = word; }
-    if (lines.length === maxLines - 1) break;
   }
   if (line && lines.length < maxLines) lines.push(line);
   lines.forEach((value, index) => context.fillText(value, x, y + index * lineHeight));
@@ -51,21 +50,15 @@ export async function makeCoverTexture(item: ShelfItem) {
   context.fillRect(0, 0, 512, 768);
   const image = item.coverImage ? await loadImage(item.coverImage) : null;
   if (image) {
-    const scale = Math.max(512 / image.width, 768 / image.height);
-    const width = image.width * scale, height = image.height * scale;
-    context.drawImage(image, (512 - width) / 2, (768 - height) / 2, width, height);
-    const shade = context.createLinearGradient(0, 0, 0, 768);
-    shade.addColorStop(0, "rgba(7,10,12,.48)");
-    shade.addColorStop(0.45, "rgba(7,10,12,.12)");
-    shade.addColorStop(1, "rgba(7,10,12,.82)");
-    context.fillStyle = shade;
-    context.fillRect(0, 0, 512, 768);
-  } else {
-    context.strokeStyle = "rgba(242,240,234,.17)";
-    context.lineWidth = 1;
-    for (let x = 36; x < 512; x += 44) {
-      context.beginPath(); context.moveTo(x, 0); context.lineTo(x, 768); context.stroke();
-    }
+    // The supplied cover is finished artwork. Keep all mutable copy inside
+    // the book and DOM detail; draw no generated border or lettering on it.
+    context.drawImage(image, 0, 0, 512, 768);
+    return texture(canvas);
+  }
+  context.strokeStyle = "rgba(242,240,234,.17)";
+  context.lineWidth = 1;
+  for (let x = 36; x < 512; x += 44) {
+    context.beginPath(); context.moveTo(x, 0); context.lineTo(x, 768); context.stroke();
   }
   context.strokeStyle = item.foil;
   context.globalAlpha = 0.67;
@@ -79,10 +72,6 @@ export async function makeCoverTexture(item: ShelfItem) {
   wrap(context, item.title.toUpperCase(), 42, 540, 428, 57, 4);
   context.font = "600 17px Geist, Arial, sans-serif";
   context.fillText(item.dateLabel.toUpperCase(), 42, 713);
-  if (item.logoImage) {
-    const logo = await loadImage(item.logoImage);
-    if (logo) context.drawImage(logo, 376, 85, 82, 82);
-  }
   return texture(canvas);
 }
 
@@ -102,8 +91,12 @@ export function makeSpineTexture(item: ShelfItem) {
   context.fillStyle = item.foil;
   context.textAlign = "center";
   context.textBaseline = "middle";
-  context.font = "500 29px Geist, Arial, sans-serif";
-  context.fillText(`${item.title.toUpperCase()}  /  ${item.kind.toUpperCase()}`, 0, 0, 570);
+  context.font = "600 20px Geist, Arial, sans-serif";
+  context.fillText(item.kind === "ysws" ? "HACK CLUB" : "HACKISTAN", -155, 0, 175);
+  context.font = "500 24px Geist, Arial, sans-serif";
+  context.fillText(item.spineLabel, 15, 0, 150);
+  context.font = "600 28px Geist, Arial, sans-serif";
+  context.fillText(item.title.toUpperCase(), 190, 0, 210);
   context.restore();
   return texture(canvas);
 }
@@ -114,18 +107,18 @@ export function makePageTexture(item: ShelfItem, side: "left" | "right") {
   context.fillRect(0, 0, 512, 768);
   context.fillStyle = "#151718";
   context.font = "600 17px Geist, Arial, sans-serif";
-  context.fillText(label(item), 34, 70);
   if (side === "left") {
     context.font = "500 48px Geist, Arial, sans-serif";
-    wrap(context, item.title.toUpperCase(), 34, 180, 445, 56, 5);
+    wrap(context, item.title.toUpperCase(), 34, 160, 445, 56, 4);
     context.font = "600 18px Geist, Arial, sans-serif";
-    context.fillText(item.status.toUpperCase(), 34, 643);
-    context.fillText(item.dateLabel.toUpperCase(), 34, 690);
+    context.fillText(label(item), 34, 420);
+    context.fillText(item.statusLabel, 34, 460);
+    wrap(context, item.dateLabel, 34, 610, 445, 30, 3);
   } else {
-    context.font = "400 29px Geist, Arial, sans-serif";
-    wrap(context, item.shortDescription, 34, 166, 440, 41, 9);
+    context.font = "400 30px Geist, Arial, sans-serif";
+    wrap(context, item.shortDescription, 34, 142, 440, 42, 10);
     context.font = "600 18px Geist, Arial, sans-serif";
-    context.fillText(item.href ? (item.kind === "ysws" ? "EXPLORE PROGRAM ↗" : "VIEW DETAILS ↗") : "DETAILS COMING SOON", 34, 690);
+    context.fillText(item.ctaLabel, 34, 690);
   }
   return texture(canvas);
 }

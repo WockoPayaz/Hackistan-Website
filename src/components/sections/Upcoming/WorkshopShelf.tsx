@@ -64,14 +64,15 @@ export function WorkshopShelf({ items }: { items: readonly ShelfItem[] }) {
   return <section id="upcoming" className={`${styles.section} ${open !== null ? styles.bookOpen : ""}`} aria-labelledby="upcoming-title" data-upcoming ref={root} inert>
     <div className={styles.header}>
       <h2 id="upcoming-title" className={styles.index}>03 / UPCOMING</h2>
-      <span className={styles.kicker}>WORKSHOPS / YSWS / PLANNED</span>
+      <span className={styles.kicker}>WORKSHOPS / FEATURED YSWS</span>
     </div>
     <div className={styles.groups} aria-label="Shelf groups">
-      {(["current", "active", "planned"] as const).map((status) =>
-        <span key={status} className={activeItem?.status === status ? styles.groupActive : ""}>{status === "active" ? "ACTIVE YSWS" : status.toUpperCase()}</span>
+      {(["hackistan-workshops", "featured-ysws"] as const).map((group) =>
+        <span key={group} className={activeItem?.group === group ? styles.groupActive : ""}>{group === "hackistan-workshops" ? "UPCOMING WORKSHOPS" : "FEATURED YSWS"}</span>
       )}
     </div>
     <canvas ref={canvas} className={`${styles.canvas} ${ready && !failed ? styles.canvasReady : ""}`} data-shelf-canvas tabIndex={0} aria-label="Interactive workshop shelf. Use left and right arrows to browse, Enter to open, Escape to close." />
+    <p className={styles.browseHint}><span>DRAG TO BROWSE · ARROWS TO NAVIGATE</span><span>SWIPE TO BROWSE · TAP TO OPEN</span></p>
     <div className={styles.controls}>
       <button type="button" onClick={() => controller.current?.navigate(-1)} disabled={!ready || failed || open !== null || active === 0} aria-label="Previous book">←</button>
       <span aria-live="polite">{activeItem?.title ?? "Upcoming shelf"} <small>{items.length ? `${active + 1} / ${items.length}` : ""}</small></span>
@@ -80,20 +81,20 @@ export function WorkshopShelf({ items }: { items: readonly ShelfItem[] }) {
     </div>
     {openItem && <div className={styles.detail} role="region" aria-label={`${openItem.title} book preview`}>
       <button type="button" className={styles.close} onClick={() => controller.current?.close()} aria-label="Close book">CLOSE ×</button>
-      <p className={styles.detailEyebrow}>{openItem.kind === "ysws" ? "HACK CLUB / YSWS" : "HACKISTAN / WORKSHOP"} <span>{openItem.status.toUpperCase()}</span></p>
+      <p className={styles.detailEyebrow}>{openItem.kind === "ysws" ? "HACK CLUB / YSWS" : "HACKISTAN / WORKSHOP"} <span>{openItem.statusLabel}</span></p>
       <h3>{openItem.title}</h3>
       <p className={styles.date}>{openItem.dateLabel}</p>
       <p>{openItem.shortDescription}</p>
-      {openItem.href ? <a href={openItem.href}>{openItem.kind === "ysws" ? "EXPLORE PROGRAM ↗" : "VIEW DETAILS ↗"}</a> : <span className={styles.pending}>DETAILS COMING SOON</span>}
+      {openItem.href ? <a href={openItem.href} target={openItem.external ? "_blank" : undefined} rel={openItem.external ? "noopener noreferrer" : undefined}>{openItem.ctaLabel}</a> : <span className={styles.pending}>{openItem.ctaLabel}</span>}
     </div>}
     <ol className={`${styles.catalog} ${ready && !failed ? styles.catalogAccessible : ""}`} aria-label="Upcoming shelf catalog">
       {items.map((item, index) => <li key={item.id}>
-        <span>{item.status === "active" ? "ACTIVE YSWS" : item.status.toUpperCase()}</span>
+        <span>{item.group === "featured-ysws" ? "FEATURED YSWS" : "UPCOMING WORKSHOPS"} · {item.statusLabel}</span>
         <strong>{item.title}</strong>
         <small>{item.dateLabel}</small>
         <p>{item.shortDescription}</p>
         {ready && <button type="button" onClick={() => controller.current?.open(index)}>Open book</button>}
-        {item.href ? <a href={item.href}>{item.kind === "ysws" ? "Explore program ↗" : "View details ↗"}</a> : <span>Details coming soon</span>}
+        {item.href ? <a href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noopener noreferrer" : undefined}>{item.ctaLabel}</a> : <span>{item.ctaLabel}</span>}
       </li>)}
     </ol>
   </section>;
