@@ -7,5 +7,5 @@ import { SiteEnd } from "@/components/layout/SiteEnd";
 import { getCurrentWorkshop } from "@/data/workshops";
 
 export default function HomePage() {
-  return <><main id="main"><BrandJourney hero={<Hero />} now={<CurrentWorkshop workshop={getCurrentWorkshop()} />} /><About /><Crew /></main><SiteEnd /></>;
+  return <><main id="main" tabIndex={-1}><BrandJourney hero={<Hero />} now={<CurrentWorkshop workshop={getCurrentWorkshop()} />} /><About /><Crew /></main><SiteEnd /></>;
 }

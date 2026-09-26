@@ -1,3 +1,18 @@
+import { HackistanMark } from "@/components/brand/HackistanMark";
+import styles from "./not-found.module.css";
+
 export default function NotFound() {
-  return <main className="page-width" style={{ minHeight: "100svh", paddingTop: "30svh" }}><p className="eyebrow muted">404 / Out of bounds</p><h1 className="display" style={{ fontSize: "var(--text-display)", marginBlock: "var(--space-7)" }}>Back to the<br />beginning.</h1><a href="/" className="text-link eyebrow">Return to Hackistan <span aria-hidden="true">↗</span></a></main>;
+  return <main id="main" tabIndex={-1} className={`${styles.page} page-width`}>
+    <div className={styles.rule} aria-hidden="true" />
+    <div className={styles.content}>
+      <div>
+        <p className={styles.index}>404 / OUT OF BOUNDS</p>
+        <h1>LOST IN<br />THE WIRES.</h1>
+        <p className={styles.description}>This page doesn&apos;t exist.</p>
+        <a href="/" className={styles.link}>BACK TO HACKISTAN <span aria-hidden="true">↗</span></a>
+      </div>
+      <div className={styles.mark}><HackistanMark /></div>
+    </div>
+    <div className={styles.rule} aria-hidden="true" />
+  </main>;
 }

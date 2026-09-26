@@ -21,7 +21,7 @@ export function SiteHeader() {
     }
   }, [open]);
 
-  const close = () => { setOpen(false); button.current?.focus(); };
+  const close = () => { dialog.current?.close(); setOpen(false); button.current?.focus(); };
   const navigate = (event: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault();

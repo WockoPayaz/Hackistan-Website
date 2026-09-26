@@ -55,7 +55,7 @@ export function HeroRibbons() {
       }
       for (const [svg, visible] of [[desktopRef.current, !small.matches], [mobileRef.current, small.matches]] as const) {
         if (!svg) continue;
-        if (!visible || !onScreen) svg.pauseAnimations();
+        if (!visible || !onScreen || document.hidden) svg.pauseAnimations();
         else svg.unpauseAnimations();
       }
     };
@@ -66,9 +66,11 @@ export function HeroRibbons() {
     });
     if (fieldRef.current) observer.observe(fieldRef.current);
     small.addEventListener("change", sync);
+    document.addEventListener("visibilitychange", sync);
     return () => {
       observer.disconnect();
       small.removeEventListener("change", sync);
+      document.removeEventListener("visibilitychange", sync);
     };
   }, []);
 
