@@ -1,5 +1,5 @@
 .section { position: relative; z-index: 4; margin-top: -100svh; }
-.runway { position: relative; height: 635svh; }
+.runway { position: relative; height: 820svh; }
 .scene { position: sticky; top: 0; height: 100svh; overflow: clip; isolation: isolate; pointer-events: none; }
 .world { position: absolute; inset: 0; overflow: clip; background: #f2f0ea; --grid-cell: 22px; --plus-cell: calc(4 * var(--grid-cell)); }
 .gridPlane, .plusPlane { position: absolute; pointer-events: none; top: -100svh; height: 400svh; will-change: transform; }
@@ -34,7 +34,7 @@
   .hackistan p, .hackClub p { font-size: clamp(1rem, 1.7vw, 1.2rem); }
 }
 @media (max-width: 767px) {
-  .runway { height: 605svh; }
+  .runway { height: 790svh; }
   .world { --grid-cell: 20px; }
   .plusPlane { background-image: url('/about-plus-tile-mobile.svg'); }
   .outline { width: min(36svh, 84vw); height: min(36svh, 84vw); }

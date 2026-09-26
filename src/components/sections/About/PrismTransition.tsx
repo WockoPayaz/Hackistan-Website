@@ -39,7 +39,8 @@ export function PrismTransition() {
       const shelfReady = shelf.dataset.shelfReady === "true";
       if (surface && shelfReady) surface.setShelfSource(shelfCanvas);
       shelf.style.opacity = String(smooth(0.84, 0.94, progress));
-      const interactive = progress >= 0.98;
+      const interactive = progress >= 0.98 && section.dataset.joinExit !== "true";
+      section.dataset.prismSettled = progress >= 0.98 ? "true" : "false";
       shelf.style.pointerEvents = interactive ? "auto" : "none";
       shelf.inert = !interactive;
       if (shelfInteractive && !interactive) window.dispatchEvent(new Event("hackistan:shelf-exit"));
@@ -201,6 +202,7 @@ export function PrismTransition() {
       shelf.style.removeProperty("opacity");
       shelf.style.removeProperty("pointer-events");
       shelf.inert = true;
+      delete section.dataset.prismSettled;
       surface?.dispose();
     };
   }, []);
