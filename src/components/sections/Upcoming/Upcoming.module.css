@@ -19,6 +19,7 @@
 .controls span { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .controls small { margin-left: .4rem; color: #939b9d; }
 .controls .openButton { padding: 0 .8rem; font-size: .7rem; letter-spacing: .07em; }
+.mobileBrowseHint { display: none; }
 .detail { position: absolute; z-index: 3; right: var(--page-x); top: 25%; width: min(24vw, 330px); padding: 1.2rem; background: rgb(13 17 20 / 91%); border: 1px solid #647073; box-shadow: 0 20px 50px rgb(0 0 0 / 25%); font-size: .95rem; line-height: 1.42; }
 .detail h3 { margin: .55rem 0; font-size: clamp(1.3rem, 2vw, 2rem); font-weight: 500; line-height: 1.05; }
 .detail p { margin: .5rem 0; }
@@ -41,12 +42,11 @@
   .header { top: 94px; }
   .kicker { display: none; }
   .groups { top: 21%; font-size: .56rem; }
-  .controls { right: var(--page-x); bottom: 4svh; flex-wrap: wrap; gap: .45rem; max-width: none; }
-  .controls span { flex-basis: calc(100% - 100px); }
-  .controls .openButton { flex-basis: 100%; }
-  .browseHint { bottom: 14svh; font-size: .57rem; }
-  .browseHint span { display: none; }
-  .browseHint span + span { display: inline; }
+  .controls { right: var(--page-x); bottom: 4svh; display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px; column-gap: .45rem; row-gap: .6rem; max-width: none; }
+  .controls > span { text-align: center; }
+  .controls .mobileBrowseHint { display: block; grid-column: 1 / -1; margin: 0; color: #a7b0b1; font-size: .57rem; letter-spacing: .12em; text-align: center; white-space: nowrap; pointer-events: none; }
+  .controls .openButton { grid-column: 1 / -1; }
+  .browseHint { display: none; }
   .detail { left: var(--page-x); right: var(--page-x); top: auto; bottom: 3svh; width: auto; min-height: 44px; padding: 0; border: 0; background: none; box-shadow: none; font-size: .78rem; }
   .detail h3, .detail p { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
   .detail a, .detail .pending { display: inline-flex; min-height: 44px; align-items: center; padding: 0 .7rem; background: #0d1114; border: 1px solid #677174; }

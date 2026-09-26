@@ -77,6 +77,7 @@ export function WorkshopShelf({ items }: { items: readonly ShelfItem[] }) {
       <button type="button" onClick={() => controller.current?.navigate(-1)} disabled={!ready || failed || open !== null || active === 0} aria-label="Previous book">←</button>
       <span aria-live="polite">{activeItem?.title ?? "Upcoming shelf"} <small>{items.length ? `${active + 1} / ${items.length}` : ""}</small></span>
       <button type="button" onClick={() => controller.current?.navigate(1)} disabled={!ready || failed || open !== null || active === items.length - 1} aria-label="Next book">→</button>
+      <p className={styles.mobileBrowseHint}>DRAG TO BROWSE · TAP TO OPEN</p>
       <button type="button" className={styles.openButton} disabled={!ready || failed || open !== null || !activeItem} onClick={() => controller.current?.open(active)}>OPEN BOOK ↗</button>
     </div>
     {openItem && <div className={styles.detail} role="region" aria-label={`${openItem.title} book preview`}>
