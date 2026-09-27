@@ -4,7 +4,7 @@ import { SVGLoader } from "three/addons/loaders/SVGLoader.js";
 /** Extrude a path from the original 400-unit mark grid, centered on the origin. */
 export function extrudeMarkPath(path: string, depth: number, bevel: number) {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg"><path d="${path}"/></svg>`;
-  const shapes = SVGLoader.createShapes(new SVGLoader().parse(svg).paths[0]);
+  const shapes = new SVGLoader().parse(svg).paths[0].toShapes();
   const geometry = new THREE.ExtrudeGeometry(shapes, {
     depth,
     bevelEnabled: bevel > 0,
