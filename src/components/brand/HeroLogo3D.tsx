@@ -99,7 +99,6 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
     let layoutReady = false;
     let resizePending = true;
     let resizeFrame = 0;
-    let restorePending = false;
     const renderScene = () => {
       if (contextAvailable && layoutReady && !resizePending) renderer.render(scene, camera);
     };
@@ -135,7 +134,7 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       front.dispose();
       sides.dispose();
       bufferTarget.dispose();
-      backdrop.texture.dispose();
+      backdrop.dispose();
       environment.dispose();
       renderer.dispose();
       canvas.remove();
@@ -239,8 +238,7 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
         layoutReady = true;
         resizePending = false;
         renderer.render(scene, camera);
-        if (restorePending && !shaderFailed) {
-          restorePending = false;
+        if (canvas.style.display === "none" && !shaderFailed) {
           canvas.style.display = "";
           onReadyChange(true);
         }
@@ -322,7 +320,6 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
     };
     const restored = () => {
       contextAvailable = true;
-      restorePending = true;
       scheduleResize();
       requestFrame();
     };
@@ -406,7 +403,7 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       front.dispose();
       sides.dispose();
       bufferTarget.dispose();
-      backdrop.texture.dispose();
+      backdrop.dispose();
       environment.dispose();
       renderer.dispose();
       canvas.remove();
