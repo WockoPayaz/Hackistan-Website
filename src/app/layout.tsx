@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Analytics } from "@vercel/analytics/next";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { siteOrigin } from "@/lib/site-url";
 import "@/styles/tokens.css";
@@ -38,5 +39,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en" className={geist.variable}><body><a className="skip-link" href="#main">Skip to main content</a><SiteHeader />{children}<div className="grain" aria-hidden="true" /></body></html>;
+  return <html lang="en" className={geist.variable}><body><a className="skip-link" href="#main">Skip to main content</a><SiteHeader />{children}<div className="grain" aria-hidden="true" /><Analytics /></body></html>;
 }
