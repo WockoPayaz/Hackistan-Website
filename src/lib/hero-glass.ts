@@ -3,17 +3,31 @@ import { MeshTransmissionMaterial } from "@pmndrs/vanilla/materials/MeshTransmis
 
 /** Small transmission buffer; only its typography copy is refracted by WebGL. */
 export function createGlassBackdrop() {
-  const canvas = document.createElement("canvas");
-  canvas.width = canvas.height = 1;
-  const context = canvas.getContext("2d");
-  if (!context) throw new Error("No 2D canvas for the glass backdrop");
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.colorSpace = THREE.SRGBColorSpace;
-  const scene = new THREE.Scene();
-  scene.background = texture;
-  const paint = (width: number, height: number, container: HTMLElement, wordmark: HTMLElement | null) => {
+  const makeBacking = (width: number, height: number) => {
+    const canvas = document.createElement("canvas");
     canvas.width = width;
     canvas.height = height;
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("No 2D canvas for the glass backdrop");
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.minFilter = THREE.LinearMipmapLinearFilter;
+    texture.magFilter = THREE.LinearFilter;
+    return { canvas, context, texture };
+  };
+  let backing = makeBacking(1, 1);
+  const scene = new THREE.Scene();
+  scene.background = backing.texture;
+  let disposed = false;
+  const paint = (width: number, height: number, container: HTMLElement, wordmark: HTMLElement | null) => {
+    if (backing.canvas.width !== width || backing.canvas.height !== height) {
+      // An uploaded canvas texture needs a fresh GPU allocation when its source dimensions change.
+      const previous = backing.texture;
+      backing = makeBacking(width, height);
+      scene.background = backing.texture;
+      previous.dispose();
+    }
+    const { context, texture } = backing;
     context.setTransform(width / 256, 0, 0, height / 256, 0, 0);
     context.fillStyle = "#1d1d1b";
     context.fillRect(0, 0, 256, 256);
@@ -49,7 +63,13 @@ export function createGlassBackdrop() {
     }
     texture.needsUpdate = true;
   };
-  return { scene, texture, paint };
+  const dispose = () => {
+    if (disposed) return;
+    disposed = true;
+    scene.background = null;
+    backing.texture.dispose();
+  };
+  return { scene, paint, dispose };
 }
 
 /** One material shared by the independent cap meshes; its buffer is set at resize. */

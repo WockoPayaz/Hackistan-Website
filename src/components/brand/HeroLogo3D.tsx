@@ -56,7 +56,6 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       return; // The dimensional SVG stays visible on unsupported devices.
     }
     container.appendChild(canvas);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, hero3d.maxPixelRatio));
     renderer.setClearColor(0x000000, 0);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -96,6 +95,13 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
     bufferTarget.texture.minFilter = THREE.LinearFilter;
     bufferTarget.texture.magFilter = THREE.LinearFilter;
     front.uniforms.buffer.value = bufferTarget.texture;
+    let contextAvailable = true;
+    let layoutReady = false;
+    let resizePending = true;
+    let resizeFrame = 0;
+    const renderScene = () => {
+      if (contextAvailable && layoutReady && !resizePending) renderer.render(scene, camera);
+    };
     let shaderFailed = false;
     renderer.debug.onShaderError = (gl, program) => {
       shaderFailed = true;
@@ -128,7 +134,7 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       front.dispose();
       sides.dispose();
       bufferTarget.dispose();
-      backdrop.texture.dispose();
+      backdrop.dispose();
       environment.dispose();
       renderer.dispose();
       canvas.remove();
@@ -166,7 +172,7 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       sides.transparent = true;
       sides.opacity = glass;
       for (const mesh of Object.values(meshes)) mesh.visible = glass > 0;
-      renderer.render(scene, camera);
+      renderScene();
     };
     const onIntroProgress = (event: Event) => introProgress((event as CustomEvent<number>).detail);
     const finishIntro = () => {
@@ -184,36 +190,75 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
         (line.material as THREE.Material).dispose();
       }
       wires.length = 0;
-      renderer.render(scene, camera);
+      renderScene();
     };
     window.addEventListener("hackistan:intro-progress", onIntroProgress);
     window.addEventListener("hackistan:intro-finished", finishIntro);
 
+    let rendererWidth = 0;
+    let rendererHeight = 0;
+    let targetWidth = 1;
+    let targetHeight = 1;
     const resize = () => {
+      if (!contextAvailable) return;
       const width = container.clientWidth;
       const height = container.clientHeight;
-      if (!width || !height || !mark.clientWidth) return;
-      renderer.setSize(width, height, false);
+      const markHeight = mark.clientHeight;
+      if (!width || !height || !mark.clientWidth || !markHeight) {
+        layoutReady = false;
+        return;
+      }
+      const deviceRatio = window.devicePixelRatio;
+      const pixelRatio = Math.min(hero3d.maxPixelRatio, Number.isFinite(deviceRatio) && deviceRatio > 0 ? deviceRatio : 1);
+      if (renderer.getPixelRatio() !== pixelRatio) renderer.setPixelRatio(pixelRatio);
+      if (width !== rendererWidth || height !== rendererHeight || !layoutReady) {
+        renderer.setSize(width, height, false);
+        rendererWidth = width;
+        rendererHeight = height;
+      }
       // Each SVG user unit maps to the same CSS size as the fallback.
-      const worldHeight = height * hero3d.viewBox / mark.clientHeight;
+      const worldHeight = height * hero3d.viewBox / markHeight;
       camera.fov = 2 * Math.atan(worldHeight / (2 * hero3d.cameraZ)) * 180 / Math.PI;
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
       const scale = Math.min(mobile ? 512 : 768, Math.max(width, height));
       const bufferWidth = Math.max(1, Math.round(scale * width / Math.max(width, height)));
       const bufferHeight = Math.max(1, Math.round(scale * height / Math.max(width, height)));
-      bufferTarget.setSize(bufferWidth, bufferHeight);
+      if (bufferWidth !== targetWidth || bufferHeight !== targetHeight) {
+        bufferTarget.setSize(bufferWidth, bufferHeight);
+        targetWidth = bufferWidth;
+        targetHeight = bufferHeight;
+      }
       backdrop.paint(bufferWidth, bufferHeight, container, wordmark);
-      renderer.setRenderTarget(bufferTarget);
-      renderer.render(backdrop.scene, camera);
-      renderer.setRenderTarget(null);
-      renderer.render(scene, camera);
+      const previousTarget = renderer.getRenderTarget();
+      try {
+        renderer.setRenderTarget(bufferTarget);
+        renderer.render(backdrop.scene, camera);
+        renderer.setRenderTarget(null);
+        layoutReady = true;
+        resizePending = false;
+        renderer.render(scene, camera);
+        if (canvas.style.display === "none" && !shaderFailed) {
+          canvas.style.display = "";
+          onReadyChange(true);
+        }
+      } finally {
+        renderer.setRenderTarget(previousTarget);
+      }
     };
-    const resizeObserver = new ResizeObserver(resize);
+    const scheduleResize = () => {
+      resizePending = true;
+      if (!resizeFrame) resizeFrame = requestAnimationFrame(() => {
+        resizeFrame = 0;
+        resize();
+      });
+    };
+    const resizeObserver = new ResizeObserver(scheduleResize);
     resizeObserver.observe(container);
     resizeObserver.observe(mark);
     resize();
-    document.fonts.ready.then(() => { if (canvas.isConnected) resize(); });
+    window.addEventListener("resize", scheduleResize);
+    document.fonts.ready.then(() => { if (canvas.isConnected) scheduleResize(); });
 
     const hover = window.matchMedia("(hover: hover) and (pointer: fine)");
     let pointerX = 0;
@@ -222,7 +267,6 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
     let drag: { id: number; startX: number; startY: number; intent: "pending" | "rotate" | "scroll" } | null = null;
     let touchX = 0;
     let touchY = 0;
-    let contextAvailable = true;
     let onScreen = true;
     let frame = 0;
     let lastTime = performance.now();
@@ -267,14 +311,16 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
     const lost = (event: Event) => {
       event.preventDefault();
       contextAvailable = false;
+      layoutReady = false;
+      resizePending = true;
+      cancelAnimationFrame(resizeFrame);
+      resizeFrame = 0;
       canvas.style.display = "none";
       onReadyChange(false);
     };
     const restored = () => {
       contextAvailable = true;
-      canvas.style.display = "";
-      resize();
-      onReadyChange(true);
+      scheduleResize();
       requestFrame();
     };
     const visibilityObserver = new IntersectionObserver(([entry]) => {
@@ -303,6 +349,7 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       frame = 0;
       if (!contextAvailable || !onScreen || document.hidden) { lastTime = time; return; }
       requestFrame();
+      if (!layoutReady || resizePending) { lastTime = time; return; }
       const elapsed = Math.min(0.05, (time - lastTime) / 1000);
       lastTime = time;
       const progress = getProgress();
@@ -336,10 +383,12 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
 
     return () => {
       cancelAnimationFrame(frame);
+      cancelAnimationFrame(resizeFrame);
       window.removeEventListener("hackistan:intro-progress", onIntroProgress);
       window.removeEventListener("hackistan:intro-finished", finishIntro);
       for (const line of wires) { line.geometry.dispose(); (line.material as THREE.Material).dispose(); }
       resizeObserver.disconnect();
+      window.removeEventListener("resize", scheduleResize);
       visibilityObserver.disconnect();
       window.removeEventListener("pointermove", move);
       document.removeEventListener("pointerout", leave);
@@ -354,7 +403,7 @@ export function HeroLogo3D({ onReadyChange }: { onReadyChange: (ready: boolean) 
       front.dispose();
       sides.dispose();
       bufferTarget.dispose();
-      backdrop.texture.dispose();
+      backdrop.dispose();
       environment.dispose();
       renderer.dispose();
       canvas.remove();
