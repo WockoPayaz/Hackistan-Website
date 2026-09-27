@@ -117,8 +117,6 @@ export function makePageTexture(item: ShelfItem, side: "left" | "right") {
   } else {
     context.font = "400 30px Geist, Arial, sans-serif";
     wrap(context, item.shortDescription, 34, 142, 440, 42, 10);
-    context.font = "600 18px Geist, Arial, sans-serif";
-    context.fillText(item.ctaLabel, 34, 690);
   }
   return texture(canvas);
 }
