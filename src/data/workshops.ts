@@ -6,7 +6,7 @@ export const workshops: readonly Workshop[] = [
     slug: "boba-drops",
     title: "Boba Drops",
     titleLines: ["Boba", "Drops"],
-    shortDescription: "Learn the basics of HTML by building and publishing your own website, then submit it through Boba Drops.",
+    shortDescription: "Learn the basics of HTML from scratch by building and publishing your own website, then submit it through Boba Drops to get free Boba Tea!.",
     status: "current",
     startDate: "2026-10-05",
     endDate: "2026-10-09",
