@@ -11,7 +11,7 @@ export function aboutHoldEnd() {
 export const prismScrollDistance = () => stageHeight() * 1.85;
 
 // Pass G starts after the approved prism and a substantial settled shelf hold.
-export const shelfBrowseDistance = () => stageHeight() * 1.2;
+export const shelfBrowseDistance = () => stageHeight() * 0.6;
 export const joinExitDistance = () => stageHeight() * 1.05;
 export const joinHoldDistance = () => stageHeight() * 1.1;
 export const joinExitStart = () => aboutHoldEnd() + prismScrollDistance() + shelfBrowseDistance();
