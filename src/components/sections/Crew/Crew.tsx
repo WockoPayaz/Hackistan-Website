@@ -28,7 +28,7 @@ export function Crew() {
       <div className={styles.topRule} aria-hidden="true" />
       <div className={styles.intro}>
         <div>
-          <p className={styles.index}>05 / THE CREW</p>
+          <p className={styles.index}>06 / THE CREW</p>
           <h2 id="crew-title"><span>THE PEOPLE</span>{" "}<span>BEHIND</span>{" "}<span>HACKISTAN.</span></h2>
           <p className={styles.lead}>Student-led in Quetta. Built by people who like making things happen.</p>
         </div>

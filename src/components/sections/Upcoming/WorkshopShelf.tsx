@@ -63,7 +63,7 @@ export function WorkshopShelf({ items }: { items: readonly ShelfItem[] }) {
   const openItem = open === null ? null : items[open];
   return <section id="upcoming" className={`${styles.section} ${open !== null ? styles.bookOpen : ""}`} aria-labelledby="upcoming-title" data-upcoming ref={root} tabIndex={-1} inert>
     <div className={styles.header}>
-      <h2 id="upcoming-title" className={styles.index}>03 / UPCOMING</h2>
+      <h2 id="upcoming-title" className={styles.index}>04 / UPCOMING</h2>
       <span className={styles.kicker}>WORKSHOPS / FEATURED YSWS</span>
     </div>
     <div className={styles.groups} aria-label="Shelf groups">

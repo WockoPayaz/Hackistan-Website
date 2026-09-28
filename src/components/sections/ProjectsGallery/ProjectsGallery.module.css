@@ -1,0 +1,257 @@
+.section {
+  position: relative;
+  z-index: 5;
+  background: var(--color-bg);
+  color: var(--color-fg);
+}
+
+.inner {
+  padding-block:
+    clamp(4rem, 7svh, 6rem)
+    clamp(4rem, 7svh, 6rem);
+}
+
+.topRule {
+  height: 1px;
+  background: var(--color-line-dark);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-8);
+  padding-block:
+    clamp(1.75rem, 3svh, 2.75rem)
+    clamp(2rem, 4svh, 3rem);
+}
+
+.index {
+  margin: 0 0 var(--space-4);
+}
+
+.header h2 {
+  margin: 0;
+  max-width: 9ch;
+  font-size: clamp(3.25rem, 5.5vw, 7rem);
+  font-weight: 500;
+  line-height: 0.9;
+  letter-spacing: -0.065em;
+}
+
+.intro {
+  max-width: 38ch;
+  margin: var(--space-4) 0 0;
+  color: var(--color-fg-muted);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+.readout {
+  display: grid;
+  align-content: end;
+  justify-items: end;
+  gap: 0.5rem;
+  padding-bottom: 0.25rem;
+
+  color: var(--color-fg-muted);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.17em;
+  line-height: 1.4;
+  text-align: right;
+}
+
+.railHeader {
+  display: flex;
+  justify-content: space-between;
+  padding-block: var(--space-3);
+  border-top: 1px solid var(--color-line-dark);
+
+  color: var(--color-fg-muted);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+}
+
+.rail {
+  display: flex;
+  gap: var(--gutter);
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  padding-bottom: var(--space-4);
+
+  scroll-snap-type: x proximity;
+  overscroll-behavior-inline: contain;
+
+  scrollbar-width: thin;
+  scrollbar-color: rgb(242 240 234 / 35%) transparent;
+}
+
+.rail::-webkit-scrollbar {
+  height: 2px;
+}
+
+.rail::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.rail::-webkit-scrollbar-thumb {
+  background: rgb(242 240 234 / 35%);
+}
+
+.card {
+  flex: 0 0 clamp(16rem, 22vw, 23rem);
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+.projectCard {
+  flex-basis: clamp(22rem, 30vw, 32rem);
+}
+
+.media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+
+  border: 1px solid var(--color-line-dark);
+  background: var(--color-bg-soft);
+}
+
+.projectCard .media {
+  aspect-ratio: 16 / 10;
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+
+  filter:
+    saturate(0.78)
+    contrast(1.04)
+    brightness(0.9);
+
+  transition:
+    transform var(--duration-normal) var(--ease-standard),
+    filter var(--duration-normal) var(--ease-standard);
+}
+
+.imageNumber {
+  position: absolute;
+  top: 0.85rem;
+  left: 0.85rem;
+
+  font-size: 0.62rem;
+  letter-spacing: 0.17em;
+  text-shadow: 0 1px 8px var(--color-bg);
+}
+
+.caption {
+  padding-top: 0.75rem;
+}
+
+.captionTop {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+
+  color: var(--color-fg-muted);
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0.13em;
+}
+
+.meta {
+  text-align: right;
+}
+
+.caption h3 {
+  margin: 0.5rem 0 0;
+  font-size: clamp(0.95rem, 1.05vw, 1.2rem);
+  font-weight: 550;
+  letter-spacing: 0.035em;
+}
+
+.caption h3 a {
+  text-underline-offset: 0.25em;
+}
+
+.caption h3 a:hover {
+  text-decoration: underline;
+}
+
+.description {
+  max-width: 45ch;
+  margin: 0.5rem 0 0;
+  color: var(--color-fg-muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+@media (hover: hover) {
+  .card:hover .image {
+    transform: scale(1.015);
+
+    filter:
+      saturate(0.95)
+      contrast(1.04)
+      brightness(0.95);
+  }
+}
+
+@media (max-width: 767px) {
+  .inner {
+    padding-block: 3.5rem 4.5rem;
+  }
+
+  .header {
+    display: block;
+    padding-block: 1.5rem 2rem;
+  }
+
+  .header h2 {
+    font-size: clamp(2.8rem, 12vw, 4.5rem);
+  }
+
+  .intro {
+    max-width: 30ch;
+    font-size: 0.9rem;
+  }
+
+  .readout {
+    display: none;
+  }
+
+  .railHeader {
+    font-size: 0.55rem;
+  }
+
+  .card {
+    flex-basis: 68vw;
+  }
+
+  .projectCard {
+    flex-basis: 82vw;
+  }
+
+  .captionTop {
+    display: block;
+  }
+
+  .meta {
+    display: block;
+    margin-top: 0.25rem;
+    text-align: left;
+  }
+
+  .description {
+    font-size: 0.78rem;
+  }
+}
+
+

@@ -17,15 +17,12 @@ export function AboutTransition() {
 
     const hackistanLines = headings[0].querySelectorAll<HTMLElement>("[data-about-heading-line]");
     const clubLines = headings[1].querySelectorAll<HTMLElement>("[data-about-heading-line]");
-    const entranceTrigger = { trigger: section, start: "top top", end: () => "+=" + aboutEntranceDistance(), scrub: true, invalidateOnRefresh: true };
+    const entranceTrigger = { trigger: section, start: "top bottom", end: "top top", scrub: true, invalidateOnRefresh: true };
 
     const context = gsap.context(() => {
       // The section overlaps NOW's final viewport. The complete light world
       // physically rises from below while the stage itself remains sticky.
-      gsap.fromTo(world,
-        { yPercent: 100 },
-        { yPercent: 0, ease: "none", scrollTrigger: entranceTrigger },
-      );
+
 
       gsap.timeline({ scrollTrigger: { ...entranceTrigger }, defaults: { ease: "none" } })
         .to({}, { duration: 1 }, 0)
@@ -36,7 +33,7 @@ export function AboutTransition() {
 
       const holdTrigger = {
         trigger: section,
-        start: () => "top top-=" + aboutEntranceDistance(),
+        start: () => "top bottom" + aboutEntranceDistance(),
         end: () => "top top-=" + aboutHoldEnd(),
         scrub: 0.6,
         invalidateOnRefresh: true,

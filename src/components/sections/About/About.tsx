@@ -23,7 +23,7 @@ export function About() {
             <path d={markGeometry.right} />
           </svg>
           <div className={`${styles.information} page-width`}>
-            <span className={`${styles.index} eyebrow`} data-about-index>02 / About</span>
+            <span className={`${styles.index} eyebrow`} data-about-index>03 / About</span>
             <div className={styles.hackistan} data-about-copy>
               <h2 id="about-title" className={styles.heading} data-about-heading><span className={styles.headingLine} data-about-heading-line>Hackistan</span><span className={`${styles.headingLine} ${styles.headingSuffix}`} data-about-heading-line>/ Quetta</span></h2>
               <p data-about-description><span className={styles.desktopCopy}>A student-led maker community in Quetta where ideas become things you can actually build.</span><span className={styles.mobileCopy}>A student-led maker community in Quetta building games, hardware, experiments and hackathons together.</span></p>

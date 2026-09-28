@@ -1,0 +1,23 @@
+warning: in the working copy of 'src/app/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/layout/SiteHeader.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/layout/layout.module.css', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/sections/About/About.module.css', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/sections/About/About.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/sections/About/AboutTransition.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/sections/About/aboutScroll.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/sections/Crew/Crew.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/sections/Join/Join.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/components/sections/Upcoming/WorkshopShelf.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/hooks/useLogoTransition.ts', LF will be replaced by CRLF the next time Git touches it
+ src/app/page.tsx                                   | 3 [32m++[m[31m-[m
+ src/components/layout/SiteHeader.tsx               | 9 [32m+++++[m[31m----[m
+ src/components/layout/layout.module.css            | 6 [32m+++[m[31m---[m
+ src/components/sections/About/About.module.css     | 6 [32m+++[m[31m---[m
+ src/components/sections/About/About.tsx            | 2 [32m+[m[31m-[m
+ src/components/sections/About/AboutTransition.tsx  | 9 [32m+++[m[31m------[m
+ src/components/sections/About/aboutScroll.ts       | 2 [32m+[m[31m-[m
+ src/components/sections/Crew/Crew.tsx              | 2 [32m+[m[31m-[m
+ src/components/sections/Join/Join.tsx              | 2 [32m+[m[31m-[m
+ src/components/sections/Upcoming/WorkshopShelf.tsx | 2 [32m+[m[31m-[m
+ src/hooks/useLogoTransition.ts                     | 4 [32m++[m[31m--[m
+ 11 files changed, 23 insertions(+), 24 deletions(-)
