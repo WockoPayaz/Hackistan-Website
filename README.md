@@ -1,6 +1,6 @@
 # Hackistan Website
 
-The Hackistan homepage is a static Next.js export. Its sections are Hero, Now, About, Upcoming, Join, and The Crew. GSAP coordinates scroll transitions; the Hero, prism, and Upcoming shelf use separate Three.js scenes with SVG/DOM fallbacks where applicable.
+The Hackistan homepage is a static Next.js export. Its sections are Hero, Now, Projects&Gallery, About, Upcoming, Join, and The Crew. GSAP coordinates scroll transitions; the Hero, prism, and Upcoming shelf use separate Three.js scenes with SVG/DOM fallbacks where applicable.
 
 ## Run
 
@@ -17,9 +17,11 @@ npm run build
 
 ## Content and assets
 
-- `src/data/workshops.ts` supplies the current Boba Drops workshop. Its color banner is `public/images/boba-drops.webp`.
+- `src/data/workshops.ts` supplies the current workshop content. Workshop artwork lives in `public/images/`.
+- `src/data/projectsGallery.ts` supplies the Projects & Gallery items. Gallery images live in `public/projects-gallery/`.
 - `src/data/shelfItems.ts` supplies the Upcoming books. Their cover artwork lives in `public/shelf/covers/`.
 - `src/data/crew.ts` supplies the public roster. Portraits live in `public/crew/`; missing files use a neutral placeholder at build time.
+- `src/components/layout/SiteEnd.tsx` contains the footer social/contact links.
 - Geist is self-hosted. Its SIL Open Font License is in `public/fonts/OFL.txt`.
 
 ## Launch URLs
