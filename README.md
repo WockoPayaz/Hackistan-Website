@@ -24,4 +24,4 @@ npm run build
 
 ## Launch URLs
 
-The production origin is `https://hackistan.vercel.app`. Static builds emit a canonical URL, Open Graph/Twitter image URLs, `robots.txt`, and a homepage-only `sitemap.xml` from that origin by default. If Hackistan later moves to a custom domain, set `NEXT_PUBLIC_SITE_URL` to its HTTPS origin at build time. Do not set it to a preview deployment URL.
+The production origin is `https://www.hackistan.club/`. Static builds emit a canonical URL, Open Graph/Twitter image URLs, `robots.txt`, and a homepage-only `sitemap.xml` from that origin by default.
