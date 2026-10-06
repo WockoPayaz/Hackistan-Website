@@ -36,7 +36,7 @@ export function SiteEnd() {
           </a>
 
           <a 
-            href="mailto:shahfahadfarooq3015@gmail.com"
+            href="mailto:contact@hackistan.club"
             target="_blank"
             rel="noopener noreferrer"
           >
