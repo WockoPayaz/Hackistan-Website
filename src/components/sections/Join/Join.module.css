@@ -4,9 +4,13 @@
 .index { display: block; margin-bottom: clamp(1rem, 2.4svh, 2rem); }
 .intro h2 { margin: 0; font-size: clamp(4.5rem, 8.3vw, 10rem); line-height: .83; font-weight: 500; letter-spacing: -.08em; }
 .intro > p { max-width: 36ch; margin: clamp(1.5rem, 3.5svh, 3rem) 0 0; font-size: clamp(1rem, 1.25vw, 1.3rem); line-height: 1.42; }
-.cta { display: inline-flex; align-items: center; justify-content: space-between; gap: 2rem; min-width: min(100%, 320px); min-height: 56px; margin-top: clamp(1.5rem, 3svh, 3rem); padding: .75rem 1rem; background: #111415; color: #f2f0ea; font-size: .83rem; font-weight: 550; letter-spacing: .08em; text-decoration: none; }
-.cta:hover { background: #313738; }
-.cta:focus-visible { outline: 2px solid #111415; outline-offset: 4px; }
+.cta { display: inline-flex; align-items: center; justify-content: space-between; gap: 2rem; min-width: min(100%, 320px); min-height: 56px; margin-top: clamp(1.5rem, 3svh, 3rem); padding: .75rem 1rem; border: 1px solid #111415; background: #111415; box-shadow: 0 3px 0 #707775; color: #f2f0ea; font-size: .83rem; font-weight: 550; letter-spacing: .08em; text-decoration: none; cursor: pointer; transition: transform var(--duration-instant) var(--ease-standard), box-shadow var(--duration-instant) var(--ease-standard), background-color var(--duration-instant) var(--ease-standard); }
+.cta span { transition: transform var(--duration-instant) var(--ease-standard); }
+.cta:hover { transform: translateY(-2px); background: #313738; box-shadow: 0 5px 0 #707775; }
+.cta:hover span { transform: translate(2px, -2px); }
+.cta:active { transform: translateY(2px); box-shadow: 0 1px 0 #707775; }
+.cta:focus-visible { outline: 3px solid #111415; outline-offset: 5px; }
+@media (prefers-reduced-motion: reduce) { .cta, .cta span { transition: none; } .cta:hover, .cta:active, .cta:hover span { transform: none; } }
 .ctaLabel { display: block; margin-top: .75rem; color: #5e6362; }
 .details { align-self: start; }
 .row { display: grid; grid-template-columns: 26% 1fr; gap: 1rem; border-top: 1px solid #adb2ae; padding: .9rem 0 1rem; }

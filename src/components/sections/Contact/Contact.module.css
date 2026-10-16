@@ -1,0 +1,21 @@
+.section { position: relative; z-index: 5; background: #0b0c0d; color: #f2f0ea; }
+.inner { padding-block: clamp(3rem, 6svh, 6rem) clamp(4rem, 8svh, 8rem); }
+.topRule { height: 1px; background: rgb(242 240 234 / 22%); }
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .9fr); align-items: end; gap: clamp(2rem, 6vw, 8rem); padding-top: clamp(2rem, 4svh, 4rem); }
+.index { margin-bottom: clamp(1.5rem, 3svh, 3rem); font-size: .65rem; font-weight: 500; letter-spacing: .2em; }
+.layout h2 { margin: 0; font-size: clamp(4rem, 7vw, 9rem); font-weight: 500; line-height: .87; letter-spacing: -.07em; }
+.details { min-width: 0; padding-bottom: .3rem; }
+.intro { max-width: 38ch; color: #bec0bc; font-size: clamp(.95rem, 1.15vw, 1.2rem); line-height: 1.5; }
+.email { display: block; width: fit-content; max-width: 100%; min-height: 44px; margin-top: clamp(1.5rem, 3svh, 3rem); font-size: clamp(1.35rem, 2.35vw, 2.6rem); font-weight: 500; line-height: 1.2; letter-spacing: -.04em; overflow-wrap: anywhere; text-decoration: underline; text-underline-offset: .25em; }
+.email:hover, .socials a:hover { color: #fff; }
+.email:focus-visible, .socials a:focus-visible { outline: 2px solid #f2f0ea; outline-offset: 4px; }
+.socials { display: flex; flex-wrap: wrap; gap: .5rem 2rem; margin-top: clamp(1.5rem, 3svh, 3rem); padding-top: 1rem; border-top: 1px solid rgb(242 240 234 / 22%); }
+.socials a { display: inline-flex; align-items: center; gap: .45rem; min-height: 44px; color: #bec0bc; font-size: .65rem; font-weight: 500; letter-spacing: .14em; }
+@media (max-width: 767px) {
+  .inner { padding-block: 3rem 4rem; }
+  .layout { display: block; padding-top: 2rem; }
+  .index { margin-bottom: 1.5rem; }
+  .layout h2 { font-size: clamp(3.5rem, 13vw, 5.75rem); }
+  .details { margin-top: 2rem; }
+  .email { font-size: clamp(1.3rem, 6vw, 1.8rem); }
+}

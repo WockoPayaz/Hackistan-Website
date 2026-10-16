@@ -27,7 +27,7 @@ export function SiteHeader() {
     event.preventDefault();
     setOpen(false);
     // Release the dialog's native focus trap before moving focus to the section.
-    dialog.current?.close();
+    if (dialog.current?.open) dialog.current.close();
     requestAnimationFrame(() => scrollToSection(id));
   };
 
@@ -36,7 +36,10 @@ export function SiteHeader() {
       <div className={styles.headerBacking} aria-hidden="true" />
       <header className={styles.header}>
         <a href="#top" className={styles.home} aria-label="Hackistan — back to top"><span className={styles.headerMark}><HackistanMark /></span><span>Hackistan</span></a>
-        <button type="button" ref={button} className={`${styles.menuButton} eyebrow`} aria-haspopup="dialog" aria-expanded={open} aria-controls="site-menu" onClick={() => setOpen(true)}><span>Menu</span><span className={styles.plus} aria-hidden="true">+</span></button>
+        <div className={styles.headerActions}>
+          <a href="#join" className={`${styles.headerJoin} eyebrow`} onClick={(event) => navigate(event, "join")}>Join now <span aria-hidden="true">↘</span></a>
+          <button type="button" ref={button} className={`${styles.menuButton} eyebrow`} aria-haspopup="dialog" aria-expanded={open} aria-controls="site-menu" onClick={() => setOpen(true)}><span>Menu</span><span className={styles.plus} aria-hidden="true">+</span></button>
+        </div>
         <noscript><style>{`.${styles.menuButton}{display:none}`}</style><a href="#now" className="text-link eyebrow">Now ↓</a></noscript>
       </header>
       <dialog ref={dialog} id="site-menu" aria-label="Site navigation" className={styles.menu} onCancel={(event) => { event.preventDefault(); close(); }} onClose={() => setOpen(false)} onKeyDown={(event) => {
@@ -56,6 +59,7 @@ export function SiteHeader() {
           <a href="#upcoming" onClick={(event) => navigate(event, "upcoming")}><span className="eyebrow muted">04</span><span>Upcoming<small className={styles.navMeta}>Workshops / YSWS</small></span><span className={styles.navArrow} aria-hidden="true">↘</span></a>
           <a href="#join" onClick={(event) => navigate(event, "join")}><span className="eyebrow muted">05</span><span>Join<small className={styles.navMeta}>Membership</small></span><span className={styles.navArrow} aria-hidden="true">↘</span></a>
           <a href="#crew" onClick={(event) => navigate(event, "crew")}><span className="eyebrow muted">06</span><span>The Crew</span><span className={styles.navArrow} aria-hidden="true">↘</span></a>
+          <a href="#contact" onClick={(event) => navigate(event, "contact")}><span className="eyebrow muted">07</span><span>Contact<small className={styles.navMeta}>Email / Socials</small></span><span className={styles.navArrow} aria-hidden="true">↘</span></a>
         </nav>
         <p className={`${styles.menuEnd} eyebrow muted`}>Student-led. Built in Quetta.</p>
       </dialog>
