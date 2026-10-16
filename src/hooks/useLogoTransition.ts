@@ -83,13 +83,16 @@ export function useLogoTransition(ref: RefObject<HTMLDivElement | null>) {
     }, root);
 
     const hashJump = () => {
-      if (location.hash === "#now" || location.hash === "#top" || location.hash === "#projects" || location.hash === "#about" || location.hash === "#upcoming" || location.hash === "#join" || location.hash === "#crew") scrollToSection(location.hash.slice(1), true);
+      if (location.hash === "#now" || location.hash === "#top" || location.hash === "#projects" || location.hash === "#about" || location.hash === "#upcoming" || location.hash === "#join" || location.hash === "#crew" || location.hash === "#contact") {
+        scrollToSection(location.hash.slice(1), true);
+        if (location.hash === "#contact") document.getElementById("contact")?.focus({ preventScroll: true });
+      }
     };
     const anchorClick = (event: MouseEvent) => {
       if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       const target = event.target;
       if (!(target instanceof Element)) return;
-      const anchor = target.closest<HTMLAnchorElement>('a[href="#now"], a[href="#top"], a[href="#projects"], a[href="#about"], a[href="#upcoming"], a[href="#join"], a[href="#crew"]');
+      const anchor = target.closest<HTMLAnchorElement>('a[href="#now"], a[href="#top"], a[href="#projects"], a[href="#about"], a[href="#upcoming"], a[href="#join"], a[href="#crew"], a[href="#contact"]');
       if (!anchor) return;
       event.preventDefault();
       scrollToSection(anchor.hash.slice(1));
