@@ -16,9 +16,9 @@ export const projectsGalleryItems: readonly ProjectsGalleryItem[] = [
         id: "project-01",
         number: "01",
         kind: "project",
-        title: "Project One",
-        meta: "WORKSHOP PROJECT / 2026",
-        description: "A short detailed description of the project.",
+        title: "Boba Drops Workshop",
+        meta: "WORKSHOP / 2026",
+        description: "Leader Hackistan explaining the basics of HTML and CSS.",
         image: "/projects-gallery/project-01.webp",
         alt: "Project displayed at Hackistan"
     },
@@ -27,7 +27,7 @@ export const projectsGalleryItems: readonly ProjectsGalleryItem[] = [
         id: "meeting-01",
         number: "02",
         kind: "meeting",
-        title: "Club Meeting",
+        title: "WORKSHOP DAY",
         meta: "HACKISTAN / QUETTA / 2026",
         image: "/projects-gallery/meeting-01.webp",
         alt: "Hackistan Club Meeting"
@@ -37,7 +37,7 @@ export const projectsGalleryItems: readonly ProjectsGalleryItem[] = [
         id: "meeting-02",
         number: "03",
         kind: "meeting",
-        title: "WORKSHOP DAY",
+        title: "Members to work at Boba Drops Workshop",
         meta: "HACKISTAN / QUETTA / 2026",
         image: "/projects-gallery/meeting-02.webp",
         alt: "Hackistan Workshop Session"
