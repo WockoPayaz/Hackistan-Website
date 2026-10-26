@@ -24,6 +24,7 @@ export function SiteHeader() {
   const close = () => { dialog.current?.close(); setOpen(false); button.current?.focus(); };
   const navigate = (event: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    if (!document.getElementById(id)) return;
     event.preventDefault();
     setOpen(false);
     // Release the dialog's native focus trap before moving focus to the section.
@@ -35,12 +36,12 @@ export function SiteHeader() {
     <>
       <div className={styles.headerBacking} aria-hidden="true" />
       <header className={styles.header}>
-        <a href="#top" className={styles.home} aria-label="Hackistan — back to top"><span className={styles.headerMark}><HackistanMark /></span><span>Hackistan</span></a>
+        <a href="/#top" onClick={(event) => navigate(event, "top")} className={styles.home} aria-label="Hackistan — back to top"><span className={styles.headerMark}><HackistanMark /></span><span>Hackistan</span></a>
         <div className={styles.headerActions}>
-          <a href="#join" className={`${styles.headerJoin} eyebrow`} onClick={(event) => navigate(event, "join")}>Join now <span aria-hidden="true">↘</span></a>
+          <a href="/#join" className={`${styles.headerJoin} eyebrow`} onClick={(event) => navigate(event, "join")}>Join now <span aria-hidden="true">↘</span></a>
           <button type="button" ref={button} className={`${styles.menuButton} eyebrow`} aria-haspopup="dialog" aria-expanded={open} aria-controls="site-menu" onClick={() => setOpen(true)}><span>Menu</span><span className={styles.plus} aria-hidden="true">+</span></button>
         </div>
-        <noscript><style>{`.${styles.menuButton}{display:none}`}</style><a href="#now" className="text-link eyebrow">Now ↓</a></noscript>
+        <noscript><style>{`.${styles.menuButton}{display:none}`}</style><a href="/#now" className="text-link eyebrow">Now ↓</a></noscript>
       </header>
       <dialog ref={dialog} id="site-menu" aria-label="Site navigation" className={styles.menu} onCancel={(event) => { event.preventDefault(); close(); }} onClose={() => setOpen(false)} onKeyDown={(event) => {
         if (event.key !== "Tab") return;
@@ -52,14 +53,14 @@ export function SiteHeader() {
       }}>
         <div className={styles.menuHeader}><span className="eyebrow">Hackistan / Quetta</span><button className={`${styles.menuButton} eyebrow`} type="button" onClick={close} autoFocus><span>Close</span><span className={styles.plus} aria-hidden="true">×</span></button></div>
         <nav aria-label="Main navigation" className={styles.menuLinks}>
-          <a href="#top" onClick={(event) => navigate(event, "top")}><span className="eyebrow muted">00</span><span>Top</span><span className={styles.navArrow} aria-hidden="true">↗</span></a>
-          <a href="#now" onClick={(event) => navigate(event, "now")}><span className="eyebrow muted">01</span><span>Now</span><span className={styles.navArrow} aria-hidden="true">↘</span></a>
-          <a href="#projects" onClick={(event) => navigate(event, "projects")}><span className="eyebrow muted">02</span><span>Projects & Gallery<small className={styles.navMeta}> Builds / Club </small></span><span className={styles.navArrow} aria-hidden="true">↘</span></a>
-          <a href="#about" onClick={(event) => navigate(event, "about")}><span className="eyebrow muted">03</span><span>About</span><span className={styles.navArrow} aria-hidden="true">↘</span></a>
-          <a href="#upcoming" onClick={(event) => navigate(event, "upcoming")}><span className="eyebrow muted">04</span><span>Upcoming<small className={styles.navMeta}>Workshops / YSWS</small></span><span className={styles.navArrow} aria-hidden="true">↘</span></a>
-          <a href="#join" onClick={(event) => navigate(event, "join")}><span className="eyebrow muted">05</span><span>Join<small className={styles.navMeta}>Membership</small></span><span className={styles.navArrow} aria-hidden="true">↘</span></a>
-          <a href="#crew" onClick={(event) => navigate(event, "crew")}><span className="eyebrow muted">06</span><span>The Crew</span><span className={styles.navArrow} aria-hidden="true">↘</span></a>
-          <a href="#contact" onClick={(event) => navigate(event, "contact")}><span className="eyebrow muted">07</span><span>Contact<small className={styles.navMeta}>Email / Socials</small></span><span className={styles.navArrow} aria-hidden="true">↘</span></a>
+          <a href="/#top" onClick={(event) => navigate(event, "top")}><span className="eyebrow muted">00</span><span>Top</span><span className={styles.navArrow} aria-hidden="true">↗</span></a>
+          <a href="/#now" onClick={(event) => navigate(event, "now")}><span className="eyebrow muted">01</span><span>Now</span><span className={styles.navArrow} aria-hidden="true">↘</span></a>
+          <a href="/#projects" onClick={(event) => navigate(event, "projects")}><span className="eyebrow muted">02</span><span>Projects & Gallery<small className={styles.navMeta}> Builds / Club </small></span><span className={styles.navArrow} aria-hidden="true">↘</span></a>
+          <a href="/#about" onClick={(event) => navigate(event, "about")}><span className="eyebrow muted">03</span><span>About</span><span className={styles.navArrow} aria-hidden="true">↘</span></a>
+          <a href="/#upcoming" onClick={(event) => navigate(event, "upcoming")}><span className="eyebrow muted">04</span><span>Upcoming<small className={styles.navMeta}>Workshops / YSWS</small></span><span className={styles.navArrow} aria-hidden="true">↘</span></a>
+          <a href="/#join" onClick={(event) => navigate(event, "join")}><span className="eyebrow muted">05</span><span>Join<small className={styles.navMeta}>Membership</small></span><span className={styles.navArrow} aria-hidden="true">↘</span></a>
+          <a href="/#crew" onClick={(event) => navigate(event, "crew")}><span className="eyebrow muted">06</span><span>The Crew</span><span className={styles.navArrow} aria-hidden="true">↘</span></a>
+          <a href="/#contact" onClick={(event) => navigate(event, "contact")}><span className="eyebrow muted">07</span><span>Contact<small className={styles.navMeta}>Email / Socials</small></span><span className={styles.navArrow} aria-hidden="true">↘</span></a>
         </nav>
         <p className={`${styles.menuEnd} eyebrow muted`}>Student-led. Built in Quetta.</p>
       </dialog>

@@ -14,6 +14,8 @@ import {
     type ProjectsGalleryItem,
 } from '@/data/projectsGallery';
 
+import { WorkshopTiles } from "./WorkshopTiles";
+
 import styles from "./ProjectsGallery.module.css";
 
 function GalleryItem({ item, onOpen, }: { item: ProjectsGalleryItem; onOpen: () => void; }) {
@@ -251,6 +253,7 @@ return (
                 }}/>
             ))}
         </div>
+        <WorkshopTiles />
     </div>
 
     

@@ -68,7 +68,7 @@ export function WorkshopShelf({ items }: { items: readonly ShelfItem[] }) {
     </div>
     <div className={styles.groups} aria-label="Shelf groups">
       {(["hackistan-workshops", "featured-ysws"] as const).map((group) =>
-        <span key={group} className={activeItem?.group === group ? styles.groupActive : ""}>{group === "hackistan-workshops" ? "UPCOMING WORKSHOPS" : "FEATURED YSWS"}</span>
+        <span key={group} className={activeItem?.group === group ? styles.groupActive : ""}>{group === "hackistan-workshops" ? "HACKISTAN WORKSHOPS" : "FEATURED YSWS"}</span>
       )}
     </div>
     <canvas ref={canvas} className={`${styles.canvas} ${ready && !failed ? styles.canvasReady : ""}`} data-shelf-canvas tabIndex={0} aria-label="Interactive workshop shelf. Use left and right arrows to browse, Enter to open, Escape to close." />
@@ -90,7 +90,7 @@ export function WorkshopShelf({ items }: { items: readonly ShelfItem[] }) {
     </div>}
     <ol className={`${styles.catalog} ${ready && !failed ? styles.catalogAccessible : ""}`} aria-label="Upcoming shelf catalog">
       {items.map((item, index) => <li key={item.id}>
-        <span>{item.group === "featured-ysws" ? "FEATURED YSWS" : "UPCOMING WORKSHOPS"} · {item.statusLabel}</span>
+        <span>{item.group === "featured-ysws" ? "FEATURED YSWS" : "HACKISTAN WORKSHOPS"} · {item.statusLabel}</span>
         <strong>{item.title}</strong>
         <small>{item.dateLabel}</small>
         <p>{item.shortDescription}</p>
