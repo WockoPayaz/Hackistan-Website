@@ -54,3 +54,7 @@
   .description { grid-column: 1 / -1; grid-row: 6; padding-top: 0; max-width: 32ch; }
   .description p { font-size: 16px; }
 }
+
+.exploreButton { display: inline-flex; align-items: center; justify-content: space-between; gap: 1.5rem; min-height: 48px; margin-top: 1.25rem; padding: 1rem 1.25rem; background: #f2f0ea; color: #0b0c0d; border: 1px solid #f2f0ea; border-radius: 4px; font-weight: 600; transition: background .2s, color .2s; }
+.exploreButton:hover { background: #fff; color: #0b0c0d; }
+.exploreButton:focus-visible { outline: 2px solid #f2f0ea; outline-offset: 5px; }

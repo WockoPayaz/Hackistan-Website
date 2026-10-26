@@ -23,7 +23,7 @@ export function CurrentWorkshop({ workshop }: { workshop?: Workshop }) {
           {(workshop.titleLines ?? [workshop.title]).map((line) => <span className="clip-line" key={line}><span data-now-title>{line}</span></span>)}
         </h2>
         <WorkshopMeta workshop={workshop} />
-        <div className={styles.description} data-now-reveal><p className="body-copy">{workshop.shortDescription}</p>{workshop.href && <a href={workshop.href} className="text-link eyebrow"><span>Explore workshop</span><span><Arrow direction="right" /></span></a>}</div>
+        <div className={styles.description} data-now-reveal><p className="body-copy">{workshop.shortDescription}</p>{workshop.href && <a href={workshop.href} className={`${styles.exploreButton} eyebrow`}><span>Explore workshop</span><span><Arrow direction="right" /></span></a>}</div>
       </article>
     </section>
   );

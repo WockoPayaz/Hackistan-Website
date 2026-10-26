@@ -32,7 +32,7 @@ The supplied reference banner was not used as final artwork. Simple SVG placehol
 
 Pages: `/workshops/bakebuild/`, `/workshops/boba-drops/`, `/workshops/vibes/`, `/workshops/fusering/`.
 
-BakeBuild dates are intentionally unspecified. Boba Drops is marked concluded for 19–27 October 2026 with 12 accepted submissions, as requested. Its details page links to the supplied Hack Club club page.
+BakeBuild runs 27 October–2 November 2026. Boba Drops is marked concluded for 19–27 October 2026 with 12 accepted submissions, as requested. Its details page links to the supplied Hack Club club page.
 
 ## Build
 

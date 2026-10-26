@@ -6,7 +6,7 @@ export const workshops: readonly Workshop[] = [
   {
     id: "bakebuild", slug: "bakebuild", title: "BakeBuild", titleLines: ["Bake", "Build"],
     shortDescription: "Learn CAD by designing your own cookie cutter in Onshape. Turn your design into a 3D print, then bring on the cookies!",
-    status: "current", dateLabel: "Dates to be announced", difficulty: "Beginner",
+    status: "current", startDate: "2026-10-27", endDate: "2026-11-02", dateLabel: "27 Oct–2 Nov 2026", difficulty: "Beginner",
     tags: ["CAD", "3D Printing"], coverImage: "/images/bakebuild.svg",
     coverAlt: "BakeBuild workshop", tileImage: "/workshops/bakebuild.svg",
     href: "/workshops/bakebuild/", location: "Quetta, Pakistan",
