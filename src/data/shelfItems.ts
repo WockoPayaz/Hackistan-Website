@@ -67,7 +67,7 @@ export const shelfItems: readonly ShelfItem[] = [
   kind: "workshop", group: "hackistan-workshops", status: "current",
   statusLabel: "CURRENT", dateLabel: "27 OCT–2 NOV 2026",
   shortDescription: "Learn CAD, design your own cookie cutter, get it printed, and make cookies!",
-  coverImage: "/shelf/covers/bakebuild.svg", href: "/workshops/bakebuild/",
+  coverImage: "/shelf/covers/bakebuild.webp", href: "/workshops/bakebuild/",
   ctaLabel: "EXPLORE WORKSHOP →", external: false, sourceUrl: "https://bakebuild.hackclub.com/",
   spineLabel: "WORKSHOP 02", color: "#789AB7", foil: "#F2F0EA",
   width: 1.04, height: 1.64, depth: 0.28, emphasis: true,
