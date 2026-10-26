@@ -7,8 +7,8 @@ The supplied reference banner was not used as final artwork. Simple SVG placehol
 - Make each image **1600 × 1000 px (8:5)**. WebP recommended; JPG/PNG also work.
 - Put the main illustration in the **upper-right half**. Leave the bottom **55%**, particularly the lower-left, quiet for the title, description and button.
 - Leave the top 15% quiet for the workshop number/tags and status. Keep important artwork at least 8% away from the edges.
-- The button is in the lower-left, with approximately 24–44 px of padding. Do not draw text or buttons into your image: the site supplies them.
-- A dark gradient is added by the site for readability. On phones, cards are taller and crop the image's left/right edges; keep the main subject near the center-right, not at the extreme edge.
+- The button is in the lower-left, with approximately 19–32 px of padding. Do not draw text or buttons into your image: the site supplies them.
+- A dark gradient is added by the site for readability. The compact cards crop images to fit their available space; keep the main subject near the center-right, not at the extreme edge.
 - Save images in `public/workshops/`: `bakebuild.webp`, `boba-drops.webp`, `vibes.webp`, `fusering.webp`.
 - In `src/data/workshops.ts`, change each `tileImage` from `/workshops/NAME.svg` to `/workshops/NAME.webp`. This also updates the background on that workshop's details page.
 

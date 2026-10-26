@@ -4,8 +4,7 @@ import styles from "./WorkshopTiles.module.css";
 export function WorkshopTiles() {
   return <div className={styles.workshops} aria-labelledby="workshop-archive-title">
     <header className={styles.heading}>
-      <div><p className="eyebrow">The workshops behind the builds</p><h3 id="workshop-archive-title">Small starts. Real things.</h3></div>
-      <p>Explore each workshop, what we made, and what comes next.</p>
+      <h3 id="workshop-archive-title">Explore Details on Projects &amp; Workshops.</h3>
     </header>
     <div className={styles.grid}>
       {workshops.map((workshop, index) => <article className={styles.tile} key={workshop.id} style={{ backgroundImage: `linear-gradient(180deg, rgba(0,0,0,.12), rgba(0,0,0,.85)), url("${workshop.tileImage}")` }}>
