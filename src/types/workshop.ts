@@ -22,12 +22,15 @@ export interface Workshop {
   titleLines?: readonly string[];
   shortDescription: string;
   status: WorkshopStatus;
-  startDate: string;
+  startDate?: string;
   endDate?: string;
   difficulty?: string;
   session?: number;
   totalSessions?: number;
   tags: readonly string[];
+  dateLabel?: string;
+  acceptedSubmissions?: number;
+  tileImage?: string;
   coverImage?: string;
   coverAlt?: string;
   coverCredit?: { label: string; url: string };

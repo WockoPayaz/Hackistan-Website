@@ -1,5 +1,5 @@
 export type ShelfItemKind = "workshop" | "ysws";
-export type ShelfItemStatus = "current" | "planned" | "active";
+export type ShelfItemStatus = "current" | "planned" | "active" | "completed";
 export type ShelfItemGroup = "hackistan-workshops" | "featured-ysws";
 
 export type ShelfItem = {
@@ -36,17 +36,17 @@ export const shelfItems: readonly ShelfItem[] = [
   kind: "workshop",
   group: "hackistan-workshops",
 
-  status: "current",
-  statusLabel: "UP NEXT",
-  dateLabel: "05–09 OCT 2026",
+  status: "completed",
+  statusLabel: "CONCLUDED",
+  dateLabel: "19–27 OCT 2026",
 
   shortDescription:
-    "Build and publish your own website with HTML, then submit it through Boba Drops.",
+    "12 accepted submissions. We built and published our own websites with HTML and CSS.",
 
   coverImage: "/shelf/covers/boba-drops.webp",
 
-  href: null,
-  ctaLabel: "DETAILS COMING SOON",
+  href: "/workshops/boba-drops/",
+  ctaLabel: "EXPLORE WORKSHOP →",
   external: false,
 
   sourceUrl: "https://boba.hackclub.com/",
@@ -60,7 +60,17 @@ export const shelfItems: readonly ShelfItem[] = [
   height: 1.64,
   depth: 0.28,
 
-  emphasis: true
+  emphasis: false
+},
+{
+  id: "bakebuild", slug: "bakebuild", title: "BakeBuild",
+  kind: "workshop", group: "hackistan-workshops", status: "current",
+  statusLabel: "CURRENT", dateLabel: "DATES TBA",
+  shortDescription: "Learn CAD, design your own cookie cutter, get it printed, and make cookies!",
+  coverImage: "/shelf/covers/bakebuild.svg", href: "/workshops/bakebuild/",
+  ctaLabel: "EXPLORE WORKSHOP →", external: false, sourceUrl: "https://bakebuild.hackclub.com/",
+  spineLabel: "WORKSHOP 02", color: "#789AB7", foil: "#F2F0EA",
+  width: 1.04, height: 1.64, depth: 0.28, emphasis: true,
 },
 {
   id: "vibes",
@@ -72,20 +82,20 @@ export const shelfItems: readonly ShelfItem[] = [
 
   status: "planned",
   statusLabel: "PLANNED",
-  dateLabel: "AFTER BOBA DROPS · DATE TBA",
+  dateLabel: "DATE TBA",
 
   shortDescription:
     "Start with an AI-assisted website, edit the code yourself, and add your own features to make it truly yours.",
 
   coverImage: "/shelf/covers/vibes.webp",
 
-  href: null,
-  ctaLabel: "DETAILS COMING SOON",
+  href: "/workshops/vibes/",
+  ctaLabel: "EXPLORE WORKSHOP →",
   external: false,
 
   sourceUrl: "https://vibes.hackclub.com/",
 
-  spineLabel: "WORKSHOP 02",
+  spineLabel: "WORKSHOP 03",
 
   color: "#21132C",
   foil: "#F2DFF0",
@@ -111,13 +121,13 @@ export const shelfItems: readonly ShelfItem[] = [
 
   coverImage: "/shelf/covers/fusering.webp",
 
-  href: null,
-  ctaLabel: "DETAILS COMING SOON",
+  href: "/workshops/fusering/",
+  ctaLabel: "EXPLORE WORKSHOP →",
   external: false,
 
   sourceUrl: "https://fusering.hackclub.com/",
 
-  spineLabel: "WORKSHOP 03",
+  spineLabel: "WORKSHOP 04",
 
   color: "#C7899F",
   foil: "#F7F0DE",
