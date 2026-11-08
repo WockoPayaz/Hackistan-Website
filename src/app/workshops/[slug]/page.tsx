@@ -34,7 +34,7 @@ export default async function WorkshopPage({ params }: { params: Promise<{ slug:
       </section>
     </div>
     {workshop.photos && <section className={styles.gallery} aria-labelledby="photos-title">
-      <h2 id="photos-title">Workshop photos</h2>
+      <h2 id="photos-title">{workshop.kind === "Game jam" ? "Game jam gallery" : "Workshop photos"}</h2>
       <div className={styles.photos}>{workshop.photos.map(({ number, src, alt }) =>
         <figure key={number}>{src
           ? <img src={src} alt={alt} width={1200} height={900} loading="lazy" />

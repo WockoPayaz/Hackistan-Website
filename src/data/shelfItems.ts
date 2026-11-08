@@ -1,4 +1,4 @@
-import { bakebuild, fusering, workshopStatusLabel } from "./workshops";
+import { bakebuild, fusering, ghostship, workshopStatusLabel } from "./workshops";
 
 export type ShelfItemKind = "workshop" | "ysws";
 export type ShelfItemStatus = "current" | "planned" | "active" | "completed";
@@ -75,38 +75,6 @@ export const shelfItems: readonly ShelfItem[] = [
   width: 1.04, height: 1.64, depth: 0.28,
 },
 {
-  id: "vibes",
-  slug: "vibes",
-  title: "Vibes",
-
-  kind: "workshop",
-  group: "hackistan-workshops",
-
-  status: "planned",
-  statusLabel: "PLANNED",
-  dateLabel: "DATE TBA",
-
-  shortDescription:
-    "Start with an AI-assisted website, edit the code yourself, and add your own features to make it truly yours.",
-
-  coverImage: "/shelf/covers/vibes.webp",
-
-  href: "/workshops/vibes/",
-  ctaLabel: "EXPLORE WORKSHOP →",
-  external: false,
-
-  sourceUrl: "https://vibes.hackclub.com/",
-
-  spineLabel: "WORKSHOP 03",
-
-  color: "#21132C",
-  foil: "#F2DFF0",
-
-  width: 1.10,
-  height: 1.51,
-  depth: 0.23
-},
-{
   id: "fusering",
   slug: "fusering",
   title: fusering.title,
@@ -134,6 +102,47 @@ export const shelfItems: readonly ShelfItem[] = [
   width: 0.98,
   height: 1.48,
   depth: 0.31
+},
+{
+  id: ghostship.id, slug: ghostship.slug, title: ghostship.title,
+  kind: "workshop", group: "hackistan-workshops", status: "planned",
+  statusLabel: "PLANNED", dateLabel: ghostship.dateLabel.toUpperCase(),
+  shortDescription: ghostship.shortDescription, href: ghostship.href,
+  coverImage: "", ctaLabel: "EXPLORE WORKSHOP →", external: false, sourceUrl: ghostship.resources[0].url,
+  spineLabel: "WORKSHOP 05", color: "#242d30", foil: "#e8ebe4",
+  width: 1.02, height: 1.55, depth: 0.25,
+},
+{
+  id: "vibes",
+  slug: "vibes",
+  title: "Vibes",
+
+  kind: "workshop",
+  group: "hackistan-workshops",
+
+  status: "planned",
+  statusLabel: "PLANNED",
+  dateLabel: "DATE TBA",
+
+  shortDescription:
+    "Start with an AI-assisted website, edit the code yourself, and add your own features to make it truly yours.",
+
+  coverImage: "/shelf/covers/vibes.webp",
+
+  href: "/workshops/vibes/",
+  ctaLabel: "EXPLORE WORKSHOP →",
+  external: false,
+
+  sourceUrl: "https://vibes.hackclub.com/",
+
+  spineLabel: "WORKSHOP 06",
+
+  color: "#21132C",
+  foil: "#F2DFF0",
+
+  width: 1.10,
+  height: 1.51,
+  depth: 0.23
 },
 {
   id: "stardance",

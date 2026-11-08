@@ -11,7 +11,7 @@ export type CrewMember = {
 
 export const crew: readonly CrewMember[] = [
   {
-    id: "member-01", number: "01", name: "FAHAD FAROOQ", role: "CLUB LEAD",
+    id: "member-01", number: "01", name: "FAHAD FAROOQ", role: "Founder & Leader",
     description: "Leads Hackistan’s direction, workshops, and Hack Club coordination, and is the sole developer behind the Hackistan website.",
     image: "/crew/member-01.webp",
   },

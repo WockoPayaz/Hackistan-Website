@@ -44,7 +44,9 @@ Keep the main subject within the central 70% of each cover and leave the lower l
 
 `src/data/workshops.ts` supplies the NOW feature, archive tiles, static detail pages and sitemap. The shelf consumes the BakeBuild and Fusering records in `src/data/shelfItems.ts`, alongside the existing book artwork and dimensions.
 
-Archive routes under `/workshops/` are `bakebuild/`, `boba-drops/`, `vibes/`, `fusering/` and `the-lost-key/`.
+Use the same three 1200 × 900 photo slots for Boba Drops, FuseRing and the game jam. In `public/workshops/`, use `boba-drops-01.webp`, `fusering-01.webp` or `the-lost-key-01.webp` for the first image and repeat with `02` and `03`.
+
+Archive routes under `/workshops/` are `bakebuild/`, `boba-drops/`, `vibes/`, `fusering/` `ghostship/` and `the-lost-key/`.
 
 ## Build
 
