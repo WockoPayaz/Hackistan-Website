@@ -1,3 +1,5 @@
+import { bakebuild, fusering, ghostship, workshopStatusLabel } from "./workshops";
+
 export type ShelfItemKind = "workshop" | "ysws";
 export type ShelfItemStatus = "current" | "planned" | "active" | "completed";
 export type ShelfItemGroup = "hackistan-workshops" | "featured-ysws";
@@ -64,13 +66,52 @@ export const shelfItems: readonly ShelfItem[] = [
 },
 {
   id: "bakebuild", slug: "bakebuild", title: "BakeBuild",
-  kind: "workshop", group: "hackistan-workshops", status: "current",
-  statusLabel: "CURRENT", dateLabel: "27 OCT–2 NOV 2026",
-  shortDescription: "Learn CAD, design your own cookie cutter, get it printed, and make cookies!",
+  kind: "workshop", group: "hackistan-workshops", status: bakebuild.status,
+  statusLabel: workshopStatusLabel(bakebuild).toUpperCase(), dateLabel: bakebuild.dateLabel.toUpperCase(),
+  shortDescription: `${bakebuild.acceptedSubmissions} approved submissions. ${bakebuild.shortDescription}`,
   coverImage: "/shelf/covers/bakebuild.webp", href: "/workshops/bakebuild/",
   ctaLabel: "EXPLORE WORKSHOP →", external: false, sourceUrl: "https://bakebuild.hackclub.com/",
   spineLabel: "WORKSHOP 02", color: "#789AB7", foil: "#F2F0EA",
-  width: 1.04, height: 1.64, depth: 0.28, emphasis: true,
+  width: 1.04, height: 1.64, depth: 0.28,
+},
+{
+  id: "fusering",
+  slug: "fusering",
+  title: fusering.title,
+  kind: "workshop",
+  group: "hackistan-workshops",
+  status: fusering.status,
+  statusLabel: workshopStatusLabel(fusering).toUpperCase(),
+  dateLabel: fusering.dateLabel.toUpperCase(),
+  shortDescription: fusering.shortDescription,
+  emphasis: true,
+
+  coverImage: "/shelf/covers/fusering.webp",
+
+  href: "/workshops/fusering/",
+  ctaLabel: "EXPLORE WORKSHOP →",
+  external: false,
+
+  sourceUrl: "https://fusering.hackclub.com/",
+
+  spineLabel: "WORKSHOP 04",
+
+  color: "#C7899F",
+  foil: "#F7F0DE",
+
+  width: 0.98,
+  height: 1.48,
+  depth: 0.31
+},
+{
+  id: ghostship.id, slug: ghostship.slug, title: ghostship.title,
+  kind: "workshop", group: "hackistan-workshops", status: "planned",
+  statusLabel: "PLANNED", dateLabel: ghostship.dateLabel.toUpperCase(),
+  shortDescription: "What makes a game feel spooky? Try a flickering light, a ticking clock or something moving just offscreen. Build your idea in p5.js.",
+  href: ghostship.href,
+  coverImage: "/shelf/covers/ghostship.webp", ctaLabel: "EXPLORE WORKSHOP →", external: false, sourceUrl: ghostship.resources[0].url,
+  spineLabel: "WORKSHOP 05", color: "#242d30", foil: "#e8ebe4",
+  width: 1.02, height: 1.55, depth: 0.25,
 },
 {
   id: "vibes",
@@ -95,7 +136,7 @@ export const shelfItems: readonly ShelfItem[] = [
 
   sourceUrl: "https://vibes.hackclub.com/",
 
-  spineLabel: "WORKSHOP 03",
+  spineLabel: "WORKSHOP 06",
 
   color: "#21132C",
   foil: "#F2DFF0",
@@ -103,38 +144,6 @@ export const shelfItems: readonly ShelfItem[] = [
   width: 1.10,
   height: 1.51,
   depth: 0.23
-},
-{
-  id: "fusering",
-  slug: "fusering",
-  title: "FuseRing",
-
-  kind: "workshop",
-  group: "hackistan-workshops",
-
-  status: "planned",
-  statusLabel: "PLANNED",
-  dateLabel: "AFTER VIBES · DATE TBA",
-
-  shortDescription:
-    "Design a custom keyring in CAD, follow the project requirements, and get your creation printed and shipped.",
-
-  coverImage: "/shelf/covers/fusering.webp",
-
-  href: "/workshops/fusering/",
-  ctaLabel: "EXPLORE WORKSHOP →",
-  external: false,
-
-  sourceUrl: "https://fusering.hackclub.com/",
-
-  spineLabel: "WORKSHOP 04",
-
-  color: "#C7899F",
-  foil: "#F7F0DE",
-
-  width: 0.98,
-  height: 1.48,
-  depth: 0.31
 },
 {
   id: "stardance",

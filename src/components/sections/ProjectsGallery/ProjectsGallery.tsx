@@ -14,11 +14,10 @@ import {
     type ProjectsGalleryItem,
 } from '@/data/projectsGallery';
 
-import { WorkshopTiles } from "./WorkshopTiles";
-
+import { padNumber } from "@/lib/format";
 import styles from "./ProjectsGallery.module.css";
 
-function GalleryItem({ item, onOpen, }: { item: ProjectsGalleryItem; onOpen: () => void; }) {
+function GalleryItem({ item, index, onOpen }: { index: number; item: ProjectsGalleryItem; onOpen: () => void; }) {
     const isProject = item.kind === "project";
 
     return (
@@ -47,7 +46,7 @@ function GalleryItem({ item, onOpen, }: { item: ProjectsGalleryItem; onOpen: () 
 
 
         <span className={styles.imageNumber} aria-hidden="true">
-            {item.number}
+            {padNumber(index + 1)}
         </span>
         </button>
 
@@ -85,7 +84,7 @@ function GalleryItem({ item, onOpen, }: { item: ProjectsGalleryItem; onOpen: () 
 }
 
   
-export function ProjectsGallery() {
+export function ProjectsGallery({ children }: { children: React.ReactNode }) {
 
     const railRef = useRef<HTMLDivElement>(null);
 
@@ -244,7 +243,7 @@ return (
             onPointerCancel={handlePointerEnd}
         >
             {projectsGalleryItems.map((item, index) => (
-                <GalleryItem key={item.id} item={item} onOpen={() => {
+                <GalleryItem index={index} key={item.id} item={item} onOpen={() => {
                     if (dragState.current.moved) {
                         dragState.current.moved = false;
                         return;
@@ -253,7 +252,7 @@ return (
                 }}/>
             ))}
         </div>
-        <WorkshopTiles />
+        {children}
     </div>
 
     

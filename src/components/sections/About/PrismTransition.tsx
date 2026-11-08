@@ -177,7 +177,7 @@ export function PrismTransition() {
         onUpdate: update,
       })
         .to(position, { value: 1, duration: 1 }, 0)
-        .fromTo(descriptions, { opacity: 1, y: 0 }, { opacity: 0, y: -12, duration: 0.12, stagger: 0.005, immediateRender: false }, 0)
+        .fromTo(descriptions, { autoAlpha: 1, y: 0 }, { autoAlpha: 0, y: -12, duration: 0.12, stagger: 0.005, immediateRender: false }, 0)
         .fromTo(lines, { clipPath: "inset(0 0% 0 0)" }, { clipPath: "inset(0 100% 0 0)", duration: 0.08, stagger: 0.005, immediateRender: false }, 0.08)
         .fromTo(index, { opacity: 1 }, { opacity: 0, duration: 0.06, immediateRender: false }, 0.12)
         .fromTo([grid, pluses], { opacity: 1 }, { opacity: 0.28, duration: 0.14, immediateRender: false }, 0.14)

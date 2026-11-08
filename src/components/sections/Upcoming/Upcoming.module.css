@@ -56,3 +56,7 @@
   .detail .close { float: right; }
   .catalog { top: 24%; bottom: 15%; grid-template-columns: 1fr; }
 }
+
+/* The catalog supplies the links until the 3D shelf is available. */
+.section:not([data-shelf-ready="true"]) :is(.controls, .browseHint) { display: none; }
+.section:not([data-shelf-ready="true"]) .catalog a { display: inline-flex; align-items: center; min-height: 44px; }

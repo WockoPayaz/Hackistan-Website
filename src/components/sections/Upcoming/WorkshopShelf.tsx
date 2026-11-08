@@ -71,7 +71,7 @@ export function WorkshopShelf({ items }: { items: readonly ShelfItem[] }) {
         <span key={group} className={activeItem?.group === group ? styles.groupActive : ""}>{group === "hackistan-workshops" ? "HACKISTAN WORKSHOPS" : "FEATURED YSWS"}</span>
       )}
     </div>
-    <canvas ref={canvas} className={`${styles.canvas} ${ready && !failed ? styles.canvasReady : ""}`} data-shelf-canvas tabIndex={0} aria-label="Interactive workshop shelf. Use left and right arrows to browse, Enter to open, Escape to close." />
+    <canvas ref={canvas} className={`${styles.canvas} ${ready && !failed ? styles.canvasReady : ""}`} data-shelf-canvas tabIndex={ready && !failed ? 0 : -1} aria-hidden={!ready || failed} aria-label="Interactive workshop shelf. Use left and right arrows to browse, Enter to open, Escape to close." />
     <p className={styles.browseHint}><span>DRAG TO BROWSE · ARROWS TO NAVIGATE</span><span>SWIPE TO BROWSE · TAP TO OPEN</span></p>
     <div className={styles.controls}>
       <button type="button" onClick={() => controller.current?.navigate(-1)} disabled={!ready || failed || open !== null || active === 0} aria-label="Previous book">←</button>
@@ -94,7 +94,7 @@ export function WorkshopShelf({ items }: { items: readonly ShelfItem[] }) {
         <strong>{item.title}</strong>
         <small>{item.dateLabel}</small>
         <p>{item.shortDescription}</p>
-        {ready && <button type="button" onClick={() => controller.current?.open(index)}>Open book</button>}
+        {ready && !failed && <button type="button" onClick={() => controller.current?.open(index)}>Open book</button>}
         {item.href ? <a href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noopener noreferrer" : undefined}>{item.ctaLabel}</a> : <span>{item.ctaLabel}</span>}
       </li>)}
     </ol>
