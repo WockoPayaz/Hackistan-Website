@@ -31,6 +31,8 @@ export function scrollToSection(id: string, immediate = false) {
   const top = sectionScrollTop(id);
   if (top === undefined) return;
   cancelPendingFocus?.();
+  // Join has its own scroll area on short screens. An explicit link returns to the application.
+  if (id === "join") document.getElementById(id)?.scrollTo({ top: 0, behavior: "instant" });
   window.scrollTo({ top, behavior: immediate ? "instant" : "smooth" });
   if (!immediate) {
     if (location.hash !== `#${id}`) history.pushState(null, "", `#${id}`);

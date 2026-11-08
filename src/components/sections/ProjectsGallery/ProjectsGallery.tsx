@@ -14,8 +14,6 @@ import {
     type ProjectsGalleryItem,
 } from '@/data/projectsGallery';
 
-import { WorkshopTiles } from "./WorkshopTiles";
-
 import styles from "./ProjectsGallery.module.css";
 
 function GalleryItem({ item, onOpen, }: { item: ProjectsGalleryItem; onOpen: () => void; }) {
@@ -85,7 +83,7 @@ function GalleryItem({ item, onOpen, }: { item: ProjectsGalleryItem; onOpen: () 
 }
 
   
-export function ProjectsGallery() {
+export function ProjectsGallery({ children }: { children: React.ReactNode }) {
 
     const railRef = useRef<HTMLDivElement>(null);
 
@@ -253,7 +251,7 @@ return (
                 }}/>
             ))}
         </div>
-        <WorkshopTiles />
+        {children}
     </div>
 
     

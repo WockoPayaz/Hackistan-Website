@@ -19,6 +19,14 @@ export interface Workshop {
   id: string;
   slug: string;
   title: string;
+  kind?: "Game jam";
+  edition?: string;
+  statusLabel?: string;
+  description?: string;
+  submissionLabel?: string;
+  fulfillmentNote?: string;
+  photos?: readonly { number: string; src?: string; alt: string }[];
+  facts?: readonly { label: string; value: string }[];
   titleLines?: readonly string[];
   shortDescription: string;
   status: WorkshopStatus;

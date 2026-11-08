@@ -1,3 +1,5 @@
+import { bakebuild, fusering, workshopStatusLabel } from "./workshops";
+
 export type ShelfItemKind = "workshop" | "ysws";
 export type ShelfItemStatus = "current" | "planned" | "active" | "completed";
 export type ShelfItemGroup = "hackistan-workshops" | "featured-ysws";
@@ -64,13 +66,13 @@ export const shelfItems: readonly ShelfItem[] = [
 },
 {
   id: "bakebuild", slug: "bakebuild", title: "BakeBuild",
-  kind: "workshop", group: "hackistan-workshops", status: "current",
-  statusLabel: "CURRENT", dateLabel: "27 OCT–2 NOV 2026",
-  shortDescription: "Learn CAD, design your own cookie cutter, get it printed, and make cookies!",
+  kind: "workshop", group: "hackistan-workshops", status: bakebuild.status,
+  statusLabel: workshopStatusLabel(bakebuild).toUpperCase(), dateLabel: bakebuild.dateLabel.toUpperCase(),
+  shortDescription: `${bakebuild.acceptedSubmissions} approved submissions. ${bakebuild.shortDescription}`,
   coverImage: "/shelf/covers/bakebuild.webp", href: "/workshops/bakebuild/",
   ctaLabel: "EXPLORE WORKSHOP →", external: false, sourceUrl: "https://bakebuild.hackclub.com/",
   spineLabel: "WORKSHOP 02", color: "#789AB7", foil: "#F2F0EA",
-  width: 1.04, height: 1.64, depth: 0.28, emphasis: true,
+  width: 1.04, height: 1.64, depth: 0.28,
 },
 {
   id: "vibes",
@@ -107,17 +109,14 @@ export const shelfItems: readonly ShelfItem[] = [
 {
   id: "fusering",
   slug: "fusering",
-  title: "FuseRing",
-
+  title: fusering.title,
   kind: "workshop",
   group: "hackistan-workshops",
-
-  status: "planned",
-  statusLabel: "PLANNED",
-  dateLabel: "AFTER VIBES · DATE TBA",
-
-  shortDescription:
-    "Design a custom keyring in CAD, follow the project requirements, and get your creation printed and shipped.",
+  status: fusering.status,
+  statusLabel: workshopStatusLabel(fusering).toUpperCase(),
+  dateLabel: fusering.dateLabel.toUpperCase(),
+  shortDescription: fusering.shortDescription,
+  emphasis: true,
 
   coverImage: "/shelf/covers/fusering.webp",
 

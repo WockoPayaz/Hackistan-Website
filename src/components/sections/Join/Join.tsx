@@ -1,10 +1,11 @@
 import styles from "./Join.module.css";
 
+const joinCode = "J55HAA";
+
 const requirements = [
-  { heading: "Who can join", label: "13–18 · Quetta", copy: "You must be between 13 and 18 years old, inclusive, and based in Quetta. You do not need previous coding, design, hardware, or technical experience." },
-  { heading: "In person", label: "The City School · For now", copy: "Physical Hackistan meetings and workshops are currently limited to students of The City School while we work toward securing an independent venue." },
-  { heading: "YSWS", label: "Open across Quetta", copy: "Any eligible student aged 13–18 in Quetta can participate in Hack Club YSWS programs through Hackistan, regardless of school." },
-  { heading: "Committee", label: "In-person availability", copy: "Committee members must be able to attend required physical committee meetings in Quetta." },
+  { heading: "Experience", label: "Beginners welcome", copy: "You can start here even if you’ve never written code, designed a part or built a game." },
+  { heading: "Meetings", label: "In person · Quetta", copy: "Member meetings take place in Quetta. Committee members need to be available to attend in person." },
+  { heading: "YSWS", label: "Hack Club programs", copy: "Each You Ship, We Ship program sets its own eligibility and submission requirements. Check the guide for the one you want to join." },
 ] as const;
 
 const steps = [
@@ -19,9 +20,11 @@ export function Join() {
       <div className={styles.intro}>
         <span className={styles.index}>05 / JOIN</span>
         <h2 id="join-title">BUILD<br />WITH US.</h2>
-        <p>Hackistan is open to students aged 13–18 in Quetta who are interested in building things. No prior experience is required. Just curiosity and a willingness to learn by making.</p>
-        <a className={styles.cta} href="https://clubs.hackclub.com/auth/member?join=J55HAA" target="_blank" rel="noopener noreferrer" aria-label="Apply to join through the official Hack Club application (opens in a new tab)">APPLY TO JOIN <span aria-hidden="true">↗</span></a>
-        <span className={styles.ctaLabel}>OFFICIAL HACK CLUB APPLICATION</span>
+        <p>Open to everyone in Quetta aged 13–18.</p>
+        <div className={styles.apply}>
+          <a data-join-cta className={styles.cta} href={`https://clubs.hackclub.com/auth/member?join=${joinCode}`} target="_blank" rel="noopener noreferrer" aria-label="Apply to join through the official Hack Club application (opens in a new tab)">APPLY TO JOIN <span aria-hidden="true">↗</span></a>
+          <div className={styles.code}><span className={styles.ctaLabel}>Hack Club join code</span><strong>{joinCode}</strong></div>
+        </div>
       </div>
       <div className={styles.details}>
         <div className={styles.requirements}>

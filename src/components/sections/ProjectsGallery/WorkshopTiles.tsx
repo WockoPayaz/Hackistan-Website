@@ -10,9 +10,9 @@ export function WorkshopTiles() {
       {workshops.map((workshop, index) => <article className={styles.tile} key={workshop.id} style={{ backgroundImage: `linear-gradient(180deg, rgba(0,0,0,.12), rgba(0,0,0,.85)), url("${workshop.tileImage}")` }}>
         <div className={`${styles.top} eyebrow`}><span>{String(index + 1).padStart(2, "0")} / {workshop.tags.join(" + ")}</span><span className={styles.status}>{workshopStatusLabel(workshop)}</span></div>
         <div className={styles.copy}>
-          <p className="eyebrow">{workshop.dateLabel}{workshop.acceptedSubmissions !== undefined && ` · ${workshop.acceptedSubmissions} accepted submissions`}</p>
+          <p className="eyebrow">{workshop.dateLabel}{workshop.acceptedSubmissions !== undefined && ` · ${workshop.acceptedSubmissions} ${workshop.submissionLabel ?? "accepted submissions"}`}</p>
           <h4>{workshop.title}</h4><p>{workshop.shortDescription}</p>
-          <a href={workshop.href} className={styles.button} aria-label={`Explore ${workshop.title}`}>Explore workshop <span aria-hidden="true">↗</span></a>
+          <a href={workshop.href} className={styles.button}>{workshop.kind ? "Explore project" : "Explore workshop"}<span className="sr-only"> — {workshop.title}</span> <span aria-hidden="true">↗</span></a>
         </div>
       </article>)}
     </div>
