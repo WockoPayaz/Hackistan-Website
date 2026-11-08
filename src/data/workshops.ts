@@ -43,8 +43,8 @@ export const fusering = {
 export const ghostship = {
   id: "ghostship", slug: "ghostship", title: "GhostShip", status: "upcoming",
   dateLabel: "Date to be announced", tags: ["Game Dev", "p5.js"],
-  shortDescription: "Draw a ghost in JavaScript, make it dart across the screen and challenge players to catch it before time runs out.",
-  description: "Start with the Ghost Ship tutorial in the p5.js web editor. Give your Halloween game two or three original features, publish the playable version on GitHub Pages and submit its link to Hack Club.",
+  shortDescription: "Build a spooky browser game in p5.js. Dream up a Halloween setting and decide what players have to do to win.",
+  description: "Use the workshop guide to learn how to draw, animate and handle player input in p5.js. Then take the game in your own direction: escape a haunted maze, dodge creatures in the dark or try a spooky idea of your own. Add two or three original features, publish your game on GitHub Pages and submit the playable link to Hack Club.",
   href: "/workshops/ghostship/", tileImage: "/workshops/ghostship.svg",
   resources: [
     { id: "program", title: "Visit Ghost Ship", url: "https://ghostship.hackclub.com/", kind: "website" },
