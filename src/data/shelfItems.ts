@@ -109,7 +109,7 @@ export const shelfItems: readonly ShelfItem[] = [
   statusLabel: "PLANNED", dateLabel: ghostship.dateLabel.toUpperCase(),
   shortDescription: "What makes a game feel spooky? Try a flickering light, a ticking clock or something moving just offscreen. Build your idea in p5.js.",
   href: ghostship.href,
-  coverImage: "", ctaLabel: "EXPLORE WORKSHOP →", external: false, sourceUrl: ghostship.resources[0].url,
+  coverImage: "/shelf/covers/ghostship.webp", ctaLabel: "EXPLORE WORKSHOP →", external: false, sourceUrl: ghostship.resources[0].url,
   spineLabel: "WORKSHOP 05", color: "#242d30", foil: "#e8ebe4",
   width: 1.02, height: 1.55, depth: 0.25,
 },
