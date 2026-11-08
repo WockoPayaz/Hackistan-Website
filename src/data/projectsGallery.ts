@@ -43,14 +43,23 @@ export const projectsGalleryItems: readonly ProjectsGalleryItem[] = [
         alt: "Hackistan Workshop Session"
     },
 
+    {
+        id: "meeting-04",
+        number: "06",
+        kind: "meeting",
+        title: "Explaining how to make cookie cutters on Onshape.",
+        meta: "BAKEBUILD WORKSHOP",
+        image: "/projects-gallery/meeting-04.webp",
+        alt: "Hackistan members during a club activity"
+    },
 
     {
         id: "project-02",
         number: "04",
         kind: "project",
-        title: "PROJECT NAME",
+        title: "The Lost Key | Jame Gam",
         meta: "INDEPENDENT PROJECT / 2026",
-        description: "A short detailed description of the project.",
+        description: "A game built by Hackistan members for the Jame Gam game jam.",
         image: "/projects-gallery/project-02.webp",
         alt: "A project made by a Hackistan member"
     },
@@ -60,9 +69,10 @@ export const projectsGalleryItems: readonly ProjectsGalleryItem[] = [
         id: "project-03",
         number: "05",
         kind: "meeting",
-        title: "FROM THE CLUB",
-        meta: "HACKISTAN ZINDABAD",
+        title: "Cookies Cutters in the making.",
+        meta: "BAKEBUILD WORKSHOP",
         image: "/projects-gallery/meeting-03.webp",
         alt: "Hackistan members during a club activity"
     },
+
 ]
