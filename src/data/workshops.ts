@@ -35,7 +35,7 @@ export const fusering = {
   dateLabel: "November 11–18, 2026", location: "Quetta, Pakistan", edition: "04",
   shortDescription: "Draw a design you’d carry on your keys. Turn your artwork into a 3D-printable keyring in Onshape.",
   description: "Our Quetta workshop starts November 11 and runs through November 18. Start with original vector artwork, model a flat-backed keyring and publish it on Printables. Submit the design to Fusering for review. Hack Club produces eligible designs as physical 3D prints.",
-  tags: ["CAD", "3D Printing"], tileImage: fuseringBanner, coverImage: fuseringBanner, coverAlt: "Fusering custom keyring workshop",
+  tags: ["CAD", "3D Printing"], tileImage: "/images/fusering-blueprint.svg", coverImage: fuseringBanner, coverAlt: "Fusering custom keyring workshop",
   href: "/workshops/fusering/",
   resources: [{ id: "guide", title: "Visit Fusering for the guide and submission rules", url: "https://fusering.hackclub.com/", kind: "guide" }],
 } satisfies Workshop;
