@@ -22,7 +22,7 @@ export const bakebuild = {
   status: "completed", startDate: "2026-10-27", endDate: "2026-11-02", dateLabel: "27 Oct–2 Nov 2026",
   acceptedSubmissions: 25, submissionLabel: "approved submissions", difficulty: "Beginner",
   tags: ["CAD", "3D Printing"], coverImage: "/images/bakebuild.webp", coverAlt: "BakeBuild workshop",
-  tileImage: "/workshops/bakebuild.svg", href: "/workshops/bakebuild/", location: "Quetta, Pakistan",
+  tileImage: "/workshops/bakebuild-tile.svg", href: "/workshops/bakebuild/", location: "Quetta, Pakistan",
   fulfillmentNote: "Cookie cutter 3D prints are still awaiting fulfillment from Hack Club HQ.",
   photos: photoSlots("bakebuild", "BakeBuild workshop"),
   resources: [{ id: "program", title: "Explore BakeBuild", url: "https://bakebuild.hackclub.com/", kind: "website" }],
@@ -45,7 +45,7 @@ export const ghostship = {
   dateLabel: "Date to be announced", tags: ["Game Dev", "p5.js"],
   shortDescription: "Build a spooky browser game in p5.js. Dream up a Halloween setting and decide what players have to do to win.",
   description: "Use the workshop guide to learn how to draw, animate and handle player input in p5.js. Then take the game in your own direction: escape a haunted maze, dodge creatures in the dark or try a spooky idea of your own. Add two or three original features, publish your game on GitHub Pages and submit the playable link to Hack Club.",
-  href: "/workshops/ghostship/", tileImage: "/workshops/ghostship.svg",
+  href: "/workshops/ghostship/", tileImage: "/workshops/ghostship-tile.svg",
   resources: [
     { id: "program", title: "Visit Ghost Ship", url: "https://ghostship.hackclub.com/", kind: "website" },
     { id: "tutorial", title: "Follow the p5.js game tutorial", url: "https://ghostship.hackclub.com/tutorial/", kind: "guide" },
@@ -60,14 +60,14 @@ export const workshops: readonly Workshop[] = [
     status: "completed", startDate: "2026-10-19", endDate: "2026-10-27", dateLabel: "19–27 Oct 2026",
     photos: photoSlots("boba-drops", "Boba Drops workshop"), acceptedSubmissions: 12, difficulty: "Beginner", tags: ["HTML", "CSS", "Web Basics"],
     coverImage: "/images/boba-drops.webp", coverAlt: "Boba Drops workshop banner",
-    tileImage: "/workshops/boba-drops.svg", href: "/workshops/boba-drops/", location: "Quetta, Pakistan",
+    tileImage: "/workshops/boba-drops-tile.svg", href: "/workshops/boba-drops/", location: "Quetta, Pakistan",
     resources: [{ id: "ships", title: "View ships & projects", url: clubProjectsUrl, kind: "website" }],
   },
   bakebuild,
   {
     id: "the-lost-key", slug: "the-lost-key", title: "Jame Gam | Game Jam", photos: photoSlots("the-lost-key", "The Lost Key game jam entry"), kind: "Game jam",
     status: "completed", startDate: "2026-10-23", endDate: "2026-10-26", dateLabel: "October 23–26, 2026",
-    tags: ["Game Dev", "Godot"], tileImage: lostKeyCover ?? "/workshops/key-study.svg", href: "/workshops/the-lost-key/",
+    tags: ["Game Dev", "Godot"], tileImage: lostKeyCover ?? "/workshops/the-lost-key-tile.svg", href: "/workshops/the-lost-key/",
     shortDescription: "We developed The Lost Key, a Godot adventure game, in three days for the October game jam. Shrink down and explore a sewer to find your missing house key.",
     description: "Jame Gam is a Hack Club community where teenagers pick a game jam to enter together each month. In October, augie and Hack Club hosted a three-day jam with the theme “I’m just a little guy.” Our four-person Hackistan team developed The Lost Key for that theme and submitted it on itch.io. We made the entire game without generative AI, including all of its artwork.",
     facts: [
@@ -88,7 +88,7 @@ export const workshops: readonly Workshop[] = [
   {
     id: "vibes", slug: "vibes", title: "Vibes", status: "upcoming", dateLabel: "Date to be announced",
     shortDescription: "Start with an AI-assisted website, edit the code yourself, and add your own features to make it truly yours.",
-    tags: ["Web", "AI"], tileImage: "/workshops/vibes.svg", href: "/workshops/vibes/",
+    tags: ["Web", "AI"], tileImage: "/workshops/vibes-tile.svg", href: "/workshops/vibes/",
   },
 ];
 
